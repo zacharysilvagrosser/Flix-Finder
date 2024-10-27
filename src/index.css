@@ -95,9 +95,9 @@ body {
     transform: scale(103%);
     transition: .2s;
 }
-.homepage-link:hover .overview {
+/*.homepage-link:hover .overview {
     display: block;
-}
+}*/
 .overview {
     width: 280px;
     display: none;
@@ -111,7 +111,7 @@ body {
 .movie-section {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
     width: 100%;
 }
 .movie-container {
