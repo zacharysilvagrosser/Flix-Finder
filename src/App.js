@@ -3,8 +3,11 @@
 // on hover, poster opacity fades and buttons to search for similar movies, find it on streaming, imdb rating atc, appear
 
 import React, {useState, useEffect} from 'react';
+import config from './config';
+
 
 function App() {
+    const mykey = config.MY_KEY;
     const [data, setData] = useState(null);
 
     let input = document.getElementById("search").value;
@@ -14,7 +17,7 @@ function App() {
     document.getElementById("search-bar").classList.add("search-bar-small");
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=28d1584f758aa6c95442a463a6a95f2c&query=${input}`);
+            const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&query=${input}`);
             const jsonData = await response.json();
             const sortedData = jsonData.results.sort((a, b) => b.vote_count - a.vote_count);
             setData(sortedData);
