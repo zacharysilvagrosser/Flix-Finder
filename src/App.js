@@ -5,7 +5,6 @@
 import React, {useState, useEffect} from 'react';
 import config from './config';
 
-
 function App() {
     const mykey = config.MY_KEY;
     const [data, setData] = useState(null);
@@ -74,11 +73,13 @@ function SortingButtons(data) {
 }
 function MovieInfo({data, item}) {
     if (item.poster_path !== null) {
+        const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
         return (
-            <div className='homepage-link'>
-                <MovieButtons data={data} item={item} />
-                {data && <img src={posterPath} />}
+            <div className='movie-information'>
+                <button><a href={streamLink} target='_blank'>Streaming</a></button>
+                <button className='overview-button'>Overview</button>
+                {data && <img className='movie-img' src={posterPath} />}
                 {data && <h2 className='movie-names'>{item.title}</h2>}
                 {/*console.log(data)*/}
                 <MovieOverview data={data} item={item} />
@@ -90,27 +91,6 @@ function MovieOverview({data, item}) {
     return (
         <div className='overview'>
             <p>{data && item.overview}</p>
-            {/*console.log(item.overview)*/}
-        </div>
-    );
-}
-function MovieButtons({data, item}) {
-    function displayOverview() {
-        if (data) {
-            document.querySelectorAll(".overview")[0].innerHTML = item.overview;
-            document.querySelectorAll(".overview")[0].style.display = "block";
-        }
-    }
-    function hideOverview() {
-        if (data) {
-            document.querySelectorAll(".overview")[0].style.display = "none";
-        }
-    }
-    const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
-    return (
-        <div className='movie-buttons'>
-            <button><a href={streamLink} target='_blank'>Streaming</a></button>
-            <button onMouseOver={displayOverview} onMouseOut={hideOverview}>Overview</button>
         </div>
     );
 }

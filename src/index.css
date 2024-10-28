@@ -75,8 +75,8 @@ body {
     margin: 0 .7rem;
     background-color: #021526;
     color: white;
-    border: 1px solid white;
-    border-radius: 8px;
+    border: 1px solid rgb(175, 175, 175);
+    border-radius: 10px;
     transition: .3s;
 }
 .sorting-buttons:hover {
@@ -85,23 +85,45 @@ body {
     transition: .3s;
 }
 
-.homepage-link {
+.movie-information {
     width: 300px;
     height: 565px;
     margin: 2rem;
     transition: .2s;
 }
-.homepage-link:hover {
+.movie-information:hover {
     transform: scale(103%);
     transition: .2s;
 }
-/*.homepage-link:hover .overview {
+.movie-information button {
+    font-size: .9rem;
+    padding: .6rem;
+    margin-right: .4rem;
+    background-color: #03213b;
+    color: white;
+    border: 1px solid rgb(53, 71, 77);
+    transition: .3s;
+}
+.movie-information button:hover {
+    background-color: #021526;
+    border-radius: 6px;
+    transition: .3s;
+}
+.movie-information a {
+    color: white;
+    text-decoration: none;
+}
+.overview-button:hover ~ .overview {
     display: block;
-}*/
+}
+.overview-button:hover + .movie-img {
+    display: none;
+}
 .overview {
     width: 280px;
     display: none;
-    padding: 1rem;
+    padding: .5rem;
+    color: white;
 }
 .movie-names {
     color: white;
