@@ -4,8 +4,6 @@
 
 import React, {useState, useEffect} from 'react';
 import config from './config';
-import ReactDOM from 'react-dom/client';
-
 
 function App() {
     const mykey = config.MY_KEY;
@@ -30,29 +28,17 @@ function App() {
         const sortedData = [...data].sort((a, b) => b[sortOption] - a[sortOption]);
         setData(sortedData);
     }
-    const sortDates = (sortOption) => {
+    const sortDatesOld = (sortOption) => {
         const sortedData = [...data].sort((a, b) => new Date(a[sortOption]) - new Date(b[sortOption]));
         setData(sortedData);
     }
-    /*function addSuggestions() {
-        console.log("DELAY");
-        document.querySelectorAll(".suggestions-button").forEach(function(i) {
-            i.addEventListener('click', () => {
-                root.render (
-                    <React.StrictMode>
-                      <App />
-                    </React.StrictMode>
-                );
-            });
-        });
-    }*/
+    const sortDatesNew = (sortOption) => {
+        const sortedData = [...data].sort((a, b) => new Date(b[sortOption]) - new Date(a[sortOption]));
+        setData(sortedData);
+    }
     return (
         <div className='movie-container'>
-            <div>
-                <button className="sorting-buttons" onClick={() => handleSort('vote_count')}>Vote Count</button>
-                <button className="sorting-buttons" id="rating" onClick={() => handleSort('vote_average')}>Rating</button>
-                <button className="sorting-buttons" onClick={() => sortDates('release_date')}>Release Date</button>
-            </div>
+            <SortingButtons handleSort={handleSort} sortDatesOld={sortDatesOld} sortDatesNew={sortDatesNew}/>
             <div className='movie-section'>
                     {data && data.map((item, index) => (
                         <MovieInfo data={data} key={index} item={item} />
@@ -61,16 +47,22 @@ function App() {
         </div>
     );
 }
-const sortMovies = (sorter) => {
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render (
-        <React.StrictMode>
-            <App sortOption={sorter}/>
-        </React.StrictMode>
-    );
-}
-//data.data.sort((a, b) => b.rating - a.rating)
+function SortingButtons(props) {
+    const [isHighlighted, setIsHighlighted] = useState(false);
 
+    const handleClick = () => {
+        setIsHighlighted(!isHighlighted);
+    };
+
+    return (
+        <>
+            <button className="sorting-buttons" onClick={() => props.handleSort('vote_count')}>Vote Count</button>
+            <button className="sorting-buttons" id="rating" onClick={() => props.handleSort('vote_average')}>Rating</button>
+            <button className="sorting-buttons" onClick={() => props.sortDatesOld('release_date')}>Oldest</button>
+            <button className="sorting-buttons" onClick={() => props.sortDatesNew('release_date')}>Newest</button>
+        </>
+      );
+}
 function MovieInfo({data, item}) {
     if (item.poster_path !== null) {
         function suggest() {
@@ -80,9 +72,10 @@ function MovieInfo({data, item}) {
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
         return (
             <div className='movie-information'>
-                <button><a href={streamLink} target='_blank'>Streaming</a></button>
-                <button className='overview-button'>Overview</button>
-                <button className='suggestions-button' onClick={suggest}>Suggestions</button>
+                <button className='suggestions-button movie-button' onClick={suggest}>Suggest</button>
+                <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
+                <button className='info-button movie-button'>Info</button>
+                <button className='overview-button movie-button'>Overview</button>
                 {data && <img className='movie-img' src={posterPath} />}
                 {data && <h2 className='movie-names'>{item.title}</h2>}
                 {/*console.log(data)*/}

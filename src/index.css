@@ -19,9 +19,9 @@ body {
 #page-header {
     width: 100%;
     text-align: center;
-    color:aliceblue;
+    color:rgb(255, 255, 255);
     font-size: 4rem;
-    margin: 0 0 0 0;
+    margin: 0 0 1rem 0;
 }
 .search-bar-large {
     width: 100%;
@@ -84,7 +84,6 @@ body {
     border-radius: 0px;
     transition: .3s;
 }
-
 .movie-information {
     width: 300px;
     height: 565px;
@@ -96,9 +95,9 @@ body {
     transition: .2s;
 }
 .movie-information button {
-    font-size: .9rem;
-    padding: .6rem;
-    margin-right: .4rem;
+    min-width: 25%;
+    font-size: .8rem;
+    padding: .62rem;
     background-color: #03213b;
     color: white;
     border: 1px solid rgb(53, 71, 77);
@@ -112,6 +111,10 @@ body {
 .movie-information a {
     color: white;
     text-decoration: none;
+}
+.movie-buttons {
+    display: flex;
+    justify-content: center;
 }
 .overview-button:hover ~ .overview {
     display: block;
