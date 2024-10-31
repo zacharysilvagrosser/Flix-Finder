@@ -4,13 +4,14 @@
 
 import React, {useState, useEffect} from 'react';
 import config from './config';
+import ReactDOM from 'react-dom/client';
+
 
 function App() {
     const mykey = config.MY_KEY;
     const [data, setData] = useState(null);
 
     let input = document.getElementById("search").value;
-    console.log("INPUT:", input);
     document.getElementById("movie-display").style.visibility = "hidden";
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
@@ -20,16 +21,37 @@ function App() {
             const jsonData = await response.json();
             const sortedData = jsonData.results.sort((a, b) => b.vote_count - a.vote_count);
             setData(sortedData);
-            console.log("SORTED", sortedData);
             //console.log("data: ", data.results.title);
         };
         fetchData();
     }, [input]);
-
+    const handleSort = (sortOption) => {
+        console.log("DATA", data);
+        const sortedData = [...data].sort((a, b) => b[sortOption] - a[sortOption]);
+        setData(sortedData);
+    }
+    const sortDates = (sortOption) => {
+        const sortedData = [...data].sort((a, b) => new Date(a[sortOption]) - new Date(b[sortOption]));
+        setData(sortedData);
+    }
+    /*function addSuggestions() {
+        console.log("DELAY");
+        document.querySelectorAll(".suggestions-button").forEach(function(i) {
+            i.addEventListener('click', () => {
+                root.render (
+                    <React.StrictMode>
+                      <App />
+                    </React.StrictMode>
+                );
+            });
+        });
+    }*/
     return (
         <div className='movie-container'>
             <div>
-                <SortingButtons data={data}/>
+                <button className="sorting-buttons" onClick={() => handleSort('vote_count')}>Vote Count</button>
+                <button className="sorting-buttons" id="rating" onClick={() => handleSort('vote_average')}>Rating</button>
+                <button className="sorting-buttons" onClick={() => sortDates('release_date')}>Release Date</button>
             </div>
             <div className='movie-section'>
                     {data && data.map((item, index) => (
@@ -39,46 +61,28 @@ function App() {
         </div>
     );
 }
-
-//data.data.sort((a, b) => b.rating - a.rating)
-function SortingButtons(data) {
-    function sortDataID() {
-        const sorted = data.data.sort((a, b) => a.id - b.id);
-        document.getElementsByClassName("sorting-buttons")[0].style.backgroundColor = "#021526";
-        document.getElementsByClassName("sorting-buttons")[0].style.borderRadius = "8px";
-        document.getElementsByClassName("sorting-buttons")[1].style.backgroundColor = "#021526";
-        document.getElementsByClassName("sorting-buttons")[1].style.borderRadius = "8px";
-        document.getElementsByClassName("sorting-buttons")[2].style.backgroundColor = "#03213b";
-        document.getElementsByClassName("sorting-buttons")[2].style.borderRadius = "0px";
-        console.log("SORTED NEW DATA: ", sorted);
-    }
-    function sortDataRating() {
-        const sorted = data.data.sort((a, b) => b.vote_average - a.vote_average);
-        document.getElementsByClassName("sorting-buttons")[0].style.backgroundColor = "#021526";
-        document.getElementsByClassName("sorting-buttons")[0].style.borderRadius = "8px";
-        document.getElementsByClassName("sorting-buttons")[1].style.backgroundColor = "#03213b";
-        document.getElementsByClassName("sorting-buttons")[1].style.borderRadius = "0px";
-        document.getElementsByClassName("sorting-buttons")[2].style.backgroundColor = "#021526";
-        document.getElementsByClassName("sorting-buttons")[2].style.borderRadius = "8px";
-        console.log("SORTED NEW DATA: ", sorted);
-    }
-
-    return (
-        <>
-            <button className="sorting-buttons">Vote Count</button>
-            <button className="sorting-buttons" id="rating" onClick={sortDataRating}>Rating</button>
-            <button className="sorting-buttons" onClick={sortDataID}>Release Date</button>
-        </>
-    )
+const sortMovies = (sorter) => {
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render (
+        <React.StrictMode>
+            <App sortOption={sorter}/>
+        </React.StrictMode>
+    );
 }
+//data.data.sort((a, b) => b.rating - a.rating)
+
 function MovieInfo({data, item}) {
     if (item.poster_path !== null) {
+        function suggest() {
+            console.log("CLICKED");
+        }
         const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
         return (
             <div className='movie-information'>
                 <button><a href={streamLink} target='_blank'>Streaming</a></button>
                 <button className='overview-button'>Overview</button>
+                <button className='suggestions-button' onClick={suggest}>Suggestions</button>
                 {data && <img className='movie-img' src={posterPath} />}
                 {data && <h2 className='movie-names'>{item.title}</h2>}
                 {/*console.log(data)*/}

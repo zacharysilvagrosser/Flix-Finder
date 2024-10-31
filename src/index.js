@@ -5,21 +5,21 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 window.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
-        root.render(
+        root.render (
             <React.StrictMode>
-              <App />
+              <App/>
             </React.StrictMode>
-          );
-        }
-    });
-    document.getElementById("search-button").addEventListener("click", () => {
-        root.render(
-            <React.StrictMode>
-        <App />
-      </React.StrictMode>
+        );
+    }
+});
+document.getElementById("search-button").addEventListener("click", () => {
+    root.render (
+        <React.StrictMode>
+            <App/>
+        </React.StrictMode>
     );
 });
-
 reportWebVitals();
