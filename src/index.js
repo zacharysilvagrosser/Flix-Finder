@@ -22,4 +22,12 @@ document.getElementById("search-button").addEventListener("click", () => {
         </React.StrictMode>
     );
 });
+document.getElementById("trending-button").addEventListener("click", () => {
+    document.getElementById("search").value = 'trending';
+    root.render (
+        <React.StrictMode>
+            <App/>
+        </React.StrictMode>
+    );
+});
 reportWebVitals();

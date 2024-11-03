@@ -1,25 +1,47 @@
-// sort movies based on imdb rating, release date, or vote count
-// search button that auto types into a google search in another page with the streaming sites for the movie (or link website that tracks that)
-// on hover, poster opacity fades and buttons to search for similar movies, find it on streaming, imdb rating atc, appear
+// find tranding movies button https://api.themoviedb.org/3/trending/movie/day?language=en-US&api_key=${mykey}
+// fix oldest and newest staying sorted when searching new movie title
 
 import React, {useState, useEffect} from 'react';
 import config from './config';
+import index from './index';
 
+
+const mykey = config.MY_KEY;
 function App() {
-    const mykey = config.MY_KEY;
     const [data, setData] = useState(null);
 
     let input = document.getElementById("search").value;
     document.getElementById("movie-display").style.visibility = "hidden";
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
+    document.getElementById("trending-button").style.width = "12%";
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&query=${input}`);
+            let response;
+            if (document.getElementById("search").value === 'trending') {
+                response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&api_key=${mykey}`);
+                console.log("trend")
+            } else {
+                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&query=${input}`);
+                console.log("NOPE")
+            }
             const jsonData = await response.json();
-            const sortedData = jsonData.results.sort((a, b) => b.popularity - a.popularity);
+            let sortedData;
+            if (document.getElementById("popularity-button").classList.contains("active-button")) {
+                sortedData = jsonData.results.sort((a, b) => b.popularity - a.popularity);
+                console.log("popular");
+            } else if (document.getElementById("rating-button").classList.contains("active-button")) {
+                sortedData = jsonData.results.sort((a, b) => b.vote_average - a.vote_average);
+                console.log("rate");
+            } else if (document.getElementById("oldest-button").classList.contains("active-button")) {
+                sortedData = [...data].sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+                console.log("old");
+            } else if (document.getElementById("newest-button").classList.contains("active-button")) {
+                sortedData = [...data].sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+            } else {
+                sortedData = jsonData.results.sort((a, b) => b.popularity - a.popularity);
+            }
             setData(sortedData);
-            //console.log("data: ", data.results.title);
         };
         fetchData();
     }, [input]);
@@ -52,12 +74,30 @@ function App() {
         const sortedData = [...data].sort((a, b) => new Date(b[sortOption]) - new Date(a[sortOption]));
         setData(sortedData);
     }
-    const suggest = (suggestion) => {
-        console.log("CLICKED", data);
-        let genres = 0;
-        document.getElementById("search").value = 'bob';
-        const sortedData = [...data].sort((a, b) => b[suggestion] - a[suggestion]);
-        setData(sortedData);
+    const suggest = (id) => {
+        const fetchData = async () => {
+            const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
+            const jsonData = await response.json();
+            //console.log(jsonData);
+            // displays all movies that belong to the same collection
+            /*if (jsonData.belongs_to_collection !== null) {
+                const collection = jsonData.belongs_to_collection.id;
+                const fetchCollection = async () => {
+                    const collectionResponse = await fetch(`https://api.themoviedb.org/3/collection/${collection}?api_key=${mykey}`);
+                    const collectionJsonData = await collectionResponse.json();
+                    setData(collectionJsonData.parts);
+                };
+                fetchCollection();
+            }*/
+            const fetchSuggestions = async () => {
+                const suggestionResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1&api_key=${mykey}`);
+                const suggestionJsonData = await suggestionResponse.json();
+                console.log(suggestionJsonData)
+                setData(suggestionJsonData.results);
+            };
+            fetchSuggestions();
+        };
+        fetchData();
     }
     return (
         <div className='movie-container'>
@@ -70,12 +110,8 @@ function App() {
         </div>
     );
 }
-function SortingButtons(props) {
-    const [isHighlighted, setIsHighlighted] = useState(false);
 
-    const handleClick = () => {
-        setIsHighlighted(!isHighlighted);
-    };
+function SortingButtons(props) {
     return (
         <>
             <button id="popularity-button" className="sorting-buttons active-button" autoFocus onClick={() => props.handleSort('popularity')}>Popularity</button>
@@ -89,15 +125,20 @@ function MovieInfo({suggest, item, data}) {
     if (item.poster_path !== null) {
         const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
+            /*const fetchData = async () => {
+                const response = await fetch(`https://api.themoviedb.org/3/movie/${item.id}?language=en-US&api_key=${mykey}`);
+                const jsonData = await response.json();
+                console.log("data: ", jsonData);
+            };
+            fetchData();*/
         return (
             <div className='movie-information'>
-                <button className='suggestions-button movie-button' onClick={() => suggest('vote_average')}>Suggest</button>
+                <button className='suggestions-button movie-button' onClick={() => suggest(item.id)}>Suggest</button>
                 <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
                 <button className='info-button movie-button'>Info</button>
                 <button className='overview-button movie-button'>Overview</button>
-                {data && <img className='movie-img' src={posterPath} />}
+                {data && <img className='movie-img' src={posterPath} alt="Movie Poster" />}
                 {data && <h2 className='movie-names'>{item.title}</h2>}
-                {/*console.log(props.data)*/}
                 <MovieData data={data} item={item} />
                 <MovieOverview data={data} item={item} />
             </div>
