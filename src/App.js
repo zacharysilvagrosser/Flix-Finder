@@ -1,20 +1,20 @@
-// find tranding movies button https://api.themoviedb.org/3/trending/movie/day?language=en-US&api_key=${mykey}
 // fix oldest and newest staying sorted when searching new movie title
+// create an 'add to watchlist feature'
+// add arrows to move to the next page of 20 movies
 
 import React, {useState, useEffect} from 'react';
 import config from './config';
-import index from './index';
-
 
 const mykey = config.MY_KEY;
 function App() {
     const [data, setData] = useState(null);
+    const [page, setPage] = useState(1);
 
     let input = document.getElementById("search").value;
     document.getElementById("movie-display").style.visibility = "hidden";
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
-    document.getElementById("trending-button").style.width = "12%";
+    document.getElementById("trending-button").style.visibility = "collapse";
     useEffect(() => {
         const fetchData = async () => {
             let response;
@@ -46,7 +46,6 @@ function App() {
         fetchData();
     }, [input]);
     const handleSort = (sortOption) => {
-        console.log("DATA", data);
         const sortedData = [...data].sort((a, b) => b[sortOption] - a[sortOption]);
         document.querySelectorAll(".sorting-buttons").forEach(button => {
             button.classList.remove("active-button");
@@ -75,9 +74,9 @@ function App() {
         setData(sortedData);
     }
     const suggest = (id) => {
-        const fetchData = async () => {
-            const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
-            const jsonData = await response.json();
+        //const fetchData = async () => {
+            //const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
+            //const jsonData = await response.json();
             //console.log(jsonData);
             // displays all movies that belong to the same collection
             /*if (jsonData.belongs_to_collection !== null) {
@@ -90,14 +89,14 @@ function App() {
                 fetchCollection();
             }*/
             const fetchSuggestions = async () => {
-                const suggestionResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1&api_key=${mykey}`);
+                const suggestionResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=${page}&api_key=${mykey}`);
                 const suggestionJsonData = await suggestionResponse.json();
                 console.log(suggestionJsonData)
                 setData(suggestionJsonData.results);
             };
             fetchSuggestions();
-        };
-        fetchData();
+        //};
+        //fetchData();
     }
     return (
         <div className='movie-container'>
@@ -107,10 +106,17 @@ function App() {
                         <MovieInfo data={data} key={index} item={item} suggest={suggest}/>
                     ))}
             </div>
+            {/*<SeeMore page={page} setPage = {setPage}/>*/}
         </div>
     );
 }
-
+function SeeMore({page, setPage}) {
+    return (
+        <>
+            <button id="see-more" onClick={() => setPage(page + 1)}>See More</button>
+        </>
+    );
+}
 function SortingButtons(props) {
     return (
         <>

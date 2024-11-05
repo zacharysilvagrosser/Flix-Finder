@@ -25,7 +25,7 @@ a {
     text-align: center;
     color:rgb(255, 255, 255);
     font-size: 4rem;
-    margin: 0 0 1rem 0;
+    margin: 3rem 0 3rem 0;
 }
 .search-bar-large {
     width: 100%;
@@ -40,7 +40,7 @@ a {
     align-items: flex-end;
     justify-content: flex-end;
     position: absolute;
-    top: 1%;
+    top: 2%;
     right: 1%;
 }
 #search {
@@ -59,7 +59,7 @@ a {
 }
 #trending-button {
     width: 6%;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 #movie-display {
     margin-top: 1rem;
