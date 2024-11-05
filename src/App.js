@@ -1,6 +1,6 @@
 // fix oldest and newest staying sorted when searching new movie title
 // create an 'add to watchlist feature'
-// add arrows to move to the next page of 20 movies
+// add arrows to move to the next page of 20 movies after getting suggestions
 
 import React, {useState, useEffect} from 'react';
 import config from './config';
@@ -11,19 +11,27 @@ function App() {
     const [page, setPage] = useState(1);
 
     let input = document.getElementById("search").value;
-    document.getElementById("movie-display").style.visibility = "hidden";
-    document.getElementById("search-bar").classList.remove("search-bar-large");
-    document.getElementById("search-bar").classList.add("search-bar-small");
-    document.getElementById("trending-button").style.visibility = "collapse";
+
+    // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
+    document.getElementById("search-button").addEventListener("click", () => {
+        setPage(1);
+    });
+    window.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            setPage(1);
+        }
+    });
+    document.getElementById("trending-button").addEventListener("click", () => {
+        setPage(1);
+    });
+
     useEffect(() => {
         const fetchData = async () => {
             let response;
             if (document.getElementById("search").value === 'trending') {
-                response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&api_key=${mykey}`);
-                console.log("trend")
-            } else {
-                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&query=${input}`);
-                console.log("NOPE")
+                response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${page}&api_key=${mykey}`);
+            } else {                
+                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&page=${page}&query=${input}`);
             }
             const jsonData = await response.json();
             let sortedData;
@@ -44,7 +52,7 @@ function App() {
             setData(sortedData);
         };
         fetchData();
-    }, [input]);
+    }, [page, input]);
     const handleSort = (sortOption) => {
         const sortedData = [...data].sort((a, b) => b[sortOption] - a[sortOption]);
         document.querySelectorAll(".sorting-buttons").forEach(button => {
@@ -106,16 +114,49 @@ function App() {
                         <MovieInfo data={data} key={index} item={item} suggest={suggest}/>
                     ))}
             </div>
-            {/*<SeeMore page={page} setPage = {setPage}/>*/}
+            <SeeMore page={page} setPage={setPage} data={data}/>
         </div>
     );
 }
-function SeeMore({page, setPage}) {
-    return (
-        <>
-            <button id="see-more" onClick={() => setPage(page + 1)}>See More</button>
-        </>
-    );
+function SeeMore({page, setPage, data}) {
+    function goNext() {
+        if (data.length === 20) {
+            setPage(page + 1);
+            console.log(data);
+            document.getElementById("search-bar").scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+    }
+    function goPrevious() {
+        if (page !== 1) {
+            setPage(page - 1);
+            console.log(data);
+            document.getElementById("search-bar").scrollIntoView({
+                behavior: "smooth",
+              });
+        }
+    }
+    if (page !== 1 && (data && data.length !== 20)) {
+        return (
+            <div id="more-data-buttons">
+                <button id="previous" onClick={goPrevious}>{'<<'}</button>
+                </div>
+        )
+    } else if (page === 1 && (data && data.length === 20)) {
+        return (
+            <div id="more-data-buttons">
+                <button id="next" onClick={goNext}>{'>>'}</button>
+                </div>
+        )
+    } else {
+        return (
+            <div id="more-data-buttons">
+                <button id="previous" onClick={goPrevious}>{'<<'}</button>
+                <button id="next" onClick={goNext}>{'>>'}</button>
+            </div>
+        );
+    }
 }
 function SortingButtons(props) {
     return (
@@ -131,12 +172,6 @@ function MovieInfo({suggest, item, data}) {
     if (item.poster_path !== null) {
         const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
-            /*const fetchData = async () => {
-                const response = await fetch(`https://api.themoviedb.org/3/movie/${item.id}?language=en-US&api_key=${mykey}`);
-                const jsonData = await response.json();
-                console.log("data: ", jsonData);
-            };
-            fetchData();*/
         return (
             <div className='movie-information'>
                 <button className='suggestions-button movie-button' onClick={() => suggest(item.id)}>Suggest</button>
