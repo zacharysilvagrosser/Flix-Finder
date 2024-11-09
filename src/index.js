@@ -1,22 +1,59 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import React, { useState } from 'react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-function changeDisplay() {
-    document.getElementById("movie-display").style.visibility = "hidden";
-    document.getElementById("search-bar").classList.remove("search-bar-large");
-    document.getElementById("search-bar").classList.add("search-bar-small");
-    document.getElementById("trending-button").style.visibility = "collapse";
-    document.getElementById("page-header").style.margin = "8rem 0 4rem 0";
-}
+/*function changeDisplay() {
 
-window.addEventListener('keydown', function(event) {
+}*/
+function StartScreen() {
+    const [showApp, setShowApp] = useState(false);
+    const searchBarClick = () => {
+        setShowApp(true);
+    };
+    const trendingBarClick = () => {
+        document.getElementById("search").value = "trending";
+        setShowApp(true);
+    };
+    const searchBarEnter = (event) => {
+        if (event.key === 'Enter') {
+            setShowApp(true);
+        }
+    }
+    return (
+        <div id="container">
+            <h1 id="page-header">Flix Finder</h1>
+            {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick}/>}
+            {!showApp && <Tagline />}
+            {showApp && <App />}
+        </div>
+    );
+}
+root.render (
+    <StartScreen />
+)
+function SearchBar(props) {
+    return (
+        <div id="search-bar" className="search-bar-large">
+            <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>
+            <button id="search-button" onClick={props.searchBarClick}>Search</button>
+            <button id="trending-button" onClick={props.trendingBarClick}>Trending</button>
+        </div>
+    )
+}
+function Tagline() {
+    return (
+        <div id="movie-display">
+            <h2>Search over one million movies</h2>
+        </div>
+    )
+}
+/*window.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
-        changeDisplay();
+        //changeDisplay();
         root.render (
             <React.StrictMode>
                 <App/>
@@ -25,7 +62,7 @@ window.addEventListener('keydown', function(event) {
     }
 });
 document.getElementById("search-button").addEventListener("click", () => {
-    changeDisplay();
+    //changeDisplay();
     root.render (
         <React.StrictMode>
             <App/>
@@ -33,12 +70,12 @@ document.getElementById("search-button").addEventListener("click", () => {
     );
 });
 document.getElementById("trending-button").addEventListener("click", () => {
-    document.getElementById("search").value = 'trending';
-    changeDisplay();
+    //document.getElementById("search").value = 'trending';
+    //changeDisplay();
     root.render (
         <React.StrictMode>
             <App/>
         </React.StrictMode>
     );
-});
+});*/
 reportWebVitals();

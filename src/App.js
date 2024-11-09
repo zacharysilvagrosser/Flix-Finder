@@ -26,6 +26,13 @@ import config from './config';
 
 const mykey = config.MY_KEY;
 function App() {
+    // update styling of search bar and header
+    document.getElementById("search-bar").classList.remove("search-bar-large");
+    document.getElementById("search-bar").classList.add("search-bar-small");
+    document.getElementById("search-button").style.fontSize = "1.5rem";
+    document.getElementById("trending-button").style.width = "6.5rem";
+    document.getElementById("page-header").style.marginBottom = "4rem";
+    // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
     // load previous watch list data before setting it to an empty array
@@ -157,9 +164,7 @@ function NoMoviesFound() {
 }
 // Watch list button component to display watch list
 function LoadWatchList(props) {
-    return (
-        <button id="watch-list" onClick={() => props.showWatchList()}>Watch List ({props.listNumber})</button>
-    )
+        return <button id="watch-list" onClick={() => props.showWatchList()}>Watch List ({props.listNumber})</button>
 }
 // Filter buttons on top of movie display that sort movies by categories
 function SortingButtons(props) {

@@ -18,7 +18,8 @@ a {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 #page-header {
     width: 100%;
