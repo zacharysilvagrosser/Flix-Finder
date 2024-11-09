@@ -3,6 +3,8 @@
 // click movie to get more details like actors?
 // make it update when search button clicked not input change
 
+// clicking on watch list again should toggle back to your search and remove active button statis 
+
 // FETCH COLLECTION DATA
 //const fetchData = async () => {
     //const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
@@ -26,8 +28,12 @@ const mykey = config.MY_KEY;
 function App() {
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
-    const [watchData, setWatchData] = useState([]);
-
+    // load previous watch list data before setting it to an empty array
+    const [watchData, setWatchData] = useState(() => {
+        const storedData = localStorage.getItem('watchLaterData');
+        return storedData ? JSON.parse(storedData) : [];
+    });
+    const [listNumber, setListNumber] = useState(watchData.length);
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
     document.getElementById("search-button").addEventListener("click", () => {
         setPage(1);
@@ -105,11 +111,24 @@ function App() {
     }
     // get watch list from local storage and display it on screen
     const showWatchList = () => {
+        document.getElementById("watch-list").classList.add("view-watch-list");
         setData(JSON.parse(localStorage.getItem('watchLaterData')));
     };
     // add new movie to a new array of watch list movies
-    function addToWatchlist(item) {
-        setWatchData(prevArray => prevArray.concat(item));
+    function addToWatchlist(newItem) {
+        // only add new watch list item if not already in the watch list
+        const isDuplicate = watchData.some((title) => {
+            return title.title === newItem.title;
+        });
+        if (!isDuplicate) {
+            setWatchData([...watchData, newItem]);
+            setListNumber(listNumber + 1);
+        }
+    }
+    function deleteFromWatchlist(movieTitle) {
+        setWatchData(prevItems => prevItems.filter(movie => movie.title !== movieTitle));
+        setData(prevItems => prevItems.filter(movie => movie.title !== movieTitle));
+        setListNumber(listNumber - 1);
     }
     // update local storage data whenever watch list movies change
     useEffect(() => {
@@ -117,11 +136,11 @@ function App() {
     }, [watchData]);
     return (
         <div className='movie-container'>
-            <LoadWatchList showWatchList={showWatchList}/>
+            <LoadWatchList showWatchList={showWatchList} listNumber={listNumber}/>
             <SortingButtons handleSort={handleSort} sortDatesOld={sortDatesOld} sortDatesNew={sortDatesNew}/>
             <div id='movie-section'>
                 {data && data.map((item, index) => (
-                    <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist}/>
+                    <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist} deleteFromWatchlist={deleteFromWatchlist}/>
                 ))}
                 <NoMoviesFound />
             </div>
@@ -139,7 +158,7 @@ function NoMoviesFound() {
 // Watch list button component to display watch list
 function LoadWatchList(props) {
     return (
-        <button id="watch-list" onClick={() => props.showWatchList()}>Watch List</button>
+        <button id="watch-list" onClick={() => props.showWatchList()}>Watch List ({props.listNumber})</button>
     )
 }
 // Filter buttons on top of movie display that sort movies by categories
@@ -154,7 +173,7 @@ function SortingButtons(props) {
       );
 }
 // individual movie component with all movie information displayed with it
-function MovieInfo({suggest, item, data, addToWatchlist}) {
+function MovieInfo({suggest, item, data, addToWatchlist, deleteFromWatchlist}) {
     console.log(data)
     if (item.poster_path !== null) {
         const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
@@ -164,7 +183,7 @@ function MovieInfo({suggest, item, data, addToWatchlist}) {
                 <button className='suggestions-button movie-button' onClick={() => suggest(item.id)}>Suggest</button>
                 <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
                 <button className='info-button movie-button'>Info</button>
-                <WatchList data={data} item={item} addToWatchlist={addToWatchlist}/>
+                <WatchList data={data} item={item} addToWatchlist={addToWatchlist} deleteFromWatchlist={deleteFromWatchlist}/>
                 {data && <img className='movie-img' src={posterPath} alt="Movie Poster" />}
                 {data && <h2 className='movie-names'>{item.title}</h2>}
                 <MovieData data={data} item={item} />
@@ -174,9 +193,11 @@ function MovieInfo({suggest, item, data, addToWatchlist}) {
 }
 // Watch list button on movieinfo component
 function WatchList(props) {
-    return (
-        <button className='watch-list-button movie-button' onClick={() => props.addToWatchlist(props.item)}>Watch List</button>
-    )
+    if (document.getElementById("watch-list").classList.contains("view-watch-list")) {
+        return <button className='watch-list-button movie-button' onClick={() => props.deleteFromWatchlist(props.item.title)}>Delete</button>
+    } else {
+        return <button className='watch-list-button movie-button' onClick={() => props.addToWatchlist(props.item)}>Watch List</button>
+    }
 }
 // List of movie data in the Info button of movieinfo component
 function MovieData({data, item}) {

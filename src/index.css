@@ -185,7 +185,7 @@ a {
     justify-content: center;
 }
 #watch-list {
-    width: 7rem;
+    width: 12rem;
     height: 3rem;
     position: absolute;
     top: 2%;
@@ -198,4 +198,7 @@ a {
 #no-movies-found {
     padding: 2rem;
     font-size: 2.2rem;
+}
+.view-watch-list {
+    background-color:rgb(0, 0, 0);
 }
