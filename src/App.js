@@ -119,14 +119,22 @@ function App() {
         <div className='movie-container'>
             <LoadWatchList showWatchList={showWatchList}/>
             <SortingButtons handleSort={handleSort} sortDatesOld={sortDatesOld} sortDatesNew={sortDatesNew}/>
-            <div className='movie-section'>
+            <div id='movie-section'>
                 {data && data.map((item, index) => (
                     <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist}/>
                 ))}
+                <NoMoviesFound />
             </div>
             <SeeMore page={page} setPage={setPage} data={data}/>
         </div>
     );
+}
+function NoMoviesFound() {
+    if (document.querySelectorAll(".movie-information").length == 0) {
+        return (
+            <p id="no-movies-found">There are no movies that match your search query.</p>
+        )
+    }
 }
 // Watch list button component to display watch list
 function LoadWatchList(props) {

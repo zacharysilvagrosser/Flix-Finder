@@ -160,7 +160,7 @@ a {
     font-size: 1.3rem;
     text-align: center;
 }
-.movie-section {
+#movie-section {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -194,4 +194,8 @@ a {
 }
 #popularity-button {
     margin-left: 4.5rem;
+}
+#no-movies-found {
+    padding: 2rem;
+    font-size: 2.2rem;
 }
