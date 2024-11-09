@@ -1,6 +1,23 @@
 // fix oldest and newest staying sorted when searching new movie title
 // create an 'add to watchlist feature'
-// add arrows to move to the next page of 20 movies after getting suggestions
+// click movie to get more details like actors?
+// make it update when search button clicked not input change
+
+// FETCH COLLECTION DATA
+//const fetchData = async () => {
+    //const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
+    //const jsonData = await response.json();
+    //console.log(jsonData);
+    // displays all movies that belong to the same collection
+    /*if (jsonData.belongs_to_collection !== null) {
+        const collection = jsonData.belongs_to_collection.id;
+        const fetchCollection = async () => {
+            const collectionResponse = await fetch(`https://api.themoviedb.org/3/collection/${collection}?api_key=${mykey}`);
+            const collectionJsonData = await collectionResponse.json();
+            setData(collectionJsonData.parts);
+        };
+        fetchCollection();
+    }*/
 
 import React, {useState, useEffect} from 'react';
 import config from './config';
@@ -9,8 +26,7 @@ const mykey = config.MY_KEY;
 function App() {
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
-
-    let input = document.getElementById("search").value;
+    const [watchData, setWatchData] = useState([]);
 
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
     document.getElementById("search-button").addEventListener("click", () => {
@@ -25,6 +41,7 @@ function App() {
         setPage(1);
     });
 
+    let input = document.getElementById("search").value;
     useEffect(() => {
         const fetchData = async () => {
             let response;
@@ -34,16 +51,14 @@ function App() {
                 response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&page=${page}&query=${input}`);
             }
             const jsonData = await response.json();
+            // sort data by the currently selected filter buttons
             let sortedData;
             if (document.getElementById("popularity-button").classList.contains("active-button")) {
                 sortedData = jsonData.results.sort((a, b) => b.popularity - a.popularity);
-                console.log("popular");
             } else if (document.getElementById("rating-button").classList.contains("active-button")) {
                 sortedData = jsonData.results.sort((a, b) => b.vote_average - a.vote_average);
-                console.log("rate");
             } else if (document.getElementById("oldest-button").classList.contains("active-button")) {
                 sortedData = [...data].sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-                console.log("old");
             } else if (document.getElementById("newest-button").classList.contains("active-button")) {
                 sortedData = [...data].sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
             } else {
@@ -53,111 +68,73 @@ function App() {
         };
         fetchData();
     }, [page, input]);
-    const handleSort = (sortOption) => {
-        const sortedData = [...data].sort((a, b) => b[sortOption] - a[sortOption]);
+
+    // sorting functions for sorting movies by different parameters
+    let sortedMovies;
+    function sortMovies(sortType) {
         document.querySelectorAll(".sorting-buttons").forEach(button => {
             button.classList.remove("active-button");
         });
+        document.getElementById(sortType + "-button").classList.add("active-button");
+        setData(sortedMovies);
+    }
+    const handleSort = (sortOption) => {
+        sortedMovies = [...data].sort((a, b) => b[sortOption] - a[sortOption]);
         if (sortOption === "popularity") {
-            document.getElementById("popularity-button").classList.add("active-button");
+            sortMovies("popularity");
         } else if (sortOption === "vote_average") {
-            document.getElementById("rating-button").classList.add("active-button");
+            sortMovies("rating");
         }
-        setData(sortedData);
     }
     const sortDatesOld = (sortOption) => {
-        document.querySelectorAll(".sorting-buttons").forEach(button => {
-            button.classList.remove("active-button");
-        });
-        document.getElementById("oldest-button").classList.add("active-button");
-        const sortedData = [...data].sort((a, b) => new Date(a[sortOption]) - new Date(b[sortOption]));
-        setData(sortedData);
+        sortedMovies = [...data].sort((a, b) => new Date(a[sortOption]) - new Date(b[sortOption]));
+        sortMovies("oldest");
     }
     const sortDatesNew = (sortOption) => {
-        document.querySelectorAll(".sorting-buttons").forEach(button => {
-            button.classList.remove("active-button");
-        });
-        document.getElementById("newest-button").classList.add("active-button");
-        const sortedData = [...data].sort((a, b) => new Date(b[sortOption]) - new Date(a[sortOption]));
-        setData(sortedData);
+        sortedMovies = [...data].sort((a, b) => new Date(b[sortOption]) - new Date(a[sortOption]));
+        sortMovies("newest");
     }
+    // fetch similar movies from API to display suggested movies to watch
     const suggest = (id) => {
-        //const fetchData = async () => {
-            //const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
-            //const jsonData = await response.json();
-            //console.log(jsonData);
-            // displays all movies that belong to the same collection
-            /*if (jsonData.belongs_to_collection !== null) {
-                const collection = jsonData.belongs_to_collection.id;
-                const fetchCollection = async () => {
-                    const collectionResponse = await fetch(`https://api.themoviedb.org/3/collection/${collection}?api_key=${mykey}`);
-                    const collectionJsonData = await collectionResponse.json();
-                    setData(collectionJsonData.parts);
-                };
-                fetchCollection();
-            }*/
             const fetchSuggestions = async () => {
                 const suggestionResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=${page}&api_key=${mykey}`);
                 const suggestionJsonData = await suggestionResponse.json();
-                console.log(suggestionJsonData)
                 setData(suggestionJsonData.results);
             };
             fetchSuggestions();
-        //};
-        //fetchData();
     }
+    // get watch list from local storage and display it on screen
+    const showWatchList = () => {
+        setData(JSON.parse(localStorage.getItem('watchLaterData')));
+    };
+    // add new movie to a new array of watch list movies
+    function addToWatchlist(item) {
+        setWatchData(prevArray => prevArray.concat(item));
+    }
+    // update local storage data whenever watch list movies change
+    useEffect(() => {
+        localStorage.setItem('watchLaterData', JSON.stringify(watchData));
+    }, [watchData]);
     return (
         <div className='movie-container'>
+            <LoadWatchList showWatchList={showWatchList}/>
             <SortingButtons handleSort={handleSort} sortDatesOld={sortDatesOld} sortDatesNew={sortDatesNew}/>
             <div className='movie-section'>
-                    {data && data.map((item, index) => (
-                        <MovieInfo data={data} key={index} item={item} suggest={suggest}/>
-                    ))}
+                {data && data.map((item, index) => (
+                    <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist}/>
+                ))}
             </div>
             <SeeMore page={page} setPage={setPage} data={data}/>
         </div>
     );
 }
-function SeeMore({page, setPage, data}) {
-    function goNext() {
-        if (data.length === 20) {
-            setPage(page + 1);
-            console.log(data);
-            document.getElementById("search-bar").scrollIntoView({
-                behavior: "smooth",
-            });
-        }
-    }
-    function goPrevious() {
-        if (page !== 1) {
-            setPage(page - 1);
-            console.log(data);
-            document.getElementById("search-bar").scrollIntoView({
-                behavior: "smooth",
-              });
-        }
-    }
-    if (page !== 1 && (data && data.length !== 20)) {
-        return (
-            <div id="more-data-buttons">
-                <button id="previous" onClick={goPrevious}>{'<<'}</button>
-                </div>
-        )
-    } else if (page === 1 && (data && data.length === 20)) {
-        return (
-            <div id="more-data-buttons">
-                <button id="next" onClick={goNext}>{'>>'}</button>
-                </div>
-        )
-    } else {
-        return (
-            <div id="more-data-buttons">
-                <button id="previous" onClick={goPrevious}>{'<<'}</button>
-                <button id="next" onClick={goNext}>{'>>'}</button>
-            </div>
-        );
-    }
+// Watch list button component to display watch list
+function LoadWatchList(props) {
+    return (
+        <button id="watch-list" onClick={() => props.showWatchList()}>Watch List</button>
+    )
 }
+// Filter buttons on top of movie display that sort movies by categories
 function SortingButtons(props) {
     return (
         <>
@@ -168,7 +145,9 @@ function SortingButtons(props) {
         </>
       );
 }
-function MovieInfo({suggest, item, data}) {
+// individual movie component with all movie information displayed with it
+function MovieInfo({suggest, item, data, addToWatchlist}) {
+    console.log(data)
     if (item.poster_path !== null) {
         const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
@@ -177,16 +156,23 @@ function MovieInfo({suggest, item, data}) {
                 <button className='suggestions-button movie-button' onClick={() => suggest(item.id)}>Suggest</button>
                 <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
                 <button className='info-button movie-button'>Info</button>
-                <button className='overview-button movie-button'>Overview</button>
+                <WatchList data={data} item={item} addToWatchlist={addToWatchlist}/>
                 {data && <img className='movie-img' src={posterPath} alt="Movie Poster" />}
                 {data && <h2 className='movie-names'>{item.title}</h2>}
                 <MovieData data={data} item={item} />
-                <MovieOverview data={data} item={item} />
             </div>
         );
     }
 }
+// Watch list button on movieinfo component
+function WatchList(props) {
+    return (
+        <button className='watch-list-button movie-button' onClick={() => props.addToWatchlist(props.item)}>Watch List</button>
+    )
+}
+// List of movie data in the Info button of movieinfo component
 function MovieData({data, item}) {
+    // convert all genre ids to words
     let genres = item.genre_ids.map(genre => {
         switch(genre) {
             case 12:
@@ -260,15 +246,50 @@ function MovieData({data, item}) {
             <p>{data && `Rating: ${item.vote_average.toFixed(1)}/10`}</p>
             <p>{data && `Popularity: ${item.popularity.toFixed(0)}`}</p>
             <p>{data && `Release Date: ${formatDate(item.release_date)}`}</p>
+            <p><br></br>{data && item.overview}</p>
         </div>
     );
 }
-function MovieOverview({data, item}) {
-    return (
-        <div className='overview'>
-            <p>{data && item.overview}</p>
-        </div>
-    );
+// forward and backward buttons to display individual pages of 20 movies at a time on screen
+function SeeMore({page, setPage, data}) {
+    function goNext() {
+        if (data && data.length === 20) {
+            setPage(page + 1);
+            document.getElementById("search-bar").scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+    }
+    function goPrevious() {
+        if (data && page !== 1) {
+            setPage(page - 1);
+            document.getElementById("search-bar").scrollIntoView({
+                behavior: "smooth",
+              });
+        }
+    }
+    if (page !== 1 && (data && data.length !== 20)) {
+        return (
+            <div id="more-data-buttons">
+                <button id="previous" onClick={goPrevious}>{'<<'}</button>
+                </div>
+        )
+    } else if (page === 1 && (data && data.length === 20)) {
+        return (
+            <div id="more-data-buttons">
+                <button id="next" onClick={goNext}>{'>>'}</button>
+                </div>
+        )
+    } else if (page === 1 && (data && data.length < 20)) {
+        return;
+    } else {
+        return (
+            <div id="more-data-buttons">
+                <button id="previous" onClick={goPrevious}>{'<<'}</button>
+                <button id="next" onClick={goNext}>{'>>'}</button>
+            </div>
+        );
+    }
 }
 
 export default App;

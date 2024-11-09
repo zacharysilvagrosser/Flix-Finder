@@ -111,9 +111,9 @@ a {
     transition: .2s;
 }
 .movie-information button {
-    min-width: 25%;
+    width: 25%;
     font-size: .8rem;
-    padding: .62rem;
+    padding: .6rem .2rem .6rem .2rem;
     background-color: #03213b;
     color: white;
     border: 1px solid rgb(53, 71, 77);
@@ -139,6 +139,9 @@ a {
     display: none;
     padding: .5rem;
     color: white;
+}
+.info p {
+    margin: 0;
 }
 .overview-button:hover ~ .overview {
     display: block;
@@ -180,4 +183,15 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+#watch-list {
+    width: 7rem;
+    height: 3rem;
+    position: absolute;
+    top: 2%;
+    margin-left: 4.5rem;
+    font-size: 1.1rem;
+}
+#popularity-button {
+    margin-left: 4.5rem;
 }
