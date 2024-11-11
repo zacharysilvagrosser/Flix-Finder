@@ -13,7 +13,7 @@ function StartScreen() {
     const [showApp, setShowApp] = useState(false);
     const searchBarClick = () => {
         setShowApp(true);
-    };
+    }; //setshowapp only runs app once so wont update search
     const trendingBarClick = () => {
         document.getElementById("search").value = "trending";
         setShowApp(true);

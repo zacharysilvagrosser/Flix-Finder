@@ -1,3 +1,9 @@
+:root {
+    --search-buttons: rgb(24, 26, 27);
+    --search-buttons-hover: rgb(15, 16, 17);
+    --sort-buttons: #021526;
+    --sort-buttons-hover: #03213b;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,6 +15,9 @@ body {
 a {
     color: white;
     text-decoration: none;
+}
+button {
+    box-shadow: 3px 3px 10px black;
 }
 #container {
     width: 100%;
@@ -49,6 +58,9 @@ a {
     height: 3rem;
     font-size: 2rem;
     border-radius: 10px;
+    box-shadow: 5px 5px 10px black;
+    color: white;
+    background-color: rgb(43, 42, 51);
 }
 #search-button, #trending-button {
     width: 12%;
@@ -56,7 +68,14 @@ a {
     margin-left: 1rem;
     font-size: 2rem;
     border-radius: 10px;
-    background-color: white;
+    color: white;
+    background-color: var(--search-buttons);
+    transition: .2s;
+}
+#search-button:hover, #trending-button:hover {
+    border-radius: 7px;
+    background-color: var(--search-buttons-hover);
+    transition: .2s;
 }
 #trending-button {
     width: 6%;
@@ -82,19 +101,19 @@ a {
     font-size: 1.5rem;
     padding: .6rem;
     margin: 0 .7rem;
-    background-color: #021526;
+    background-color: var(--sort-buttons);
     color: white;
     border: 1px solid rgb(175, 175, 175);
     border-radius: 10px;
     transition: .3s;
 }
 .sorting-buttons:hover {
-    background-color: #03213b;
+    background-color: var(--sort-buttons-hover);
     border-radius: 5px;
     transition: .3s;
 }
 .active-button {
-    background-color: #03213b;
+    background-color: var(--sort-buttons-hover);
     border-radius: 5px;
 }
 .movie-img {
@@ -115,13 +134,13 @@ a {
     width: 25%;
     font-size: .8rem;
     padding: .6rem .2rem .6rem .2rem;
-    background-color: #03213b;
+    background-color: var(--sort-buttons-hover);
     color: white;
     border: 1px solid rgb(53, 71, 77);
     transition: .3s;
 }
 .movie-information button:hover {
-    background-color: #021526;
+    background-color: var(--sort-buttons);
     border-radius: 6px;
     transition: .3s;
 }
@@ -191,15 +210,26 @@ a {
     position: absolute;
     top: 2%;
     margin-left: 4.5rem;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    border: 1px solid rgb(175, 175, 175);
+    border-radius: 5px;
+    transition: .2s;
+    background-color: var(--search-buttons);
+    color: white;
+}
+#watch-list:hover {
+    background-color: var(--search-buttons-hover);
+    border-radius: 7px;
+    transition: .2s;
 }
 #popularity-button {
     margin-left: 4.5rem;
 }
 #no-movies-found {
+    color: white;
     padding: 2rem;
     font-size: 2.2rem;
 }
 .view-watch-list {
-    background-color:rgb(0, 0, 0);
+    font-style: italic;
 }

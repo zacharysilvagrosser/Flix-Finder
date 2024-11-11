@@ -1,9 +1,8 @@
 // fix oldest and newest staying sorted when searching new movie title
-// create an 'add to watchlist feature'
 // click movie to get more details like actors?
 // make it update when search button clicked not input change
 
-// clicking on watch list again should toggle back to your search and remove active button statis 
+// clicking on watch list again should toggle back to your search and remove active button status 
 
 // FETCH COLLECTION DATA
 //const fetchData = async () => {
@@ -33,8 +32,11 @@ function App() {
     document.getElementById("trending-button").style.width = "6.5rem";
     document.getElementById("page-header").style.marginBottom = "4rem";
     // useState variable containing API movie data and page number returned
+    const [userSearch, setUserSearch] = useState(document.getElementById("search").value);
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
+    // save data when switching to watch list so you can click it again to revert to the previous data
+    const [savedData, setSavedData] = useState(null);
     // load previous watch list data before setting it to an empty array
     const [watchData, setWatchData] = useState(() => {
         const storedData = localStorage.getItem('watchLaterData');
@@ -53,15 +55,26 @@ function App() {
     document.getElementById("trending-button").addEventListener("click", () => {
         setPage(1);
     });
-
-    let input = document.getElementById("search").value;
+    // eventlisteners to update user search input so new data will be fetched
+    document.getElementById("search-button").addEventListener('click', () => {
+        setUserSearch(document.getElementById("search").value);
+    });
+    document.getElementById("trending-button").addEventListener('click', () => {
+        document.getElementById("search").value = 'trending';
+        setUserSearch(document.getElementById("search").value);
+    });
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            setUserSearch(document.getElementById("search").value);
+        }
+    });
     useEffect(() => {
         const fetchData = async () => {
             let response;
             if (document.getElementById("search").value === 'trending') {
                 response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${page}&api_key=${mykey}`);
             } else {                
-                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&page=${page}&query=${input}`);
+                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&page=${page}&query=${userSearch}`);
             }
             const jsonData = await response.json();
             // sort data by the currently selected filter buttons
@@ -74,14 +87,18 @@ function App() {
                 sortedData = [...data].sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
             } else if (document.getElementById("newest-button").classList.contains("active-button")) {
                 sortedData = [...data].sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+                console.log("new", sortedData);
             } else {
                 sortedData = jsonData.results.sort((a, b) => b.popularity - a.popularity);
             }
             setData(sortedData);
+            setSavedData(sortedData);
         };
         fetchData();
-    }, [page, input]);
-
+    }, [page, userSearch]);
+    document.getElementById("search-button").addEventListener('click', () => {
+        //input = document.getElementById("search").value;
+    });
     // sorting functions for sorting movies by different parameters
     let sortedMovies;
     function sortMovies(sortType) {
@@ -113,13 +130,20 @@ function App() {
                 const suggestionResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=${page}&api_key=${mykey}`);
                 const suggestionJsonData = await suggestionResponse.json();
                 setData(suggestionJsonData.results);
+                setSavedData(suggestionJsonData.results);
             };
             fetchSuggestions();
     }
     // get watch list from local storage and display it on screen
     const showWatchList = () => {
-        document.getElementById("watch-list").classList.add("view-watch-list");
-        setData(JSON.parse(localStorage.getItem('watchLaterData')));
+        const watchList = document.getElementById("watch-list");
+        if (watchList.classList.contains("view-watch-list")) {
+            watchList.classList.remove("view-watch-list");
+            setData(savedData);
+        } else {
+            watchList.classList.add("view-watch-list");
+            setData(JSON.parse(localStorage.getItem('watchLaterData')));
+        }
     };
     // add new movie to a new array of watch list movies
     function addToWatchlist(newItem) {
@@ -149,14 +173,14 @@ function App() {
                 {data && data.map((item, index) => (
                     <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist} deleteFromWatchlist={deleteFromWatchlist}/>
                 ))}
-                <NoMoviesFound />
+                <NoMoviesFound data={data}/>
             </div>
             <SeeMore page={page} setPage={setPage} data={data}/>
         </div>
     );
 }
-function NoMoviesFound() {
-    if (document.querySelectorAll(".movie-information").length == 0) {
+function NoMoviesFound(data) {
+    if (data && data.data == '') {
         return (
             <p id="no-movies-found">There are no movies that match your search query.</p>
         )
@@ -179,7 +203,7 @@ function SortingButtons(props) {
 }
 // individual movie component with all movie information displayed with it
 function MovieInfo({suggest, item, data, addToWatchlist, deleteFromWatchlist}) {
-    console.log(data)
+    //console.log(data)
     if (item.poster_path !== null) {
         const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
         let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
@@ -327,3 +351,5 @@ function SeeMore({page, setPage, data}) {
 }
 
 export default App;
+
+// added savedData useState to allow user to go back to previous data after leaving the Watch List section    updated styling of buttons and search bar    fixed message saying 'no movies found' appearing when their were movies found
