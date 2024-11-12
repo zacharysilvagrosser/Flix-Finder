@@ -45,7 +45,7 @@ button {
     margin-top: 5rem;
 }
 .search-bar-small {
-    width: 50%;
+    width: 65%;
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
@@ -232,4 +232,51 @@ button {
 }
 .view-watch-list {
     font-style: italic;
+}
+#sorting-filters {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+#filters {
+    width: 13rem;
+    height: 3rem;
+    position: absolute;
+    right: 3.9%;
+    color: white;
+    z-index: 2;
+}
+#filters h3 {
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--search-buttons);
+    border: 1px dotted black;
+    padding-bottom: 13px;
+}
+.filter-type {
+    padding: 4px;
+}
+.filter-type label {
+    font-size: 1.3rem;
+    margin-left: 5px;
+}
+.filter-type input {
+    width: 20px;
+    height: 20px;
+    float: left;
+}
+#filters button {
+    width: 13rem;
+    height: 3rem;
+    font-size: 1.5rem;
+    box-shadow: 0px 0px 0px;
+    border: 1px solid rgb(175, 175, 175);
+    color: white;
+    background-color: var(--search-buttons);
 }

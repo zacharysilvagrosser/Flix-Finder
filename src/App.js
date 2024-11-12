@@ -1,8 +1,7 @@
-// fix oldest and newest staying sorted when searching new movie title
 // click movie to get more details like actors?
-// make it update when search button clicked not input change
-
-// clicking on watch list again should toggle back to your search and remove active button status 
+// filter data by language (en or not)
+// discover movies by genre
+// make site responsive
 
 // FETCH COLLECTION DATA
 //const fetchData = async () => {
@@ -21,6 +20,7 @@
     }*/
 
 import React, {useState, useEffect} from 'react';
+import Filters from './Filters';
 import config from './config';
 
 const mykey = config.MY_KEY;
@@ -31,8 +31,23 @@ function App() {
     document.getElementById("search-button").style.fontSize = "1.5rem";
     document.getElementById("trending-button").style.width = "6.5rem";
     document.getElementById("page-header").style.marginBottom = "4rem";
-    // useState variable containing API movie data and page number returned
+    // usestate variables for filter checkboxes 
+    const [sixties, setSixties] = useState(true);
+    const [seventies, setSeventies] = useState(true);
+    const [eighties, setEighties] = useState(true);
+    const [ninties, setNinties] = useState(true);
+    const [thousands, setThousands] = useState(true);
+    const [tens, setTens] = useState(true);
+    const [twenties, setTwenties] = useState(true);
+    const [rate5, setRate5] = useState(true);
+    const [rate6, setRate6] = useState(true);
+    const [rate7, setRate7] = useState(true);
+    const [rate8, setRate8] = useState(true);
+    const [isAdult, setIsAdult] = useState(false);
+
+    // useState variable to track changes in user search input
     const [userSearch, setUserSearch] = useState(document.getElementById("search").value);
+    // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
     // save data when switching to watch list so you can click it again to revert to the previous data
@@ -74,7 +89,7 @@ function App() {
             if (document.getElementById("search").value === 'trending') {
                 response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${page}&api_key=${mykey}`);
             } else {                
-                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&page=${page}&query=${userSearch}`);
+                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&include_adult=true&page=${page}&query=${userSearch}`);
             }
             const jsonData = await response.json();
             // sort data by the currently selected filter buttons
@@ -84,9 +99,9 @@ function App() {
             } else if (document.getElementById("rating-button").classList.contains("active-button")) {
                 sortedData = jsonData.results.sort((a, b) => b.vote_average - a.vote_average);
             } else if (document.getElementById("oldest-button").classList.contains("active-button")) {
-                sortedData = [...data].sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+                sortedData = jsonData.results.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
             } else if (document.getElementById("newest-button").classList.contains("active-button")) {
-                sortedData = [...data].sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+                sortedData = jsonData.results.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
                 console.log("new", sortedData);
             } else {
                 sortedData = jsonData.results.sort((a, b) => b.popularity - a.popularity);
@@ -96,9 +111,6 @@ function App() {
         };
         fetchData();
     }, [page, userSearch]);
-    document.getElementById("search-button").addEventListener('click', () => {
-        //input = document.getElementById("search").value;
-    });
     // sorting functions for sorting movies by different parameters
     let sortedMovies;
     function sortMovies(sortType) {
@@ -131,6 +143,7 @@ function App() {
                 const suggestionJsonData = await suggestionResponse.json();
                 setData(suggestionJsonData.results);
                 setSavedData(suggestionJsonData.results);
+                document.getElementById('search').value = 'Suggested similar movies';
             };
             fetchSuggestions();
     }
@@ -168,10 +181,15 @@ function App() {
     return (
         <div className='movie-container'>
             <LoadWatchList showWatchList={showWatchList} listNumber={listNumber}/>
-            <SortingButtons handleSort={handleSort} sortDatesOld={sortDatesOld} sortDatesNew={sortDatesNew}/>
+            <div id='sorting-filters'>
+                <SortingButtons handleSort={handleSort} sortDatesOld={sortDatesOld} sortDatesNew={sortDatesNew}/>
+                <Filters setSixties={setSixties} setSeventies={setSeventies} setEighties={setEighties} setNinties={setNinties} setThousands={setThousands} setTens={setTens} setTwenties={setTwenties}
+                setRate5={setRate5} setRate6={setRate6} setRate7={setRate7} setRate8={setRate8} setIsAdult={setIsAdult}/>
+            </div>
             <div id='movie-section'>
                 {data && data.map((item, index) => (
-                    <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist} deleteFromWatchlist={deleteFromWatchlist}/>
+                    <MovieInfo data={data} key={index} item={item} suggest={suggest} addToWatchlist={addToWatchlist} deleteFromWatchlist={deleteFromWatchlist} sixties={sixties} seventies={seventies}
+                    eighties={eighties} ninties={ninties} thousands={thousands} tens={tens} twenties={twenties} rate5={rate5} rate6={rate6} rate7={rate7} rate8={rate8} isAdult={isAdult}/>
                 ))}
                 <NoMoviesFound data={data}/>
             </div>
@@ -202,22 +220,32 @@ function SortingButtons(props) {
       );
 }
 // individual movie component with all movie information displayed with it
-function MovieInfo({suggest, item, data, addToWatchlist, deleteFromWatchlist}) {
+function MovieInfo(props) {
+    const convertedDate = props.item.release_date.substring(0, 4);
+    const rating = props.item.vote_average;
+    console.log("rating: ", props.item.adult);
     //console.log(data)
-    if (item.poster_path !== null) {
-        const streamLink = `https://www.justwatch.com/us/search?q=${item.title}`
-        let posterPath = "https://image.tmdb.org/t/p/w300" + item.poster_path;
-        return (
-            <div className='movie-information'>
-                <button className='suggestions-button movie-button' onClick={() => suggest(item.id)}>Suggest</button>
-                <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
-                <button className='info-button movie-button'>Info</button>
-                <WatchList data={data} item={item} addToWatchlist={addToWatchlist} deleteFromWatchlist={deleteFromWatchlist}/>
-                {data && <img className='movie-img' src={posterPath} alt="Movie Poster" />}
-                {data && <h2 className='movie-names'>{item.title}</h2>}
-                <MovieData data={data} item={item} />
-            </div>
-        );
+    if (props.item.poster_path !== null &&
+    ((props.sixties && convertedDate <= 1969) || (props.seventies && convertedDate <= 1979 && convertedDate >= 1970) || (props.eighties && convertedDate <= 1989 && convertedDate >= 1980) ||
+    (props.ninties && convertedDate <= 1999 && convertedDate >= 1990) || (props.thousands && convertedDate <= 2009 && convertedDate >= 2000)|| (props.tens && convertedDate <= 2019 && convertedDate >= 2010) || (props.twenties && convertedDate >= 2020))
+    && ((props.rate5 && rating <= 5) || (props.rate6 && rating < 7 && rating >= 6) || (props.rate7 && rating < 8 && rating >= 7) || (props.rate8 && rating >= 8))) {
+        if (!props.isAdult && props.item.adult) {
+            return;
+        } else {
+            const streamLink = `https://www.justwatch.com/us/search?q=${props.item.title}`
+            let posterPath = "https://image.tmdb.org/t/p/w300" + props.item.poster_path;
+            return (
+                <div className='movie-information'>
+                    <button className='suggestions-button movie-button' onClick={() => props.suggest(props.item.id)}>Suggest</button>
+                    <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
+                    <button className='info-button movie-button'>Info</button>
+                    <WatchList data={props.data} item={props.item} addToWatchlist={props.addToWatchlist} deleteFromWatchlist={props.deleteFromWatchlist}/>
+                    {props.data && <img className='movie-img' src={posterPath} alt="Movie Poster" />}
+                    {props.data && <h2 className='movie-names'>{props.item.title}</h2>}
+                    <MovieData data={props.data} item={props.item} />
+                </div>
+            );
+        }
     }
 }
 // Watch list button on movieinfo component
@@ -326,20 +354,20 @@ function SeeMore({page, setPage, data}) {
               });
         }
     }
-    if (page !== 1 && (data && data.length !== 20)) {
-        return (
-            <div id="more-data-buttons">
-                <button id="previous" onClick={goPrevious}>{'<<'}</button>
-                </div>
-        )
+    if (page === 1 && (data && data.length < 20)) {
+        return; 
     } else if (page === 1 && (data && data.length === 20)) {
         return (
             <div id="more-data-buttons">
                 <button id="next" onClick={goNext}>{'>>'}</button>
                 </div>
         )
-    } else if (page === 1 && (data && data.length < 20)) {
-        return;
+    } else if (page !== 1 && (data && data.length !== 20)) {
+        return (
+            <div id="more-data-buttons">
+                <button id="previous" onClick={goPrevious}>{'<<'}</button>
+                </div>
+        )
     } else {
         return (
             <div id="more-data-buttons">
@@ -352,4 +380,4 @@ function SeeMore({page, setPage, data}) {
 
 export default App;
 
-// added savedData useState to allow user to go back to previous data after leaving the Watch List section    updated styling of buttons and search bar    fixed message saying 'no movies found' appearing when their were movies found
+// fixed bug where sorting by date would cause app to crash

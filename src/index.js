@@ -6,14 +6,11 @@ import React, { useState } from 'react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-/*function changeDisplay() {
-
-}*/
 function StartScreen() {
     const [showApp, setShowApp] = useState(false);
     const searchBarClick = () => {
         setShowApp(true);
-    }; //setshowapp only runs app once so wont update search
+    };
     const trendingBarClick = () => {
         document.getElementById("search").value = "trending";
         setShowApp(true);
@@ -51,31 +48,4 @@ function Tagline() {
         </div>
     )
 }
-/*window.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        //changeDisplay();
-        root.render (
-            <React.StrictMode>
-                <App/>
-            </React.StrictMode>
-        );
-    }
-});
-document.getElementById("search-button").addEventListener("click", () => {
-    //changeDisplay();
-    root.render (
-        <React.StrictMode>
-            <App/>
-        </React.StrictMode>
-    );
-});
-document.getElementById("trending-button").addEventListener("click", () => {
-    //document.getElementById("search").value = 'trending';
-    //changeDisplay();
-    root.render (
-        <React.StrictMode>
-            <App/>
-        </React.StrictMode>
-    );
-});*/
 reportWebVitals();
