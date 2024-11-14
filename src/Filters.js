@@ -1,8 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 function Filters(props) {
-    const [openFilter, setOpenFilter] = useState(false);
-
     const check60s = (event) => {
         props.setSixties(event.target.checked);
     };
@@ -39,15 +37,22 @@ function Filters(props) {
     const checkAdult = (event) => {
         props.setIsAdult(event.target.checked);
     };
-    const handleClick = () => {
-        setOpenFilter(!openFilter);
+    const toggleFilterSection = () => {
+        const filterSections = document.getElementById('filter-sections');
+        if (filterSections.style.display === 'block') {
+            filterSections.style.display = 'none';
+        } else {
+            filterSections.style.display = 'block';
+        }
     };
     return (
         <div id='filters'>
-            <button onClick={handleClick}>Filters</button>
-                {openFilter && <FilterDates check60s={check60s} check70s={check70s} check80s={check80s} check90s={check90s} check00s={check00s} check10s={check10s} check20s={check20s}/>}
-                {openFilter && <FilterRatings check5={check5} check6={check6} check7={check7} check8={check8}/>}
-                {openFilter && <FilterAdult checkAdult={checkAdult}/>}
+            <button onClick={toggleFilterSection}>Filters</button>
+            <div id='filter-sections'>
+                {<FilterDates check60s={check60s} check70s={check70s} check80s={check80s} check90s={check90s} check00s={check00s} check10s={check10s} check20s={check20s}/>}
+                {<FilterRatings check5={check5} check6={check6} check7={check7} check8={check8}/>}
+                {<FilterAdult checkAdult={checkAdult}/>}
+            </div>
         </div>
     )
 }

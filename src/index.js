@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 import React, { useState } from 'react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -20,10 +19,14 @@ function StartScreen() {
             setShowApp(true);
         }
     }
+    const discoverBarClick = () => {
+        document.getElementById("search").value = "discover";
+        setShowApp(true);
+    };
     return (
         <div id="container">
             <h1 id="page-header">Flix Finder</h1>
-            {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick}/>}
+            {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverBarClick={discoverBarClick}/>}
             {!showApp && <Tagline />}
             {showApp && <App />}
         </div>
@@ -35,9 +38,10 @@ root.render (
 function SearchBar(props) {
     return (
         <div id="search-bar" className="search-bar-large">
-            <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>
+            <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>           
             <button id="search-button" onClick={props.searchBarClick}>Search</button>
             <button id="trending-button" onClick={props.trendingBarClick}>Trending</button>
+            <button id="discover-button" onClick={props.discoverBarClick}>Discover</button>
         </div>
     )
 }
@@ -48,4 +52,3 @@ function Tagline() {
         </div>
     )
 }
-reportWebVitals();

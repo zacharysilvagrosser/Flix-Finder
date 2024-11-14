@@ -45,16 +45,17 @@ button {
     margin-top: 5rem;
 }
 .search-bar-small {
-    width: 65%;
+    width: 50%;
+    height: 3rem;
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
     position: absolute;
-    top: 2%;
+    top: 1.5%;
     right: 1%;
 }
 #search {
-    width: 30%;
+    width: 35%;
     height: 3rem;
     font-size: 2rem;
     border-radius: 10px;
@@ -62,17 +63,17 @@ button {
     color: white;
     background-color: rgb(43, 42, 51);
 }
-#search-button, #trending-button {
-    width: 12%;
+#search-bar button {
+    width: 8rem;
     height: 3.3rem;
-    margin-left: 1rem;
-    font-size: 2rem;
+    margin-left: .5rem;
+    font-size: 1.6rem;
     border-radius: 10px;
     color: white;
     background-color: var(--search-buttons);
     transition: .2s;
 }
-#search-button:hover, #trending-button:hover {
+#search-bar button {
     border-radius: 7px;
     background-color: var(--search-buttons-hover);
     transition: .2s;
@@ -251,6 +252,9 @@ button {
     padding: 1rem;
     text-align: center;
     font-size: 1.5rem;
+}
+#filter-sections {
+    display: none;
 }
 .filter-section {
     display: flex;
