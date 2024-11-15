@@ -26,6 +26,7 @@ button {
     background-color: rgb(11, 11, 22);
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -40,6 +41,7 @@ button {
 .search-bar-large {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     margin-top: 5rem;
@@ -54,33 +56,33 @@ button {
     top: 1.5%;
     right: 1%;
 }
+#search-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+#search-buttons-div {
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
 #search {
-    width: 35%;
+    width: 50%;
     height: 3rem;
     font-size: 2rem;
     border-radius: 10px;
-    box-shadow: 5px 5px 10px black;
     color: white;
     background-color: rgb(43, 42, 51);
 }
-#search-bar button {
-    width: 8rem;
+#search-bar button, #search-bar select {
+    width: 22%;
     height: 3.3rem;
-    margin-left: .5rem;
     font-size: 1.6rem;
-    border-radius: 10px;
+    border-radius: 8px;
     color: white;
     background-color: var(--search-buttons);
     transition: .2s;
-}
-#search-bar button {
-    border-radius: 7px;
-    background-color: var(--search-buttons-hover);
-    transition: .2s;
-}
-#trending-button {
-    width: 6%;
-    font-size: 1.4rem;
 }
 #movie-display {
     margin-top: 1rem;
@@ -88,11 +90,14 @@ button {
     font-size: 1.7rem;
     text-align: center;
 }
-.fa-magnifying-glass {
-    width: 500px;
+#render-data-option {
+    width: 8rem;
+    height: 3.4rem;
+    font-size: 1.2rem;
+    border-radius: 10px;
     color: white;
+    background-color: var(--search-buttons);
 }
-
 
 .sorting-buttons:first-child {
     margin-left: 4.5rem;
@@ -284,3 +289,4 @@ button {
     color: white;
     background-color: var(--search-buttons);
 }
+

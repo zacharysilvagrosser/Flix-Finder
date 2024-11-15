@@ -38,11 +38,32 @@ root.render (
 function SearchBar(props) {
     return (
         <div id="search-bar" className="search-bar-large">
-            <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>           
-            <button id="search-button" onClick={props.searchBarClick}>Search</button>
-            <button id="trending-button" onClick={props.trendingBarClick}>Trending</button>
-            <button id="discover-button" onClick={props.discoverBarClick}>Discover</button>
+            <div id='search-div'>
+                <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>
+            </div>
+            <div id='search-buttons-div'>
+                <button className='search-bar-elements' id="search-button" onClick={props.searchBarClick}>Search</button>
+                <button className='search-bar-elements' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
+                <button className='search-bar-elements' id="discover-button" onClick={props.discoverBarClick}>Discover</button>
+                <RenderMovies />
+            </div>
         </div>
+    )
+}
+function RenderMovies() {
+    return (
+        <select className='search-bar-elements' id='render-data-option'>
+            <option># of results</option>
+            <option>20</option>
+            <option>40</option>
+            <option>60</option>
+            <option>80</option>
+            <option>100</option>
+            <option>200</option>
+            <option>300</option>
+            <option>400</option>
+            <option>500</option>
+        </select>
     )
 }
 function Tagline() {

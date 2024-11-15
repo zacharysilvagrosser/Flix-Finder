@@ -2,11 +2,11 @@
 // filter data by language (en or not)
 // discover movies by genre
 // make site responsive
-// make ALL pages load so you can properly sort things in discover movies section
 // get totalpage count to render correct amount of data
+//bug: getting duplicate films
+// poster not avaiable instead of filtering out non poster movies
 
-// !bugfix: filter checkboxes reset when reshowing the filter button
-// !bugfix: searching after being in watchlist causes all movies to have 'delete' button instead of watchlist button
+// added a 'number of results' select element that allows you to control how many movies render when searching
 
 // FETCH COLLECTION DATA
 //const fetchData = async () => {
@@ -38,10 +38,11 @@ function App() {
     // update styling of search bar and header
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
-    document.getElementById("search-button").style = "font-size: 1.2rem; width: 5.5rem; height: 3rem";
-    document.getElementById("trending-button").style = "font-size: 1.2rem; width: 5.5rem; height: 3rem";
-    document.getElementById("discover-button").style = "font-size: 1.2rem; width: 5.5rem; height: 3rem";
+    document.querySelectorAll('.search-bar-elements').forEach(i => {
+        i.style = "font-size: 1.2rem; width: 5.5rem; height: 3rem; margin-left: .5rem";
+    });
     document.getElementById("search").style = "height: 2.6rem";
+    document.getElementById("search-div").style = "justify-content: flex-end";
     document.getElementById("page-header").style.marginBottom = "4rem";
     // variable to update sorted data
     const [sorted, setSorted] = useState('popularity');
@@ -116,29 +117,45 @@ function App() {
             jsonData.results.forEach(i => {
                 allData.push(i);
             });
-            // Keep data sorted between fetch requests
-            switch (sorted) {
-                case 'popularity':
-                    setData(jsonData.results.sort((a, b) => b.popularity - a.popularity));
-                    setSavedData(jsonData.results.sort((a, b) => b.popularity - a.popularity));
-                    break;
-                case 'rating':
-                    setData(jsonData.results.sort((a, b) => b.vote_average - a.vote_average));
-                    setSavedData(jsonData.results.sort((a, b) => b.vote_average - a.vote_average));
-                    break;
-                case 'oldest':
-                    setData(jsonData.results.sort((a, b) => new Date(a.release_date) - new Date(b.release_date)));
-                    setSavedData(jsonData.results.sort((a, b) => new Date(a.release_date) - new Date(b.release_date)));
-                    break;
-                case 'newest':
-                    setData(jsonData.results.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
-                    setSavedData(jsonData.results.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
-                    break;
+            if (document.getElementById('render-data-option').value === '# of results') {
+                document.getElementById('render-data-option').value = 20;
             }
+            if (pages === document.getElementById('render-data-option').value / 20 || pages == jsonData.total_pages) {
+                // Keep data sorted between fetch requests
+                switch (sorted) {
+                    case 'popularity':
+                        setData(allData.sort((a, b) => b.popularity - a.popularity));
+                        setSavedData(allData.sort((a, b) => b.popularity - a.popularity));
+                        break;
+                    case 'rating':
+                        setData(allData.sort((a, b) => b.vote_average - a.vote_average));
+                        setSavedData(allData.sort((a, b) => b.vote_average - a.vote_average));
+                        break;
+                    case 'oldest':
+                        setData(allData.sort((a, b) => new Date(a.release_date) - new Date(b.release_date)));
+                        setSavedData(allData.sort((a, b) => new Date(a.release_date) - new Date(b.release_date)));
+                        break;
+                    case 'newest':
+                        setData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
+                        setSavedData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
+                        break;
+                }
+            }
+            return jsonData.total_pages;
         };
-        for (let i = 1; i < 2; i++) {
-            fetchData(i);
-        }
+        fetchData(1).then(totalPages => {
+                for (let i = 2; i <= totalPages; i++) {
+                    if (document.getElementById('render-data-option').value == 20) {
+                        break;
+                    }
+                    fetchData(i);
+                    if (i == (document.getElementById('render-data-option').value / 20)) {
+                        break;
+                    }
+                    console.log("TOTAL totalPages:", totalPages, i, allData);
+                }
+            }
+        );
     }, [page, userSearch]);
     // update local storage data whenever watch list movies change
     useEffect(() => {
