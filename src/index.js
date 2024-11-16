@@ -11,7 +11,7 @@ function StartScreen() {
         setShowApp(true);
     };
     const trendingBarClick = () => {
-        document.getElementById("search").value = "trending";
+        document.getElementById("search").value = "Trending";
         setShowApp(true);
     };
     const searchBarEnter = (event) => {
@@ -19,14 +19,14 @@ function StartScreen() {
             setShowApp(true);
         }
     }
-    const discoverBarClick = () => {
-        document.getElementById("search").value = "discover";
+    const discoverSelectChange = () => {
+        document.getElementById("search").value = `Discover: ${document.getElementById('discover-button').value}`;
         setShowApp(true);
     };
     return (
         <div id="container">
             <h1 id="page-header">Flix Finder</h1>
-            {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverBarClick={discoverBarClick}/>}
+            {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverSelectChange={discoverSelectChange}/>}
             {!showApp && <Tagline />}
             {showApp && <App />}
         </div>
@@ -44,7 +44,7 @@ function SearchBar(props) {
             <div id='search-buttons-div'>
                 <button className='search-bar-elements' id="search-button" onClick={props.searchBarClick}>Search</button>
                 <button className='search-bar-elements' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
-                <button className='search-bar-elements' id="discover-button" onClick={props.discoverBarClick}>Discover</button>
+                <Discover discoverSelectChange={props.discoverSelectChange}/>
                 <RenderMovies />
             </div>
         </div>
@@ -63,6 +63,32 @@ function RenderMovies() {
             <option>300</option>
             <option>400</option>
             <option>500</option>
+        </select>
+    )
+}
+function Discover(props) {
+    return (
+        <select className='search-bar-elements' id='discover-button' onChange={props.discoverSelectChange}>
+            <option id='discover-option'>Discover</option>
+            <option>Adventure</option>
+            <option>Fantasy</option>
+            <option>Animation</option>
+            <option>Drama</option>
+            <option>Horror</option>
+            <option>Action</option>
+            <option>Comedy</option>
+            <option>History</option>
+            <option>Western</option>
+            <option>Thriller</option>
+            <option>Crime</option>
+            <option>Documentary</option>
+            <option>Science Fiction</option>
+            <option>Mystery</option>
+            <option>Music</option>
+            <option>Romance</option>
+            <option>Family</option>
+            <option>War</option>
+            <option>TV Movie</option>
         </select>
     )
 }

@@ -25,7 +25,7 @@ function MovieData(props) {
                     <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setListNumber={props.setListNumber} setData={props.setData}/>
                     {props.data && <img className='movie-img' src={posterPath} alt="Movie Poster" />}
                     {props.data && <h2 className='movie-names'>{props.item.title}</h2>}
-                    <MovieInfo data={props.data} item={props.item} />
+                    <MovieInfo data={props.data} item={props.item}/>
                 </div>
             );
         }

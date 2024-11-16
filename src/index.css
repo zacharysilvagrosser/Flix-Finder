@@ -64,8 +64,19 @@ button {
 #search-buttons-div {
     width: 50%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 2rem;
+}
+.search-bar-elements {
+    width: 22%;
+    height: 3.3rem;
+    font-size: calc(1rem + 1vmin);
+    border-radius: 8px;
+    color: white;
+    background-color: var(--search-buttons);
+    transition: .2s;
+    text-align: center;
 }
 #search {
     width: 50%;
@@ -75,28 +86,35 @@ button {
     color: white;
     background-color: rgb(43, 42, 51);
 }
-#search-bar button, #search-bar select {
-    width: 22%;
-    height: 3.3rem;
-    font-size: 1.6rem;
-    border-radius: 8px;
-    color: white;
-    background-color: var(--search-buttons);
-    transition: .2s;
-}
 #movie-display {
     margin-top: 1rem;
     color: white;
     font-size: 1.7rem;
     text-align: center;
 }
-#render-data-option {
-    width: 8rem;
-    height: 3.4rem;
-    font-size: 1.2rem;
-    border-radius: 10px;
-    color: white;
-    background-color: var(--search-buttons);
+@media (max-width: 1350px) {
+    .search-bar-elements {
+        width: 24%;
+        font-size: calc(.9rem + .8vmin);
+    }
+    #search, #search-buttons-div {
+        width: 75%;
+    }
+}
+@media (max-width: 750px) {
+    .search-bar-elements {
+        width: 45%;
+        margin: .4rem;
+    }
+    #search, #search-buttons-div {
+        width: 85%;
+    }
+    #movie-display {
+        font-size: 1.3rem;
+    }
+    #page-header {
+        font-size: 3.5rem;
+    }
 }
 
 .sorting-buttons:first-child {

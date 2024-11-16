@@ -1,10 +1,7 @@
 // click movie to get more details like actors and movie collections
-// filter data by language (en or not)
-// discover movies by genre
+// arrows dont load more data like they should
 // make site responsive
-// get totalpage count to render correct amount of data
 //bug: getting duplicate films
-// poster not avaiable instead of filtering out non poster movies
 
 // added a 'number of results' select element that allows you to control how many movies render when searching
 
@@ -34,7 +31,7 @@ import NoMoviesFound from './NoMoviesFound';
 import config from './config';
 
 const mykey = config.MY_KEY;
-function App() {
+function App(props) {
     // update styling of search bar and header
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
@@ -44,6 +41,7 @@ function App() {
     document.getElementById("search").style = "height: 2.6rem";
     document.getElementById("search-div").style = "justify-content: flex-end";
     document.getElementById("page-header").style.marginBottom = "4rem";
+    document.getElementById("discover-option").style.display = "none";
     // variable to update sorted data
     const [sorted, setSorted] = useState('popularity');
     // usestate variables for filter checkboxes 
@@ -101,14 +99,77 @@ function App() {
             setUserSearch(document.getElementById("search").value);
         }
     });
+    function convertGenreIDs() {
+        switch(document.getElementById('discover-button').value) {
+            case "Adventure":
+                return 12;
+                break;
+            case "Fantasy":
+                return 14;
+                break;
+            case "Animation":
+                return 16;
+                break;
+            case "Drama":
+                return 18;
+                break;
+            case "Horror":
+                return 27;
+                break;
+            case "Action":
+                return 28;
+                break;
+            case "Comedy":
+                return 35;
+                break;
+            case "History":
+                return 36;
+                break;
+            case "Western":
+                return 37;
+                break;
+            case "Thriller":
+                return 53;
+                break;
+            case "Crime":
+                return 80;
+                break;
+            case "Documentary":
+                return 99;
+                break;
+            case "Science Fiction":
+                return 878;
+                break;
+            case "Mystery":
+                return 9648;
+                break;
+            case "Music":
+                return 10402;
+                break;
+            case "Romance":
+                return 10749;
+                break;
+            case "Family":
+                return 10751;
+                break;
+            case "War":
+                return 10752;
+                break;
+            case "TV Movie":
+                return 10770;
+                break;
+        }
+    }
+    console.log(convertGenreIDs());
     let allData = [];
     useEffect(() => {
         const fetchData = async (pages) => {
             let response;
-            if (document.getElementById("search").value === 'trending') {
+            const genreID = convertGenreIDs();
+            if (document.getElementById("search").value === 'Trending') {
                 response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${pages}&api_key=${mykey}`);
-            } else if (document.getElementById("search").value === 'discover') {
-                response = await fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=28&api_key=${mykey}`);
+            } else if (document.getElementById("search").value === `Discover: ${document.getElementById('discover-button').value}`) {
+                response = await fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
             } else {                
                 response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True`);
             }
@@ -149,6 +210,7 @@ function App() {
                         break;
                     }
                     fetchData(i);
+                    setPage(i);
                     if (i == (document.getElementById('render-data-option').value / 20)) {
                         break;
                     }
@@ -156,7 +218,8 @@ function App() {
                 }
             }
         );
-    }, [page, userSearch]);
+    }, [userSearch]);
+
     // update local storage data whenever watch list movies change
     useEffect(() => {
         localStorage.setItem('watchLaterData', JSON.stringify(watchData));
