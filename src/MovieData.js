@@ -19,7 +19,7 @@ function MovieData(props) {
             let posterPath = "https://image.tmdb.org/t/p/w300" + props.item.poster_path;
             return (
                 <div className='movie-information'>
-                    <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} page={props.page} mykey={props.mykey}/>
+                    <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey}/>
                     <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
                     <button className='info-button movie-button'>Info</button>
                     <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setListNumber={props.setListNumber} setData={props.setData}/>

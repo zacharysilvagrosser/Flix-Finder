@@ -64,7 +64,6 @@ button {
 #search-buttons-div {
     width: 50%;
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 2rem;
 }
@@ -91,30 +90,6 @@ button {
     color: white;
     font-size: 1.7rem;
     text-align: center;
-}
-@media (max-width: 1350px) {
-    .search-bar-elements {
-        width: 24%;
-        font-size: calc(.9rem + .8vmin);
-    }
-    #search, #search-buttons-div {
-        width: 75%;
-    }
-}
-@media (max-width: 750px) {
-    .search-bar-elements {
-        width: 45%;
-        margin: .4rem;
-    }
-    #search, #search-buttons-div {
-        width: 85%;
-    }
-    #movie-display {
-        font-size: 1.3rem;
-    }
-    #page-header {
-        font-size: 3.5rem;
-    }
 }
 
 .sorting-buttons:first-child {
@@ -179,9 +154,12 @@ button {
     display: none;
 }
 .info {
-    width: 280px;
+    width: 320px;
+    max-height: 490px;
+    position: relative;
     display: none;
-    padding: .5rem;
+    font-size: 1rem;
+    overflow-y: hidden;
     color: white;
 }
 .info p {
@@ -308,3 +286,28 @@ button {
     background-color: var(--search-buttons);
 }
 
+@media (max-width: 1350px) {
+    .search-bar-elements {
+        width: 24%;
+        font-size: calc(.9rem + .8vmin);
+    }
+    #search, #search-buttons-div {
+        width: 75%;
+    }
+}
+@media (max-width: 750px) {
+    .search-bar-elements {
+        width: 45%;
+        margin: .4rem;
+    }
+    #search, #search-buttons-div {
+        width: 85%;
+        flex-wrap: wrap;
+    }
+    #movie-display {
+        font-size: 1.3rem;
+    }
+    #page-header {
+        font-size: 3.5rem;
+    }
+}

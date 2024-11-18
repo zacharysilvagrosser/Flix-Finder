@@ -91,7 +91,7 @@ function App(props) {
         setUserSearch(document.getElementById("search").value);
     });
     document.getElementById("trending-button").addEventListener('click', () => {
-        document.getElementById("search").value = 'trending';
+        document.getElementById("search").value = 'Trending';
         setUserSearch(document.getElementById("search").value);
     });
     window.addEventListener('keydown', (event) => {
@@ -160,7 +160,6 @@ function App(props) {
                 break;
         }
     }
-    console.log(convertGenreIDs());
     let allData = [];
     useEffect(() => {
         const fetchData = async (pages) => {
@@ -205,19 +204,18 @@ function App(props) {
             return jsonData.total_pages;
         };
         fetchData(1).then(totalPages => {
-                for (let i = 2; i <= totalPages; i++) {
-                    if (document.getElementById('render-data-option').value == 20) {
-                        break;
-                    }
-                    fetchData(i);
-                    setPage(i);
-                    if (i == (document.getElementById('render-data-option').value / 20)) {
-                        break;
-                    }
-                    console.log("TOTAL totalPages:", totalPages, i, allData);
+            for (let i = 2; i <= totalPages; i++) {
+                if (document.getElementById('render-data-option').value == 20) {
+                    break;
                 }
+                fetchData(i);
+                setPage(i);
+                if (i == (document.getElementById('render-data-option').value / 20)) {
+                    break;
+                }
+                console.log("TOTAL totalPages:", totalPages, i, allData);
             }
-        );
+        });
     }, [userSearch]);
 
     // update local storage data whenever watch list movies change
@@ -234,12 +232,12 @@ function App(props) {
             </div>
             <div id='movie-section'>
                 {data && data.map((item, index) => (
-                    <MovieData data={data} setData={setData} setSavedData={setSavedData} key={index} page={page} item={item} watchData={watchData} setWatchData={setWatchData} listNumber={listNumber} setListNumber={setListNumber} sixties={sixties}
+                    <MovieData data={data} setData={setData} setSavedData={setSavedData} sorted={sorted} key={index} page={page} item={item} watchData={watchData} setWatchData={setWatchData} listNumber={listNumber} setListNumber={setListNumber} sixties={sixties}
                     seventies={seventies} eighties={eighties} ninties={ninties} thousands={thousands} tens={tens} twenties={twenties} rate5={rate5} rate6={rate6} rate7={rate7} rate8={rate8} isAdult={isAdult}/>
                 ))}
                 <NoMoviesFound data={data}/>
             </div>
-            <SeeMore data={data} page={page} setPage={setPage}/>
+            {/*<SeeMore data={data} page={page} setPage={setPage}/>*/}
         </div>
     );
 }
