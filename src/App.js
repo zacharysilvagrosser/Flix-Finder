@@ -1,9 +1,7 @@
-// click movie to get more details like actors and movie collections
-// arrows dont load more data like they should
 // make site responsive
-//bug: getting duplicate films
-
-// added a 'number of results' select element that allows you to control how many movies render when searching
+// bug: duplicate films in 'suggest'
+// bug: still cant search unless input is changed
+// bug: fix imdb link on movies that dont have imdb id
 
 // FETCH COLLECTION DATA
 //const fetchData = async () => {
@@ -26,12 +24,12 @@ import Filters from './Filters';
 import LoadWatchList from './LoadWatchlist';
 import SortingButtons from './SortingButtons';
 import MovieData from './MovieData';
-import SeeMore from './SeeMore';
+//import SeeMore from './SeeMore';
 import NoMoviesFound from './NoMoviesFound';
 import config from './config';
 
 const mykey = config.MY_KEY;
-function App(props) {
+function App() {
     // update styling of search bar and header
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
@@ -160,8 +158,14 @@ function App(props) {
                 break;
         }
     }
-    let allData = [];
+    let [allData, allIDs]= [[], []];
     useEffect(() => {
+        const fetchMovieData = async () => {
+            const response = await fetch(`https://api.themoviedb.org/3/movie/12?language=en-US&api_key=${mykey}`);
+            const jsonData = await response.json();
+            console.log(jsonData);
+        }
+        fetchMovieData();
         const fetchData = async (pages) => {
             let response;
             const genreID = convertGenreIDs();
@@ -170,17 +174,22 @@ function App(props) {
             } else if (document.getElementById("search").value === `Discover: ${document.getElementById('discover-button').value}`) {
                 response = await fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
             } else {                
-                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True`);
+                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
             }
             const jsonData = await response.json();
             // collect multiple pages of data to display at once
             jsonData.results.forEach(i => {
-                allData.push(i);
+                // ensure that duplicate movies dont get rendered
+                if (!allIDs.includes(i.id)) {
+                    allData.push(i);
+                }
+                allIDs.push(i.id);
             });
             if (document.getElementById('render-data-option').value === '# of results') {
                 document.getElementById('render-data-option').value = 20;
             }
             if (pages === document.getElementById('render-data-option').value / 20 || pages == jsonData.total_pages) {
+                console.log("DONE");
                 // Keep data sorted between fetch requests
                 switch (sorted) {
                     case 'popularity':
@@ -209,7 +218,6 @@ function App(props) {
                     break;
                 }
                 fetchData(i);
-                setPage(i);
                 if (i == (document.getElementById('render-data-option').value / 20)) {
                     break;
                 }

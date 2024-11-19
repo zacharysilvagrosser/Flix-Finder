@@ -75,7 +75,7 @@ function MovieData({data, item}) {
             <p>{data && `Genres: ${genres.join(', ')}`}</p>
             <p>{data && `Rating: ${item.vote_average.toFixed(1)}/10`}</p>
             <p>{data && `Popularity: ${item.popularity.toFixed(0)}`}</p>
-            <p>{data && `Release Date: ${formatDate(item.release_date)}`}</p>
+            <p>{data && item.release_date == '' ? `Release Date: Unknown` : `Release Date: ${formatDate(item.release_date)}`}</p>
             <p><br></br>{data && item.overview}</p>
         </div>
     );

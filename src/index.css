@@ -150,8 +150,14 @@ button {
 .info-button:hover ~ .info {
     display: block;
 }
-.info-button:hover ~ .movie-img {
+.info-button:hover ~ .imdb-link {
     display: none;
+}
+.imdb-link {
+    display: block;
+}
+.imdb-link:hover {
+    cursor: pointer;
 }
 .info {
     width: 320px;
