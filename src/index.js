@@ -7,6 +7,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 function StartScreen() {
     const [showApp, setShowApp] = useState(false);
+    const [searchClicked, setSearchClicked] = useState(false);
+
     const searchBarClick = () => {
         setShowApp(true);
     };
@@ -21,14 +23,16 @@ function StartScreen() {
     }
     const discoverSelectChange = () => {
         document.getElementById("search").value = `Discover: ${document.getElementById('discover-button').value}`;
+        document.getElementById("watch-list").classList.remove("view-watch-list");
+        setSearchClicked(!searchClicked);
         setShowApp(true);
     };
     return (
         <div id="container">
-            <h1 id="page-header">Flix Finder</h1>
+            <a href='' id="page-header">Flix Finder</a>
             {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverSelectChange={discoverSelectChange}/>}
             {!showApp && <Tagline />}
-            {showApp && <App />}
+            {showApp && <App searchClicked={searchClicked} setSearchClicked={setSearchClicked}/>}
         </div>
     );
 }
@@ -38,10 +42,10 @@ root.render (
 function SearchBar(props) {
     return (
         <div id="search-bar" className="search-bar-large">
-            <div id='search-div'>
+            <div id='search-div' className='search-div-large'>
                 <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>
             </div>
-            <div id='search-buttons-div'>
+            <div id='search-buttons-div' className='search-buttons-div-large'>
                 <button className='search-bar-elements' id="search-button" onClick={props.searchBarClick}>Search</button>
                 <button className='search-bar-elements' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
                 <Discover discoverSelectChange={props.discoverSelectChange}/>

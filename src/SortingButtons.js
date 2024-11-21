@@ -44,12 +44,12 @@ function SortingButtons(props) {
             }
         }
         return (
-            <>
+            <div id='sorting-buttons-div'>
                 <button id="popularity-button" className="sorting-buttons active-button" autoFocus onClick={sortPopularity}>Popularity</button>
                 <button id="rating-button" className="sorting-buttons" onClick={sortRating}>Rating</button>
                 <button id="oldest-button" className="sorting-buttons" onClick={sortDatesOld}>Oldest</button>
                 <button id="newest-button" className="sorting-buttons" onClick={sortDatesNew}>Newest</button>
-            </>
+            </div>
         );
     }
 }

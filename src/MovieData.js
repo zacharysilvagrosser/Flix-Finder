@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import MovieInfo from './MovieInfo';
 import WatchList from './WatchList';
 import Suggest from './Suggest';
-import config from './config';
+import MoviePoster from './MoviePoster';
 
 // individual movie component with all movie information displayed with it
 function MovieData(props) {
@@ -32,34 +32,6 @@ function MovieData(props) {
             }
         }
     }
-}
-
-function MoviePoster(props) {
-    const posterPath = "https://image.tmdb.org/t/p/w300" + props.item.poster_path;
-    const mykey = config.MY_KEY;
-    const [isLoading, setIsLoading] = useState(true);
-    const [idData, setIdData] = useState(null);
-    useEffect(() => {
-        const fetchData = async (pages) => {
-            setIsLoading(true);
-            const response = await fetch(`https://api.themoviedb.org/3/movie/${props.item.id}?language=en-US&api_key=${mykey}&page=${pages}`);
-            const jsonData = await response.json();
-            setIdData(jsonData);
-            setIsLoading(false);
-            //return 'https://www.imdb.com/title/' + jsonData.imdb_id;
-        }
-        fetchData(1);
-    }, []); // Empty dependency array ensures the effect runs only once
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    return (
-        <a className='imdb-link' href={'https://www.imdb.com/title/' + idData.imdb_id} target='_blank'>
-            <img className='movie-img' src={posterPath} alt="Movie Poster" />
-        </a>
-    )
 }
 
 export default MovieData;

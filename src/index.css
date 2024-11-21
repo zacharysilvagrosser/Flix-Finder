@@ -32,11 +32,13 @@ button {
     overflow-y: scroll;
 }
 #page-header {
-    width: 100%;
-    text-align: center;
-    color:rgb(255, 255, 255);
+    position: relative;
+    color:white;
     font-size: 4rem;
-    margin: 0;
+    font-weight: bold;
+}
+.page-header-small {
+    margin-bottom: 4rem;
 }
 .search-bar-large {
     width: 100%;
@@ -44,38 +46,57 @@ button {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    margin-top: 5rem;
+    margin-top: 2rem;
 }
 .search-bar-small {
-    width: 50%;
-    height: 3rem;
     display: flex;
-    align-items: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
     position: absolute;
-    top: 1.5%;
+    top: 2%;
     right: 1%;
 }
-#search-div {
+.search-div-large {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
+    margin-top: 2rem;
 }
-#search-buttons-div {
-    width: 50%;
+.search-div-small {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+.search-buttons-div-large {
+    width: 51%;
     display: flex;
     justify-content: space-between;
     margin-top: 2rem;
 }
+.search-buttons-div-small {
+    width: 51%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
 .search-bar-elements {
     width: 22%;
     height: 3.3rem;
+    text-align: center;
     font-size: calc(1rem + 1vmin);
     border-radius: 8px;
     color: white;
     background-color: var(--search-buttons);
     transition: .2s;
-    text-align: center;
+}
+.search-bar-elements-small {
+    width: 24%;
+    font-size: calc(.7rem + 1vmin);
 }
 #search {
     width: 50%;
@@ -92,14 +113,14 @@ button {
     text-align: center;
 }
 
-.sorting-buttons:first-child {
-    margin-left: 4.5rem;
+#sorting-buttons-div {
+    margin-right: 4rem;
 }
 .sorting-buttons {
-    width: 10%;
+    width: 10rem;
     font-size: 1.5rem;
     padding: .6rem;
-    margin: 0 .7rem;
+    margin: 0 .5rem;
     background-color: var(--sort-buttons);
     color: white;
     border: 1px solid rgb(175, 175, 175);
@@ -129,7 +150,7 @@ button {
     transform: scale(103%);
     transition: .2s;
 }
-.movie-information button {
+.movie-button {
     width: 25%;
     font-size: .8rem;
     padding: .6rem .2rem .6rem .2rem;
@@ -138,7 +159,7 @@ button {
     border: 1px solid rgb(53, 71, 77);
     transition: .3s;
 }
-.movie-information button:hover {
+.movie-button:hover {
     background-color: var(--sort-buttons);
     border-radius: 6px;
     transition: .3s;
@@ -215,9 +236,6 @@ button {
 #watch-list {
     width: 12rem;
     height: 3rem;
-    position: absolute;
-    top: 2%;
-    margin-left: 4.5rem;
     font-size: 1.2rem;
     border: 1px solid rgb(175, 175, 175);
     border-radius: 5px;
@@ -241,16 +259,22 @@ button {
 .view-watch-list {
     font-style: italic;
 }
-#sorting-filters {
+#top-bar-buttons {
     width: 100%;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+}
+#watch-list-and-filters {
+    display: flex;
+    margin-left: 4.5rem;
+}
+#watch-list-and-filters button {
+    margin-right: 1rem;
 }
 #filters {
-    width: 13rem;
+    width: 15.5rem;
     height: 3rem;
-    position: absolute;
-    right: 3.9%;
     color: white;
     z-index: 2;
 }
@@ -288,32 +312,119 @@ button {
     font-size: 1.5rem;
     box-shadow: 0px 0px 0px;
     border: 1px solid rgb(175, 175, 175);
+    border-radius: 5px;
     color: white;
     background-color: var(--search-buttons);
 }
 
 @media (max-width: 1350px) {
+    #search, #search-buttons-div  {
+        width: 80%;
+    }
     .search-bar-elements {
         width: 24%;
         font-size: calc(.9rem + .8vmin);
     }
-    #search, #search-buttons-div {
-        width: 75%;
+    #movie-display {
+        font-size: 1.4rem;
+    }
+    .page-header-small {
+        font-size: 3.5rem;
+        margin-top: 16rem;
+    }
+    .sorting-buttons {
+        font-size: 1.2rem;
+        padding: .8rem;
+        font-weight: bold;
+        width: 24%;
+    }
+    #popularity-button {
+        margin: 0 .7rem;
+    }
+    #sorting-buttons-div {
+        width: 95%;
+        display: flex;
+        justify-content: space-around;
+        margin-right: 0;
+    }
+    #filter-sections {
+        width: 15rem;
+    }
+    #top-bar-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    #watch-list {
+        top: 1.2%;
+        left: 3.6%;
+        margin: 0;
+        width: 10rem;
+    }
+    .search-buttons-div-large {
+        justify-content: space-around;
+    }
+    #watch-list-and-filters {
+        width: 93%;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        margin-left: 0;
+    }
+    #watch-list-and-filters button {
+        width: 15.5rem;
+    }
+    .search-bar-elements {
+        margin: .1rem;
+        font-size: calc(.5rem + 1vmin);
+        height: 2.5rem;
+    }
+    .search-div-small, .search-bar-small {
+        width: 100%;
+        justify-content: center;
     }
 }
 @media (max-width: 750px) {
     .search-bar-elements {
-        width: 45%;
-        margin: .4rem;
+        margin: 0;
+        font-size: calc(.5rem + 1vmin);
+        height: 2.5rem;
+        font-weight: bold;
     }
-    #search, #search-buttons-div {
-        width: 85%;
+    #search, .search-buttons-div-large {
+        width: 82%;
         flex-wrap: wrap;
     }
+    #search {
+        height: 2rem;
+        font-size: 1.5rem;
+    }
+    .search-buttons-div-small {
+        width: 85%;
+    }
     #movie-display {
-        font-size: 1.3rem;
+        font-size: 1rem;
+        padding: 0 8px;
     }
     #page-header {
-        font-size: 3.5rem;
+        font-size: 3rem;
+    }
+    .movie-information {
+        margin: 1rem;
+    }
+    .search-div-small, .search-bar-small {
+        justify-content: center;
+    }
+    .sorting-buttons, #popularity-button {
+        font-size: calc(.5rem + 1vmin);
+        margin: 0 .2rem;
+    }
+    #sorting-buttons-div {
+        width: 95%;
+    }
+    #watch-list-and-filters button {
+        width: 8rem;
+        font-size: 1rem;
+    }
+    #filters {
+        width: 8rem;
     }
 }

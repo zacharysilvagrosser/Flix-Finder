@@ -5,13 +5,16 @@ function Suggest(props) {
     const mykey = config.MY_KEY;
     // fetch similar movies from API to display suggested movies to watch
     const suggest = (id) => {
-        let allData = [];
+        let [allData, allIDs] = [[], []];
         const fetchData = async (pages) => {
             const response = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=${pages}&api_key=${mykey}`);
             const jsonData = await response.json();
             // collect multiple pages of data to display at once
             jsonData.results.forEach(i => {
-                allData.push(i);
+                if (!allIDs.includes(i.id)) {
+                    allData.push(i);
+                }
+                allIDs.push(i.id);
             });
             if (document.getElementById('render-data-option').value === '# of results') {
                 document.getElementById('render-data-option').value = 20;

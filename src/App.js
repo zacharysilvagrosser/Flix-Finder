@@ -1,24 +1,3 @@
-// make site responsive
-// bug: duplicate films in 'suggest'
-// bug: still cant search unless input is changed
-// bug: fix imdb link on movies that dont have imdb id
-
-// FETCH COLLECTION DATA
-//const fetchData = async () => {
-    //const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US&api_key=${mykey}`);
-    //const jsonData = await response.json();
-    //console.log(jsonData);
-    // displays all movies that belong to the same collection
-    /*if (jsonData.belongs_to_collection !== null) {
-        const collection = jsonData.belongs_to_collection.id;
-        const fetchCollection = async () => {
-            const collectionResponse = await fetch(`https://api.themoviedb.org/3/collection/${collection}?api_key=${mykey}`);
-            const collectionJsonData = await collectionResponse.json();
-            setData(collectionJsonData.parts);
-        };
-        fetchCollection();
-    }*/
-
 import React, {useState, useEffect} from 'react';
 import Filters from './Filters';
 import LoadWatchList from './LoadWatchlist';
@@ -29,16 +8,20 @@ import NoMoviesFound from './NoMoviesFound';
 import config from './config';
 
 const mykey = config.MY_KEY;
-function App() {
+function App(props) {
     // update styling of search bar and header
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
     document.querySelectorAll('.search-bar-elements').forEach(i => {
-        i.style = "font-size: 1.2rem; width: 5.5rem; height: 3rem; margin-left: .5rem";
+    //    i.style = "font-size: 1.2rem; width: 24%; height: 3rem; margin-left: .5rem";
+        i.classList.add('search-bar-elements-small');
     });
-    document.getElementById("search").style = "height: 2.6rem";
-    document.getElementById("search-div").style = "justify-content: flex-end";
-    document.getElementById("page-header").style.marginBottom = "4rem";
+    document.getElementById("search-div").classList.remove("search-div-large");
+    document.getElementById("search-div").classList.add("search-div-small");
+    document.getElementById("search-buttons-div").style = "margin-top: .5rem";
+    document.getElementById("page-header").classList.add("page-header-small");
+    document.getElementById("search-buttons-div").classList.remove("search-buttons-div-large");
+    document.getElementById("search-buttons-div").classList.add("search-buttons-div-small");
     document.getElementById("discover-option").style.display = "none";
     // variable to update sorted data
     const [sorted, setSorted] = useState('popularity');
@@ -87,14 +70,17 @@ function App() {
     // eventlisteners to update user search input so new data will be fetched
     document.getElementById("search-button").addEventListener('click', () => {
         setUserSearch(document.getElementById("search").value);
+        props.setSearchClicked(!props.searchClicked);
     });
     document.getElementById("trending-button").addEventListener('click', () => {
         document.getElementById("search").value = 'Trending';
         setUserSearch(document.getElementById("search").value);
+        props.setSearchClicked(!props.searchClicked);
     });
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             setUserSearch(document.getElementById("search").value);
+            props.setSearchClicked(!props.searchClicked);
         }
     });
     function convertGenreIDs() {
@@ -189,7 +175,6 @@ function App() {
                 document.getElementById('render-data-option').value = 20;
             }
             if (pages === document.getElementById('render-data-option').value / 20 || pages == jsonData.total_pages) {
-                console.log("DONE");
                 // Keep data sorted between fetch requests
                 switch (sorted) {
                     case 'popularity':
@@ -224,7 +209,7 @@ function App() {
                 console.log("TOTAL totalPages:", totalPages, i, allData);
             }
         });
-    }, [userSearch]);
+    }, [props.searchClicked, userSearch]);
 
     // update local storage data whenever watch list movies change
     useEffect(() => {
@@ -232,11 +217,13 @@ function App() {
     }, [watchData]);
     return (
         <div className='movie-container'>
-            <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber}/>
-            <div id='sorting-filters'>
+            <div id='top-bar-buttons'>
+                <div id='watch-list-and-filters'>
+                    <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber}/>
+                    <Filters setSixties={setSixties} setSeventies={setSeventies} setEighties={setEighties} setNinties={setNinties} setThousands={setThousands} setTens={setTens} setTwenties={setTwenties}
+                    setRate5={setRate5} setRate6={setRate6} setRate7={setRate7} setRate8={setRate8} setIsAdult={setIsAdult}/>
+                </div>
                 <SortingButtons data={data} setData={setData} setSorted={setSorted}/>
-                <Filters setSixties={setSixties} setSeventies={setSeventies} setEighties={setEighties} setNinties={setNinties} setThousands={setThousands} setTens={setTens} setTwenties={setTwenties}
-                setRate5={setRate5} setRate6={setRate6} setRate7={setRate7} setRate8={setRate8} setIsAdult={setIsAdult}/>
             </div>
             <div id='movie-section'>
                 {data && data.map((item, index) => (
