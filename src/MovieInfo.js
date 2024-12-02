@@ -70,15 +70,27 @@ function MovieData({data, item}) {
         const [year, month, day] = date.split('-');
         return `${month}/${day}/${year}`;
     }
-    return (
-        <div className='info'>
-            <p>{data && `Genres: ${genres.join(', ')}`}</p>
-            <p>{data && `Rating: ${item.vote_average.toFixed(1)}/10`}</p>
-            <p>{data && `Popularity: ${item.popularity.toFixed(0)}`}</p>
-            <p>{data && item.release_date == '' ? `Release Date: Unknown` : `Release Date: ${formatDate(item.release_date)}`}</p>
-            <p><br></br>{data && item.overview}</p>
-        </div>
-    );
+    if (item.release_date) {
+        return (
+            <div className='info'>
+                <p>{data && `Genres: ${genres.join(', ')}`}</p>
+                <p>{data && `Rating: ${item.vote_average.toFixed(1)}/10`}</p>
+                <p>{data && `Popularity: ${item.popularity.toFixed(0)}`}</p>
+                <p>{data && item.release_date == '' ? `Release Date: Unknown` : `Release Date: ${formatDate(item.release_date)}`}</p>
+                <p><br></br>{data && item.overview}</p>
+            </div>
+        );
+    } else {
+        return (
+            <div className='info'>
+                <p>{data && `Genres: ${genres.join(', ')}`}</p>
+                <p>{data && `Rating: ${item.vote_average.toFixed(1)}/10`}</p>
+                <p>{data && `Popularity: ${item.popularity.toFixed(0)}`}</p>
+                <p>{data && item.first_air_date == undefined ? `Air Date: Unknown` : `Air Date: ${formatDate(item.first_air_date)}`}</p>
+                <p><br></br>{data && item.overview}</p>
+            </div>
+        )
+    }
 }
 
 export default MovieData;

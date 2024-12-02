@@ -2,20 +2,25 @@ import React, {useState, useEffect} from 'react';
 import config from './config';
 
 function MoviePoster(props) {
-    const posterPath = "https://image.tmdb.org/t/p/w300" + props.item.poster_path;
+    let posterPath;
+    if (props.item.poster_path) {
+        posterPath = "https://image.tmdb.org/t/p/w300" + props.item.poster_path;
+    } else {
+        posterPath = require('./missing-img.png'); 
+    }
     const mykey = config.MY_KEY;
     const [isLoading, setIsLoading] = useState(true);
     const [idData, setIdData] = useState(null);
     useEffect(() => {
-        const fetchData = async (pages) => {
+        const fetchData = async () => {
             setIsLoading(true);
-            const response = await fetch(`https://api.themoviedb.org/3/movie/${props.item.id}?language=en-US&api_key=${mykey}&page=${pages}`);
+            const response = await fetch(`https://api.themoviedb.org/3/movie/${props.item.id}?language=en-US&api_key=${mykey}`);
             const jsonData = await response.json();
             setIdData(jsonData);
             setIsLoading(false);
         }
-        fetchData(1);
-    }, []); // Empty dependency array ensures the effect runs only once
+        fetchData();
+    }, [props.page]);
 
     if (isLoading) {
         return <div>Loading...</div>;

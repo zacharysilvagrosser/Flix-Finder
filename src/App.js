@@ -1,9 +1,13 @@
+// make nextPage 1 and i=2 to load all data on same page with loadmore button
+// tv shows not letting add to watch list
+// make nextPage 1 and i=2 to load all data on same page with loadmore button
+
 import React, {useState, useEffect} from 'react';
 import Filters from './Filters';
 import LoadWatchList from './LoadWatchlist';
 import SortingButtons from './SortingButtons';
 import MovieData from './MovieData';
-//import SeeMore from './SeeMore';
+import SeeMore from './SeeMore';
 import NoMoviesFound from './NoMoviesFound';
 import config from './config';
 
@@ -13,7 +17,6 @@ function App(props) {
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
     document.querySelectorAll('.search-bar-elements').forEach(i => {
-    //    i.style = "font-size: 1.2rem; width: 24%; height: 3rem; margin-left: .5rem";
         i.classList.add('search-bar-elements-small');
     });
     document.getElementById("search-div").classList.remove("search-div-large");
@@ -43,6 +46,7 @@ function App(props) {
     // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
+    const [nextPage, setNextPage] = useState(1);
     // save data when switching to watch list so you can click it again to revert to the previous data
     const [savedData, setSavedData] = useState(null);
     // load previous watch list data before setting it to an empty array
@@ -50,10 +54,16 @@ function App(props) {
         const storedData = localStorage.getItem('watchLaterData');
         return storedData ? JSON.parse(storedData) : [];
     });
+    // track titles in the Watch List so the movies 'Watch List' button can change to 'Listed' if it's already in the watchlist
+    const [watchTitles, setWatchTitles] = useState([]);
+    watchData.forEach(item => {
+        watchTitles.push(item.title);
+    });
     const [listNumber, setListNumber] = useState(watchData.length);
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
     function resetPage() {
         setPage(1);
+        setNextPage(1);
         document.getElementById("watch-list").classList.remove("view-watch-list");
     }
     document.getElementById("search-button").addEventListener("click", () => {
@@ -146,21 +156,16 @@ function App(props) {
     }
     let [allData, allIDs]= [[], []];
     useEffect(() => {
-        const fetchMovieData = async () => {
-            const response = await fetch(`https://api.themoviedb.org/3/movie/12?language=en-US&api_key=${mykey}`);
-            const jsonData = await response.json();
-            console.log(jsonData);
-        }
-        fetchMovieData();
         const fetchData = async (pages) => {
             let response;
+            const mediaType = document.getElementById('media-type').value;
             const genreID = convertGenreIDs();
             if (document.getElementById("search").value === 'Trending') {
-                response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=en-US&page=${pages}&api_key=${mykey}`);
+                response = await fetch(`https://api.themoviedb.org/3/trending/${mediaType.toLowerCase()}/day?language=en-US&page=${pages}&api_key=${mykey}`);
             } else if (document.getElementById("search").value === `Discover: ${document.getElementById('discover-button').value}`) {
-                response = await fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
-            } else {                
-                response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
+                response = await fetch(`https://api.themoviedb.org/3/discover/${mediaType.toLowerCase()}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
+            } else {
+                response = await fetch(`https://api.themoviedb.org/3/search/${mediaType.toLowerCase()}?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
             }
             const jsonData = await response.json();
             // collect multiple pages of data to display at once
@@ -174,7 +179,7 @@ function App(props) {
             if (document.getElementById('render-data-option').value === '# of results') {
                 document.getElementById('render-data-option').value = 20;
             }
-            if (pages === document.getElementById('render-data-option').value / 20 || pages == jsonData.total_pages) {
+            if (pages == (document.getElementById('render-data-option').value / 20 * page) || pages == jsonData.total_pages) {
                 // Keep data sorted between fetch requests
                 switch (sorted) {
                     case 'popularity':
@@ -194,22 +199,27 @@ function App(props) {
                         setSavedData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
                         break;
                 }
+                setPage(page + 1);
+                console.log('page', page);
+                console.log('nextpage', nextPage);
             }
             return jsonData.total_pages;
         };
-        fetchData(1).then(totalPages => {
-            for (let i = 2; i <= totalPages; i++) {
-                if (document.getElementById('render-data-option').value == 20) {
+        fetchData(nextPage).then(totalPages => {
+            for (let i = nextPage + 1; i <= document.getElementById('render-data-option').value / 20 * page; i++) {
+                /*if (document.getElementById('render-data-option').value == 20) {
+                    console.log('first break');
                     break;
-                }
+                }*/
+               if (i == (totalPages)) {
+                   console.log('second break');
+                   break;
+               }
                 fetchData(i);
-                if (i == (document.getElementById('render-data-option').value / 20)) {
-                    break;
-                }
-                console.log("TOTAL totalPages:", totalPages, i, allData);
+                console.log("TOTAL totalPages:", totalPages, i, page, allData);
             }
         });
-    }, [props.searchClicked, userSearch]);
+    }, [props.searchClicked, userSearch, nextPage]);
 
     // update local storage data whenever watch list movies change
     useEffect(() => {
@@ -228,11 +238,11 @@ function App(props) {
             <div id='movie-section'>
                 {data && data.map((item, index) => (
                     <MovieData data={data} setData={setData} setSavedData={setSavedData} sorted={sorted} key={index} page={page} item={item} watchData={watchData} setWatchData={setWatchData} listNumber={listNumber} setListNumber={setListNumber} sixties={sixties}
-                    seventies={seventies} eighties={eighties} ninties={ninties} thousands={thousands} tens={tens} twenties={twenties} rate5={rate5} rate6={rate6} rate7={rate7} rate8={rate8} isAdult={isAdult}/>
+                    seventies={seventies} eighties={eighties} ninties={ninties} thousands={thousands} tens={tens} twenties={twenties} rate5={rate5} rate6={rate6} rate7={rate7} rate8={rate8} isAdult={isAdult} watchTitles={watchTitles} setWatchTitles={setWatchTitles}/>
                 ))}
                 <NoMoviesFound data={data}/>
             </div>
-            {/*<SeeMore data={data} page={page} setPage={setPage}/>*/}
+            {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage}/>}
         </div>
     );
 }

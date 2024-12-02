@@ -317,7 +317,7 @@ button {
     background-color: var(--search-buttons);
 }
 
-@media (max-width: 1350px) {
+@media (max-width: 1360px) {
     #search, #search-buttons-div  {
         width: 80%;
     }
@@ -426,5 +426,18 @@ button {
     }
     #filters {
         width: 8rem;
+    }
+    #filter-sections {
+        width: 9rem;
+    }
+    .filter-section label {
+        font-size: .9rem;
+    }
+    #filter-sections h3 {
+        font-size: 1.1rem;
+    }
+    .filter-type input {
+        width: 16px;
+        height: 16px;
     }
 }

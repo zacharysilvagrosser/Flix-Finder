@@ -23,7 +23,9 @@ function StartScreen() {
     }
     const discoverSelectChange = () => {
         document.getElementById("search").value = `Discover: ${document.getElementById('discover-button').value}`;
-        document.getElementById("watch-list").classList.remove("view-watch-list");
+        if (document.getElementById("watch-list")) {
+            document.getElementById("watch-list").classList.remove("view-watch-list");
+        }
         setSearchClicked(!searchClicked);
         setShowApp(true);
     };
@@ -49,9 +51,18 @@ function SearchBar(props) {
                 <button className='search-bar-elements' id="search-button" onClick={props.searchBarClick}>Search</button>
                 <button className='search-bar-elements' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
                 <Discover discoverSelectChange={props.discoverSelectChange}/>
+                <MediaType />
                 <RenderMovies />
             </div>
         </div>
+    )
+}
+function MediaType() {
+    return (
+        <select className='search-bar-elements' id='media-type'>
+            <option>Movie</option>
+            <option>TV</option>
+        </select>
     )
 }
 function RenderMovies() {
