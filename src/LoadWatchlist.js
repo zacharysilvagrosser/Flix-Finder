@@ -12,6 +12,7 @@ function LoadWatchList(props) {
             watchList.classList.add("view-watch-list");
             props.setData(JSON.parse(localStorage.getItem('watchLaterData')));
         }
+        props.setSavedData(props.data);
     };
     return <button id="watch-list" onClick={showWatchList}>Watch List ({props.listNumber})</button>
 }

@@ -36,6 +36,7 @@ button {
     color:white;
     font-size: 4rem;
     font-weight: bold;
+    z-index: 3;
 }
 .page-header-small {
     margin-bottom: 4rem;
@@ -75,8 +76,16 @@ button {
 .search-buttons-div-large {
     width: 51%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
+}
+.top-bar {
+    width: 32%;
+}
+.bottom-bar {
+    width: 49%;
+    margin-top: .7rem;
 }
 .search-buttons-div-small {
     width: 51%;
@@ -85,7 +94,6 @@ button {
     flex-wrap: nowrap;
 }
 .search-bar-elements {
-    width: 22%;
     height: 3.3rem;
     text-align: center;
     font-size: calc(1rem + 1vmin);
@@ -219,12 +227,21 @@ button {
     width: 100%;
     height: 40rem;
 }
-#more-data-buttons {
-    width: 100%;
+#center-more-data {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
 }
-#more-data-buttons button {
+#more-data-buttons {
+    width: 92.3%;
+    display: flex;
+    justify-content: space-between;
+}
+#more-data-buttons-next {
+    width: 92.3%;
+    display: flex;
+    justify-content: flex-end;
+}
+#more-data-buttons button, #more-data-buttons-next button {
     width: 20%;
     height: 3rem;
     font-size: 1.5rem;
@@ -322,7 +339,6 @@ button {
         width: 80%;
     }
     .search-bar-elements {
-        width: 24%;
         font-size: calc(.9rem + .8vmin);
     }
     #movie-display {
@@ -372,11 +388,6 @@ button {
     #watch-list-and-filters button {
         width: 15.5rem;
     }
-    .search-bar-elements {
-        margin: .1rem;
-        font-size: calc(.5rem + 1vmin);
-        height: 2.5rem;
-    }
     .search-div-small, .search-bar-small {
         width: 100%;
         justify-content: center;
@@ -384,7 +395,6 @@ button {
 }
 @media (max-width: 750px) {
     .search-bar-elements {
-        margin: 0;
         font-size: calc(.5rem + 1vmin);
         height: 2.5rem;
         font-weight: bold;

@@ -1,7 +1,3 @@
-// make nextPage 1 and i=2 to load all data on same page with loadmore button
-// tv shows not letting add to watch list
-// make nextPage 1 and i=2 to load all data on same page with loadmore button
-
 import React, {useState, useEffect} from 'react';
 import Filters from './Filters';
 import LoadWatchList from './LoadWatchlist';
@@ -18,6 +14,7 @@ function App(props) {
     document.getElementById("search-bar").classList.add("search-bar-small");
     document.querySelectorAll('.search-bar-elements').forEach(i => {
         i.classList.add('search-bar-elements-small');
+        i.classList.remove('bottom-bar');
     });
     document.getElementById("search-div").classList.remove("search-div-large");
     document.getElementById("search-div").classList.add("search-div-small");
@@ -43,6 +40,7 @@ function App(props) {
     const [isAdult, setIsAdult] = useState(false);
     // useState variable to track changes in user search input
     const [userSearch, setUserSearch] = useState(document.getElementById("search").value);
+    const [renderAmount, setRenderAmount] = useState(20);
     // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
@@ -58,6 +56,7 @@ function App(props) {
     const [watchTitles, setWatchTitles] = useState([]);
     watchData.forEach(item => {
         watchTitles.push(item.title);
+        watchTitles.push(item.name);
     });
     const [listNumber, setListNumber] = useState(watchData.length);
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
@@ -81,16 +80,19 @@ function App(props) {
     document.getElementById("search-button").addEventListener('click', () => {
         setUserSearch(document.getElementById("search").value);
         props.setSearchClicked(!props.searchClicked);
+        setRenderAmount(document.getElementById('render-data-option').value);
     });
     document.getElementById("trending-button").addEventListener('click', () => {
         document.getElementById("search").value = 'Trending';
         setUserSearch(document.getElementById("search").value);
         props.setSearchClicked(!props.searchClicked);
+        setRenderAmount(document.getElementById('render-data-option').value);
     });
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             setUserSearch(document.getElementById("search").value);
             props.setSearchClicked(!props.searchClicked);
+            setRenderAmount(document.getElementById('render-data-option').value);
         }
     });
     function convertGenreIDs() {
@@ -179,7 +181,7 @@ function App(props) {
             if (document.getElementById('render-data-option').value === '# of results') {
                 document.getElementById('render-data-option').value = 20;
             }
-            if (pages == (document.getElementById('render-data-option').value / 20 * page) || pages == jsonData.total_pages) {
+            if (pages == (document.getElementById('render-data-option').value / 20 * page) || pages == (jsonData.total_pages - 1)) {
                 // Keep data sorted between fetch requests
                 switch (sorted) {
                     case 'popularity':
@@ -207,16 +209,12 @@ function App(props) {
         };
         fetchData(nextPage).then(totalPages => {
             for (let i = nextPage + 1; i <= document.getElementById('render-data-option').value / 20 * page; i++) {
-                /*if (document.getElementById('render-data-option').value == 20) {
-                    console.log('first break');
-                    break;
-                }*/
-               if (i == (totalPages)) {
+                if (i == (totalPages)) {
                    console.log('second break');
                    break;
-               }
+                }
                 fetchData(i);
-                console.log("TOTAL totalPages:", totalPages, i, page, allData);
+                console.log("TOTAL totalPages:", totalPages, 'i', i, 'page', page, 'allData', allData);
             }
         });
     }, [props.searchClicked, userSearch, nextPage]);
@@ -229,7 +227,7 @@ function App(props) {
         <div className='movie-container'>
             <div id='top-bar-buttons'>
                 <div id='watch-list-and-filters'>
-                    <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber}/>
+                    <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber} setSavedData={setSavedData} data={data}/>
                     <Filters setSixties={setSixties} setSeventies={setSeventies} setEighties={setEighties} setNinties={setNinties} setThousands={setThousands} setTens={setTens} setTwenties={setTwenties}
                     setRate5={setRate5} setRate6={setRate6} setRate7={setRate7} setRate8={setRate8} setIsAdult={setIsAdult}/>
                 </div>
@@ -242,7 +240,7 @@ function App(props) {
                 ))}
                 <NoMoviesFound data={data}/>
             </div>
-            {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage}/>}
+            {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage} renderAmount={renderAmount} setRenderAmount={setRenderAmount}/>}
         </div>
     );
 }

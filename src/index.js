@@ -48,8 +48,8 @@ function SearchBar(props) {
                 <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>
             </div>
             <div id='search-buttons-div' className='search-buttons-div-large'>
-                <button className='search-bar-elements' id="search-button" onClick={props.searchBarClick}>Search</button>
-                <button className='search-bar-elements' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
+                <button className='search-bar-elements top-bar' id="search-button" onClick={props.searchBarClick}>Search</button>
+                <button className='search-bar-elements top-bar' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
                 <Discover discoverSelectChange={props.discoverSelectChange}/>
                 <MediaType />
                 <RenderMovies />
@@ -59,7 +59,7 @@ function SearchBar(props) {
 }
 function MediaType() {
     return (
-        <select className='search-bar-elements' id='media-type'>
+        <select className='search-bar-elements bottom-bar' id='media-type'>
             <option>Movie</option>
             <option>TV</option>
         </select>
@@ -67,7 +67,7 @@ function MediaType() {
 }
 function RenderMovies() {
     return (
-        <select className='search-bar-elements' id='render-data-option'>
+        <select className='search-bar-elements bottom-bar' id='render-data-option'>
             <option># of results</option>
             <option>20</option>
             <option>40</option>
@@ -83,7 +83,7 @@ function RenderMovies() {
 }
 function Discover(props) {
     return (
-        <select className='search-bar-elements' id='discover-button' onChange={props.discoverSelectChange}>
+        <select className='search-bar-elements top-bar' id='discover-button' onChange={props.discoverSelectChange}>
             <option id='discover-option'>Discover</option>
             <option>Adventure</option>
             <option>Fantasy</option>

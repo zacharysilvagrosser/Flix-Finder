@@ -66,6 +66,60 @@ function MovieData({data, item}) {
                 return "None";
         }
     });
+    let tvGenres = item.genre_ids.map(genre => {
+        switch(genre) {
+            case 16:
+                return "Animation";
+                break;
+            case 18:
+                return "Drama";
+                break;
+            case 35:
+                return "Comedy";
+                break;
+            case 37:
+                return "Western";
+                break;
+            case 80:
+                return "Crime";
+                break;
+            case 99:
+                return "Documentary";
+                break;
+            case 9648:
+                return "Mystery";
+                break;
+            case 10751:
+                return "Family";
+                break;
+            case 10762:
+                return "Kids";
+                break;
+            case 10763:
+                return "News";
+                break;
+            case 10764:
+                return "Reality";
+                break;
+            case 10765:
+                return "Sci-Fi & Fantasy";
+                break;
+            case 10766:
+                return "Soap";
+                break;
+            case 10767:
+                return "Talk";
+                break;
+            case 10768:
+                return "War & Politics";
+                break;
+            case 10759:
+                return "Action & Adventure";
+                break;
+            default:
+                return "None";
+        }
+    });
     function formatDate(date) {
         const [year, month, day] = date.split('-');
         return `${month}/${day}/${year}`;
@@ -83,7 +137,7 @@ function MovieData({data, item}) {
     } else {
         return (
             <div className='info'>
-                <p>{data && `Genres: ${genres.join(', ')}`}</p>
+                <p>{data && `Genres: ${tvGenres.join(', ')}`}</p>
                 <p>{data && `Rating: ${item.vote_average.toFixed(1)}/10`}</p>
                 <p>{data && `Popularity: ${item.popularity.toFixed(0)}`}</p>
                 <p>{data && item.first_air_date == undefined ? `Air Date: Unknown` : `Air Date: ${formatDate(item.first_air_date)}`}</p>
