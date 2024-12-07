@@ -19,6 +19,7 @@ function App(props) {
     document.getElementById("search-div").classList.remove("search-div-large");
     document.getElementById("search-div").classList.add("search-div-small");
     document.getElementById("search-buttons-div").style = "margin-top: .5rem";
+    document.getElementById("page-header").classList.remove("page-header-large");
     document.getElementById("page-header").classList.add("page-header-small");
     document.getElementById("search-buttons-div").classList.remove("search-buttons-div-large");
     document.getElementById("search-buttons-div").classList.add("search-buttons-div-small");

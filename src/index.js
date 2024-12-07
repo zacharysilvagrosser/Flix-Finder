@@ -31,7 +31,7 @@ function StartScreen() {
     };
     return (
         <div id="container">
-            <a href='' id="page-header">Flix Finder</a>
+            <a href='' id="page-header" className='page-header-large'>Flix Finder</a>
             {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverSelectChange={discoverSelectChange}/>}
             {!showApp && <Tagline />}
             {showApp && <App searchClicked={searchClicked} setSearchClicked={setSearchClicked}/>}
