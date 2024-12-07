@@ -32,14 +32,15 @@ button {
     overflow-y: scroll;
 }
 #page-header {
-    position: relative;
+    width: 100%;
+    text-align: center;
     color:white;
     font-size: 4rem;
     font-weight: bold;
     z-index: 3;
 }
 .page-header-small {
-    margin-bottom: 4rem;
+    margin: 1rem 0;
 }
 .search-bar-large {
     width: 100%;
@@ -337,8 +338,11 @@ button {
 }
 
 @media (max-width: 1360px) {
-    #search, #search-buttons-div  {
+    #search-buttons-div  {
         width: 80%;
+    }
+    #search {
+        width: 78.5%;
     }
     .search-bar-elements {
         font-size: calc(.9rem + .8vmin);
@@ -348,7 +352,7 @@ button {
     }
     .page-header-small {
         font-size: 3.5rem;
-        margin-top: 16rem;
+        margin-top: 8rem;
     }
     .sorting-buttons {
         font-size: 1.2rem;
@@ -393,6 +397,10 @@ button {
     .search-div-small, .search-bar-small {
         width: 100%;
         justify-content: center;
+        position: relative;
+    }
+    .search-bar-small {
+        margin-bottom: 4rem;
     }
     #more-data-buttons button, #more-data-buttons-next button {
         width: 20rem;
@@ -410,6 +418,7 @@ button {
         flex-wrap: wrap;
     }
     #search {
+        width: 78%;
         height: 2rem;
         font-size: 1.5rem;
     }
@@ -422,6 +431,10 @@ button {
     }
     #page-header {
         font-size: 3rem;
+    }
+    .page-header-small {
+        font-size: 3.5rem;
+        margin-top: 12rem;
     }
     .movie-information {
         margin: 1rem;
@@ -459,5 +472,18 @@ button {
     #more-data-buttons button, #more-data-buttons-next button {
         width: 10rem;
         font-size: 1.1rem;
+    }
+    #more-data-buttons, #more-data-buttons-next{
+        padding-bottom: 7rem;
+    }
+}
+@media (max-height: 800px) {
+    .page-header-small {
+        margin-top: 20rem;
+    }
+}
+@media (max-height: 550px) {
+    .page-header-small {
+        margin-top: 40rem;
     }
 }
