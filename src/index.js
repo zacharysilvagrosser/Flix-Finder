@@ -111,6 +111,7 @@ function Tagline() {
     return (
         <div id="movie-display">
             <h2>Search over one million movies</h2>
+            <img src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg'></img>
         </div>
     )
 }

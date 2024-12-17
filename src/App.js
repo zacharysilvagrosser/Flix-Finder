@@ -5,9 +5,8 @@ import SortingButtons from './SortingButtons';
 import MovieData from './MovieData';
 import SeeMore from './SeeMore';
 import NoMoviesFound from './NoMoviesFound';
-import config from './config';
 
-const mykey = config.MY_KEY;
+const mykey = process.env.REACT_APP_API_KEY;
 function App(props) {
     // update styling of search bar and header
     document.getElementById("search-bar").classList.remove("search-bar-large");

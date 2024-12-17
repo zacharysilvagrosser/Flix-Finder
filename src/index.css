@@ -32,7 +32,6 @@ button {
     overflow-y: scroll;
 }
 #page-header {
-    width: 100%;
     text-align: center;
     color:white;
     font-size: 4rem;
@@ -40,6 +39,7 @@ button {
     z-index: 3;
 }
 .page-header-small {
+    width: 20%;
     margin: 4rem 0;
 }
 .search-bar-large {

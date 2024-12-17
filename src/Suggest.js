@@ -1,8 +1,7 @@
 import React from 'react';
-import config from './config';
 
 function Suggest(props) {
-    const mykey = config.MY_KEY;
+    const mykey = process.env.REACT_APP_API_KEY;
     // fetch similar movies from API to display suggested movies to watch
     const suggest = (id) => {
         let [allData, allIDs] = [[], []];

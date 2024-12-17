@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import config from './config';
 
 function MoviePoster(props) {
     let posterPath;
@@ -8,7 +7,7 @@ function MoviePoster(props) {
     } else {
         posterPath = require('./missing-img.png'); 
     }
-    const mykey = config.MY_KEY;
+    const mykey = process.env.REACT_APP_API_KEY;
     const [isLoading, setIsLoading] = useState(true);
     const [idData, setIdData] = useState(null);
     useEffect(() => {
