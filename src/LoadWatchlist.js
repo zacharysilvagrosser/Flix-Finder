@@ -2,7 +2,7 @@ import React from 'react';
 
 // Watch list button component to display watch list
 function LoadWatchList(props) {
-    // get watch list from local storage and display it on screen
+    // get watch list and display it on screen
     const showWatchList = () => {
         const watchList = document.getElementById("watch-list");
         if (watchList.classList.contains("view-watch-list")) {
@@ -10,7 +10,7 @@ function LoadWatchList(props) {
             props.setData(props.savedData);
         } else {
             watchList.classList.add("view-watch-list");
-            props.setData(JSON.parse(localStorage.getItem('watchLaterData')));
+            props.setData(props.watchData);
         }
         props.setSavedData(props.data);
     };

@@ -23,7 +23,7 @@ function SeeMore(props) {
     }
     if (props.page === 2 && (props.data && props.data.length < document.getElementById('render-data-option').value)) {
         return; 
-    } else if (props.data && props.page == 2) {
+    } else if (props.data && props.page === 2) {
         return (
             <div id='center-more-data'>
                 <div id="more-data-buttons-next">
@@ -31,7 +31,7 @@ function SeeMore(props) {
                 </div>
             </div>
         )
-    } else if (props.data && props.data != '' && props.data.length < document.getElementById('render-data-option').value) {
+    } else if (props.data && props.data !== '' && props.data.length < document.getElementById('render-data-option').value) {
         console.log('props.data.length: ', props.data.length, 'document.getElementByIdvalue: ', document.getElementById('render-data-option').value);
         return (
             <div id='center-more-data'>
@@ -40,7 +40,7 @@ function SeeMore(props) {
                 </div>
             </div>
         )
-    } else if (props.data && props.data != '') {
+    } else if (props.data && props.data !== '') {
         return (
             <div id='center-more-data'>
                 <div id="more-data-buttons">

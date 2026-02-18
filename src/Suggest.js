@@ -18,7 +18,7 @@ function Suggest(props) {
             if (document.getElementById('render-data-option').value === '# of results') {
                 document.getElementById('render-data-option').value = 20;
             }
-            if (pages === document.getElementById('render-data-option').value / 20 || pages == jsonData.total_pages) {
+            if (pages === document.getElementById('render-data-option').value / 20 || pages === jsonData.total_pages) {
                 // Keep data sorted between fetch requests
                 switch (props.sorted) {
                     case 'popularity':
@@ -37,17 +37,19 @@ function Suggest(props) {
                         props.setData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
                         props.setSavedData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
                         break;
+                    default:
+                        break;
                 }
             }
             return jsonData.total_pages;
         };
         fetchData(1).then(totalPages => {
             for (let i = 2; i <= totalPages; i++) {
-                if (document.getElementById('render-data-option').value == 20) {
+                if (document.getElementById('render-data-option').value === 20) {
                     break;
                 }
                 fetchData(i);
-                if (i == (document.getElementById('render-data-option').value / 20)) {
+                if (i === (document.getElementById('render-data-option').value / 20)) {
                     break;
                 }
             }

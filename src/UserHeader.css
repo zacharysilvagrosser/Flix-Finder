@@ -1,0 +1,65 @@
+.user-header {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 100;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-email {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.logout-btn,
+.login-btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover,
+.login-btn:hover {
+  background-color: #357ae8;
+}
+
+.login-btn {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .user-header {
+    top: 5px;
+    right: 10px;
+  }
+  
+  .user-email {
+    display: none;
+  }
+  
+  .user-info {
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .logout-btn,
+  .login-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+  }
+}

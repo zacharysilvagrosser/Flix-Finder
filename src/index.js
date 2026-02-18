@@ -2,6 +2,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import React, { useState } from 'react';
+import { AuthProvider } from './AuthContext';
+import UserHeader from './UserHeader';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -31,7 +33,8 @@ function StartScreen() {
     };
     return (
         <div id="container">
-            <a href='' id="page-header" className='page-header-large'>Flix Finder</a>
+            <UserHeader />
+            <h1 id="page-header" className='page-header-large'>Flix Finder</h1>
             {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverSelectChange={discoverSelectChange}/>}
             {!showApp && <Tagline />}
             {showApp && <App searchClicked={searchClicked} setSearchClicked={setSearchClicked}/>}
@@ -39,7 +42,9 @@ function StartScreen() {
     );
 }
 root.render (
-    <StartScreen />
+    <AuthProvider>
+        <StartScreen />
+    </AuthProvider>
 )
 function SearchBar(props) {
     return (
@@ -111,7 +116,7 @@ function Tagline() {
     return (
         <div id="movie-display">
             <h2>Search over one million movies</h2>
-            <img src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg'></img>
+            <img src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg' alt='The Movie Database logo'></img>
         </div>
     )
 }

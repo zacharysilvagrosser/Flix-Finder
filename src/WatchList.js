@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 // Watch list button on movieinfo component
 function WatchList(props) {
@@ -16,7 +16,6 @@ function WatchList(props) {
         if (!isDuplicate) {
             // add to watch list
             props.setWatchData([...props.watchData, newItem]);
-            props.setListNumber(props.listNumber + 1);
             props.setWatchTitles([...props.watchTitles, props.item.title]);
         } else {
             // delete from watch list
@@ -29,11 +28,10 @@ function WatchList(props) {
                 props.setWatchData(prevItems => prevItems.filter(movie => movie.name !== props.item.name));
                 props.setWatchTitles(prevItems => prevItems.filter(movie => movie !== props.item.name));
             }
-            props.setListNumber(props.listNumber - 1);
         }
     }
     function deleteFromWatchlist(movieTitle) {
-        if (movieTitle == props.item.title) {
+        if (movieTitle === props.item.title) {
             // for movies
             props.setWatchData(prevItems => prevItems.filter(movie => movie.title !== movieTitle));
             props.setData(prevItems => prevItems.filter(movie => movie.title !== movieTitle));
@@ -44,11 +42,10 @@ function WatchList(props) {
             props.setData(prevItems => prevItems.filter(movie => movie.name !== movieTitle));
             props.setWatchTitles(prevItems => prevItems.filter(movie => movie !== props.item.title));
         }
-        props.setListNumber(props.listNumber - 1);
     }
     // Show 'Listed' when item is on the watch list
     let listed = false;
-    if ((props.watchTitles.includes(props.item.title) && props.item.title != undefined) || (props.watchTitles.includes(props.item.name) && props.item.name != undefined)) {
+    if ((props.watchTitles.includes(props.item.title) && props.item.title !== undefined) || (props.watchTitles.includes(props.item.name) && props.item.name !== undefined)) {
         listed = true;
     }
     // change Watch List button to Delete button if currently viewing Watch List

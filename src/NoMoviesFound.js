@@ -6,7 +6,7 @@ function NoMoviesFound(data) {
             <p id="no-movies-found">Please enter a movie or TV show in the search bar.</p>
         )
     }
-    if (data && data.data == '') {
+    if (data && data.data === '') {
         return (
             <p id="no-movies-found">There is no data that matches your search query.</p>
         )

@@ -5,9 +5,13 @@ import SortingButtons from './SortingButtons';
 import MovieData from './MovieData';
 import SeeMore from './SeeMore';
 import NoMoviesFound from './NoMoviesFound';
+import { useAuth } from './AuthContext';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 const mykey = process.env.REACT_APP_API_KEY;
 function App(props) {
+    const { currentUser } = useAuth();
     // update styling of search bar and header
     document.getElementById("search-bar").classList.remove("search-bar-large");
     document.getElementById("search-bar").classList.add("search-bar-small");
@@ -47,18 +51,11 @@ function App(props) {
     const [nextPage, setNextPage] = useState(1);
     // save data when switching to watch list so you can click it again to revert to the previous data
     const [savedData, setSavedData] = useState(null);
-    // load previous watch list data before setting it to an empty array
-    const [watchData, setWatchData] = useState(() => {
-        const storedData = localStorage.getItem('watchLaterData');
-        return storedData ? JSON.parse(storedData) : [];
-    });
+    // load previous watch list data - will be synced with Firestore if user is logged in
+    const [watchData, setWatchData] = useState([]);
+    const [isWatchListLoaded, setIsWatchListLoaded] = useState(false);
     // track titles in the Watch List so the movies 'Watch List' button can change to 'Listed' if it's already in the watchlist
     const [watchTitles, setWatchTitles] = useState([]);
-    watchData.forEach(item => {
-        watchTitles.push(item.title);
-        watchTitles.push(item.name);
-    });
-    const [listNumber, setListNumber] = useState(watchData.length);
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
     function resetPage() {
         setPage(1);
@@ -99,61 +96,44 @@ function App(props) {
         switch(document.getElementById('discover-button').value) {
             case "Adventure":
                 return 12;
-                break;
             case "Fantasy":
                 return 14;
-                break;
             case "Animation":
                 return 16;
-                break;
             case "Drama":
                 return 18;
-                break;
             case "Horror":
                 return 27;
-                break;
             case "Action":
                 return 28;
-                break;
             case "Comedy":
                 return 35;
-                break;
             case "History":
                 return 36;
-                break;
             case "Western":
                 return 37;
-                break;
             case "Thriller":
                 return 53;
-                break;
             case "Crime":
                 return 80;
-                break;
             case "Documentary":
                 return 99;
-                break;
             case "Science Fiction":
                 return 878;
-                break;
             case "Mystery":
                 return 9648;
-                break;
             case "Music":
                 return 10402;
-                break;
             case "Romance":
                 return 10749;
-                break;
             case "Family":
                 return 10751;
-                break;
             case "War":
                 return 10752;
-                break;
             case "TV Movie":
                 return 10770;
-                break;
+            default:
+                return null;
         }
     }
     let [allData, allIDs]= [[], []];
@@ -181,7 +161,7 @@ function App(props) {
             if (document.getElementById('render-data-option').value === '# of results') {
                 document.getElementById('render-data-option').value = 20;
             }
-            if (pages == (document.getElementById('render-data-option').value / 20 * page) || pages == (jsonData.total_pages - 1)) {
+            if (pages === (document.getElementById('render-data-option').value / 20 * page) || pages === (jsonData.total_pages - 1)) {
                 // Keep data sorted between fetch requests
                 switch (sorted) {
                     case 'popularity':
@@ -200,6 +180,8 @@ function App(props) {
                         setData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
                         setSavedData(allData.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)));
                         break;
+                    default:
+                        break;
                 }
                 setPage(page + 1);
                 console.log('page', page);
@@ -209,7 +191,7 @@ function App(props) {
         };
         fetchData(nextPage).then(totalPages => {
             for (let i = nextPage + 1; i <= document.getElementById('render-data-option').value / 20 * page; i++) {
-                if (i == (totalPages)) {
+                if (i === (totalPages)) {
                    console.log('second break');
                    break;
                 }
@@ -219,15 +201,71 @@ function App(props) {
         });
     }, [props.searchClicked, userSearch, nextPage]);
 
-    // update local storage data whenever watch list movies change
+    // Load watch list from Firestore when user logs in
     useEffect(() => {
-        localStorage.setItem('watchLaterData', JSON.stringify(watchData));
+        async function loadWatchList() {
+            if (currentUser) {
+                try {
+                    const docRef = doc(db, 'watchlists', currentUser.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        setWatchData(docSnap.data().movies || []);
+                    } else {
+                        setWatchData([]);
+                    }
+                } catch (error) {
+                    console.error('Error loading watchlist:', error);
+                    setWatchData([]);
+                }
+            } else {
+                // If user is not logged in, load from localStorage as fallback
+                const storedData = localStorage.getItem('watchLaterData');
+                setWatchData(storedData ? JSON.parse(storedData) : []);
+            }
+            setIsWatchListLoaded(true);
+        }
+        loadWatchList();
+    }, [currentUser]);
+
+    // Save watch list to Firestore whenever it changes
+    useEffect(() => {
+        // Don't save until the initial load is complete
+        if (!isWatchListLoaded) return;
+        
+        async function saveWatchList() {
+            if (currentUser && watchData) {
+                try {
+                    const docRef = doc(db, 'watchlists', currentUser.uid);
+                    await setDoc(docRef, { movies: watchData });
+                    console.log('Watchlist saved to Firestore:', watchData.length, 'items');
+                } catch (error) {
+                    console.error('Error saving watchlist:', error);
+                }
+            } else if (!currentUser && watchData) {
+                // Fallback to localStorage if not logged in
+                localStorage.setItem('watchLaterData', JSON.stringify(watchData));
+            }
+        }
+        saveWatchList();
+    }, [watchData, currentUser, isWatchListLoaded]);
+
+    // Update watchTitles whenever watchData changes
+    useEffect(() => {
+        const titles = [];
+        watchData.forEach(item => {
+            titles.push(item.title);
+            titles.push(item.name);
+        });
+        setWatchTitles(titles);
     }, [watchData]);
+
+    const listNumber = watchData.length;
+
     return (
         <div className='movie-container'>
             <div id='top-bar-buttons'>
                 <div id='watch-list-and-filters'>
-                    <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber} setSavedData={setSavedData} data={data}/>
+                    <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber} setSavedData={setSavedData} data={data} watchData={watchData}/>
                     <Filters setSixties={setSixties} setSeventies={setSeventies} setEighties={setEighties} setNinties={setNinties} setThousands={setThousands} setTens={setTens} setTwenties={setTwenties}
                     setRate5={setRate5} setRate6={setRate6} setRate7={setRate7} setRate8={setRate8} setIsAdult={setIsAdult}/>
                 </div>
@@ -235,7 +273,7 @@ function App(props) {
             </div>
             <div id='movie-section'>
                 {data && data.map((item, index) => (
-                    <MovieData data={data} setData={setData} setSavedData={setSavedData} sorted={sorted} key={index} page={page} item={item} watchData={watchData} setWatchData={setWatchData} listNumber={listNumber} setListNumber={setListNumber} sixties={sixties}
+                    <MovieData data={data} setData={setData} setSavedData={setSavedData} sorted={sorted} key={index} page={page} item={item} watchData={watchData} setWatchData={setWatchData} listNumber={listNumber} sixties={sixties}
                     seventies={seventies} eighties={eighties} ninties={ninties} thousands={thousands} tens={tens} twenties={twenties} rate5={rate5} rate6={rate6} rate7={rate7} rate8={rate8} isAdult={isAdult} watchTitles={watchTitles} setWatchTitles={setWatchTitles}/>
                 ))}
                 <NoMoviesFound data={data}/>

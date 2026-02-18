@@ -19,14 +19,14 @@ function MoviePoster(props) {
             setIsLoading(false);
         }
         fetchData();
-    }, [props.page]);
+    }, [props.page, mykey, props.item.id]);
 
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
     return (
-        <a className='imdb-link' href={'https://www.imdb.com/title/' + idData.imdb_id} target='_blank'>
+        <a className='imdb-link' href={'https://www.imdb.com/title/' + idData.imdb_id} target='_blank' rel='noreferrer'>
             <img className='movie-img' src={posterPath} alt="Movie Poster" />
         </a>
     )

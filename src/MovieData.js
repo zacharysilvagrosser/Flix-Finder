@@ -7,16 +7,16 @@ import MoviePoster from './MoviePoster';
 // individual movie component with all movie information displayed with it
 function MovieData(props) {
     let date, title;
-    if (props.item.release_date != undefined) {
+    if (props.item.release_date !== undefined) {
         // object names for movies
         date = props.item.release_date;
         title = props.item.title;
-    } else if (props.item.first_air_date != undefined) {
+    } else if (props.item.first_air_date !== undefined) {
         // object names for TV
         date = props.item.first_air_date;
         title = props.item.name;
     }
-    if (date != undefined) {
+    if (date !== undefined) {
         const convertedDate = date.substring(0, 4);
         const rating = props.item.vote_average;
 
@@ -31,9 +31,9 @@ function MovieData(props) {
                 return (
                     <div className='movie-information'>
                         <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey}/>
-                        <button className='movie-button'><a href={streamLink} target='_blank'>Stream</a></button>
+                        <button className='movie-button'><a href={streamLink} target='_blank' rel='noreferrer'>Stream</a></button>
                         <button className='info-button movie-button'>Info</button>
-                        <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setListNumber={props.setListNumber} setData={props.setData} watchTitles={props.watchTitles} setWatchTitles={props.setWatchTitles}/>
+                        <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setData={props.setData} watchTitles={props.watchTitles} setWatchTitles={props.setWatchTitles}/>
                         {props.data && <MoviePoster item={props.item} page={props.page}/>}
                         {props.data && <h2 className='movie-names'>{title}</h2>}
                         <MovieInfo data={props.data} item={props.item}/>

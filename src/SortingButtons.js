@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 // Filter buttons on top of movie display that sort movies by categories
 function SortingButtons(props) {
