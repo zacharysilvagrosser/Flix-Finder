@@ -12,21 +12,34 @@ import { db } from './firebase';
 const mykey = process.env.REACT_APP_API_KEY;
 function App(props) {
     const { currentUser } = useAuth();
-    // update styling of search bar and header
-    document.getElementById("search-bar").classList.remove("search-bar-large");
-    document.getElementById("search-bar").classList.add("search-bar-small");
-    document.querySelectorAll('.search-bar-elements').forEach(i => {
-        i.classList.add('search-bar-elements-small');
-        i.classList.remove('bottom-bar');
-    });
-    document.getElementById("search-div").classList.remove("search-div-large");
-    document.getElementById("search-div").classList.add("search-div-small");
-    document.getElementById("search-buttons-div").style = "margin-top: .5rem";
-    document.getElementById("page-header").classList.remove("page-header-large");
-    document.getElementById("page-header").classList.add("page-header-small");
-    document.getElementById("search-buttons-div").classList.remove("search-buttons-div-large");
-    document.getElementById("search-buttons-div").classList.add("search-buttons-div-small");
-    document.getElementById("discover-option").style.display = "none";
+    useEffect(() => {
+        const searchBar = document.getElementById("search-bar");
+        const searchDiv = document.getElementById("search-div");
+        const searchButtonsDiv = document.getElementById("search-buttons-div");
+        const pageHeader = document.getElementById("page-header");
+        const discoverOption = document.getElementById("discover-option");
+
+        if (!searchBar || !searchDiv || !searchButtonsDiv || !pageHeader) {
+            return;
+        }
+
+        searchBar.classList.remove("search-bar-large");
+        searchBar.classList.add("search-bar-small");
+        document.querySelectorAll('.search-bar-elements').forEach(i => {
+            i.classList.add('search-bar-elements-small');
+            i.classList.remove('bottom-bar');
+        });
+        searchDiv.classList.remove("search-div-large");
+        searchDiv.classList.add("search-div-small");
+        searchButtonsDiv.style = "margin-top: .5rem";
+        pageHeader.classList.remove("page-header-large");
+        pageHeader.classList.add("page-header-small");
+        searchButtonsDiv.classList.remove("search-buttons-div-large");
+        searchButtonsDiv.classList.add("search-buttons-div-small");
+        if (discoverOption) {
+            discoverOption.style.display = "none";
+        }
+    }, []);
     // variable to update sorted data
     const [sorted, setSorted] = useState('popularity');
     // usestate variables for filter checkboxes 
@@ -42,9 +55,9 @@ function App(props) {
     const [rate7, setRate7] = useState(true);
     const [rate8, setRate8] = useState(true);
     const [isAdult, setIsAdult] = useState(false);
-    // useState variable to track changes in user search input
-    const [userSearch, setUserSearch] = useState(document.getElementById("search").value);
-    const [renderAmount, setRenderAmount] = useState(20);
+    // track the current search query from routing
+    const userSearch = props.searchValue || document.getElementById("search")?.value || '';
+    const pageSize = 20;
     // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
@@ -62,36 +75,9 @@ function App(props) {
         setNextPage(1);
         document.getElementById("watch-list").classList.remove("view-watch-list");
     }
-    document.getElementById("search-button").addEventListener("click", () => {
+    useEffect(() => {
         resetPage();
-    });
-    window.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            resetPage();
-        }
-    });
-    document.getElementById("trending-button").addEventListener("click", () => {
-        resetPage();
-    });
-    // eventlisteners to update user search input so new data will be fetched
-    document.getElementById("search-button").addEventListener('click', () => {
-        setUserSearch(document.getElementById("search").value);
-        props.setSearchClicked(!props.searchClicked);
-        setRenderAmount(document.getElementById('render-data-option').value);
-    });
-    document.getElementById("trending-button").addEventListener('click', () => {
-        document.getElementById("search").value = 'Trending';
-        setUserSearch(document.getElementById("search").value);
-        props.setSearchClicked(!props.searchClicked);
-        setRenderAmount(document.getElementById('render-data-option').value);
-    });
-    window.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            setUserSearch(document.getElementById("search").value);
-            props.setSearchClicked(!props.searchClicked);
-            setRenderAmount(document.getElementById('render-data-option').value);
-        }
-    });
+    }, [props.searchClicked]);
     function convertGenreIDs() {
         switch(document.getElementById('discover-button').value) {
             case "Adventure":
@@ -158,10 +144,7 @@ function App(props) {
                 }
                 allIDs.push(i.id);
             });
-            if (document.getElementById('render-data-option').value === '# of results') {
-                document.getElementById('render-data-option').value = 20;
-            }
-            if (pages === (document.getElementById('render-data-option').value / 20 * page) || pages === (jsonData.total_pages - 1)) {
+            if (pages === ((pageSize / 20) * page) || pages === (jsonData.total_pages - 1)) {
                 // Keep data sorted between fetch requests
                 switch (sorted) {
                     case 'popularity':
@@ -190,7 +173,7 @@ function App(props) {
             return jsonData.total_pages;
         };
         fetchData(nextPage).then(totalPages => {
-            for (let i = nextPage + 1; i <= document.getElementById('render-data-option').value / 20 * page; i++) {
+            for (let i = nextPage + 1; i <= (pageSize / 20) * page; i++) {
                 if (i === (totalPages)) {
                    console.log('second break');
                    break;
@@ -278,7 +261,7 @@ function App(props) {
                 ))}
                 <NoMoviesFound data={data}/>
             </div>
-            {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage} renderAmount={renderAmount} setRenderAmount={setRenderAmount}/>}
+            {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage}/>}
         </div>
     );
 }

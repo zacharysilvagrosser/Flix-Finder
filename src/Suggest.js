@@ -2,6 +2,7 @@ import React from 'react';
 
 function Suggest(props) {
     const mykey = process.env.REACT_APP_API_KEY;
+    const pageSize = 20;
     // fetch similar movies from API to display suggested movies to watch
     const suggest = (id) => {
         let [allData, allIDs] = [[], []];
@@ -15,10 +16,7 @@ function Suggest(props) {
                 }
                 allIDs.push(i.id);
             });
-            if (document.getElementById('render-data-option').value === '# of results') {
-                document.getElementById('render-data-option').value = 20;
-            }
-            if (pages === document.getElementById('render-data-option').value / 20 || pages === jsonData.total_pages) {
+            if (pages === pageSize / 20 || pages === jsonData.total_pages) {
                 // Keep data sorted between fetch requests
                 switch (props.sorted) {
                     case 'popularity':
@@ -43,17 +41,7 @@ function Suggest(props) {
             }
             return jsonData.total_pages;
         };
-        fetchData(1).then(totalPages => {
-            for (let i = 2; i <= totalPages; i++) {
-                if (document.getElementById('render-data-option').value === 20) {
-                    break;
-                }
-                fetchData(i);
-                if (i === (document.getElementById('render-data-option').value / 20)) {
-                    break;
-                }
-            }
-        });
+        fetchData(1);
     }
     return <button className='suggestions-button movie-button' onClick={() => suggest(props.item.id)}>Suggest</button>
 }

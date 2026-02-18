@@ -1,29 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 :root {
-    --search-buttons: rgb(24, 26, 27);
-    --search-buttons-hover: rgb(15, 16, 17);
-    --sort-buttons: #021526;
-    --sort-buttons-hover: #03213b;
+    --search-buttons: #1a1e24;
+    --search-buttons-hover: #12151a;
+    --sort-buttons: #0b1c2f;
+    --sort-buttons-hover: #0f2946;
+    --bg: #0b0f14;
+    --panel: #11151b;
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --text: #eef2f6;
+    --muted: #9aa3ad;
+    --accent: #4dd0e1;
+    --accent-soft: rgba(77, 208, 225, 0.12);
 }
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg);
+    color: var(--text);
 }
 a {
     color: white;
     text-decoration: none;
 }
 button {
-    box-shadow: 3px 3px 10px black;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 #container {
     width: 100%;
     height: 100vh;
     position: fixed;
-    background-color: rgb(11, 11, 22);
+    background: radial-gradient(1200px 800px at 10% -10%, rgba(77, 208, 225, 0.12), transparent 60%),
+                radial-gradient(900px 700px at 90% 0%, rgba(255, 200, 120, 0.10), transparent 55%),
+                var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,24 +42,51 @@ button {
     overflow-x: hidden;
     overflow-y: scroll;
 }
+#container::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(11, 15, 20, 0.6), rgba(11, 15, 20, 0.95));
+    pointer-events: none;
+}
+#container.results-page::before {
+    background: linear-gradient(180deg, rgba(11, 15, 20, 0.25), rgba(11, 15, 20, 0.6));
+}
 #page-header {
     text-align: center;
-    color:white;
-    font-size: 4rem;
-    font-weight: bold;
+    color: var(--text);
+    font-size: clamp(2.6rem, 4vw, 4.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
     z-index: 3;
+    margin: 0.5rem 0 0;
+}
+#page-subtitle {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    margin: 0.6rem 0 1.8rem;
+    z-index: 3;
+    text-align: center;
 }
 .page-header-small {
     width: 20%;
     margin: 4rem 0;
 }
 .search-bar-large {
-    width: 100%;
+    width: min(920px, 92vw);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 0;
+    padding: 1.6rem 1.8rem 1.8rem;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    position: relative;
+    z-index: 3;
+    animation: fadeInUp 0.5s ease-out;
 }
 .search-bar-small {
     display: flex;
@@ -65,7 +103,7 @@ button {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 0.4rem;
 }
 .search-div-small {
     width: 100%;
@@ -75,51 +113,100 @@ button {
     justify-content: flex-end;
 }
 .search-buttons-div-large {
-    width: 51%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 2.5rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-top: 1.4rem;
 }
 .top-bar {
-    width: 32%;
+    width: 100%;
 }
 .bottom-bar {
-    width: 49%;
-    margin-top: .7rem;
+    width: 100%;
+    grid-column: span 3;
+    margin-top: 0;
 }
 .search-buttons-div-small {
-    width: 51%;
+    width: 52%;
     display: flex;
     justify-content: space-between;
     flex-wrap: nowrap;
 }
 .search-bar-elements {
-    height: 3.3rem;
+    height: 3rem;
     text-align: center;
-    font-size: calc(1rem + 1vmin);
-    border-radius: 8px;
-    color: white;
+    font-size: 1rem;
+    border-radius: 10px;
+    color: var(--text);
     background-color: var(--search-buttons);
-    transition: .2s;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: 0.2s ease;
+}
+.search-bar-elements:hover {
+    background-color: var(--search-buttons-hover);
+    transform: translateY(-1px);
 }
 .search-bar-elements-small {
     width: 24%;
     font-size: calc(.7rem + 1vmin);
 }
 #search {
-    width: 50%;
-    height: 3rem;
-    font-size: 2rem;
-    border-radius: 10px;
-    color: white;
-    background-color: rgb(43, 42, 51);
+    width: 100%;
+    height: 3.3rem;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    color: var(--text);
+    background-color: #151a21;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0 1rem;
+}
+#search::placeholder {
+    color: rgba(255, 255, 255, 0.45);
 }
 #movie-display {
-    margin-top: 1rem;
-    color: white;
-    font-size: 1.7rem;
+    margin-top: 1.4rem;
+    color: var(--muted);
+    font-size: 1.1rem;
     text-align: center;
+    z-index: 3;
+}
+#movie-display img {
+    margin-top: 0.8rem;
+    max-width: 220px;
+    opacity: 0.9;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 900px) {
+    .search-buttons-div-large {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .bottom-bar {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 600px) {
+    #page-header {
+        font-size: 2.4rem;
+    }
+    .search-bar-large {
+        padding: 1.2rem 1rem 1.4rem;
+    }
+    #search {
+        font-size: 1rem;
+    }
 }
 
 #sorting-buttons-div {

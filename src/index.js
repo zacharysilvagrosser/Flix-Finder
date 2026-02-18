@@ -1,63 +1,122 @@
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AuthProvider } from './AuthContext';
 import UserHeader from './UserHeader';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-function StartScreen() {
-    const [showApp, setShowApp] = useState(false);
-    const [searchClicked, setSearchClicked] = useState(false);
+function HomePage() {
+    const navigate = useNavigate();
 
-    const searchBarClick = () => {
-        setShowApp(true);
-    };
-    const trendingBarClick = () => {
-        document.getElementById("search").value = "Trending";
-        setShowApp(true);
-    };
-    const searchBarEnter = (event) => {
-        if (event.key === 'Enter') {
-            setShowApp(true);
-        }
-    }
-    const discoverSelectChange = () => {
+    const discoverSelectPreview = () => {
         document.getElementById("search").value = `Discover: ${document.getElementById('discover-button').value}`;
         if (document.getElementById("watch-list")) {
             document.getElementById("watch-list").classList.remove("view-watch-list");
         }
-        setSearchClicked(!searchClicked);
-        setShowApp(true);
     };
+
+    const handleSearchNavigate = (value) => {
+        const nextValue = value || '';
+        navigate(`/search?q=${encodeURIComponent(nextValue)}`);
+    };
+
     return (
         <div id="container">
             <UserHeader />
             <h1 id="page-header" className='page-header-large'>Flix Finder</h1>
-            {<SearchBar searchBarClick={searchBarClick} searchBarEnter={searchBarEnter} trendingBarClick={trendingBarClick} discoverSelectChange={discoverSelectChange}/>}
-            {!showApp && <Tagline />}
-            {showApp && <App searchClicked={searchClicked} setSearchClicked={setSearchClicked}/>}
+            <p id="page-subtitle">Search, discover, and save your next watch.</p>
+            <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
+            <Tagline />
         </div>
     );
 }
+
+function ResultsPage() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [searchClicked, setSearchClicked] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+
+    const discoverSelectPreview = () => {
+        document.getElementById("search").value = `Discover: ${document.getElementById('discover-button').value}`;
+        if (document.getElementById("watch-list")) {
+            document.getElementById("watch-list").classList.remove("view-watch-list");
+        }
+    };
+
+    const handleSearchNavigate = (value) => {
+        const nextValue = value || '';
+        navigate(`/search?q=${encodeURIComponent(nextValue)}`);
+    };
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const nextValue = params.get('q') || '';
+        const searchInput = document.getElementById('search');
+        if (searchInput) {
+            searchInput.value = nextValue;
+        }
+        setSearchValue(nextValue);
+        setSearchClicked((prev) => !prev);
+    }, [location.search]);
+
+    return (
+        <div id="container" className="results-page">
+            <UserHeader />
+            <h1 id="page-header" className='page-header-large'>Flix Finder</h1>
+            <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
+            <App searchClicked={searchClicked} searchValue={searchValue} />
+        </div>
+    );
+}
+
 root.render (
     <AuthProvider>
-        <StartScreen />
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/search" element={<ResultsPage />} />
+            </Routes>
+        </BrowserRouter>
     </AuthProvider>
 )
 function SearchBar(props) {
+    const triggerSearch = (valueOverride) => {
+        const input = document.getElementById("search");
+        if (!input) return;
+        if (typeof valueOverride === 'string') {
+            input.value = valueOverride;
+        }
+        props.onSearchNavigate?.(input.value);
+    };
+
+    const handleSearch = () => {
+        triggerSearch();
+    };
+
+    const handleTrending = () => {
+        triggerSearch('Trending');
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            triggerSearch();
+        }
+    };
+
     return (
         <div id="search-bar" className="search-bar-large">
             <div id='search-div' className='search-div-large'>
-                <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={props.searchBarEnter}></input>
+                <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={handleKeyDown}></input>
             </div>
             <div id='search-buttons-div' className='search-buttons-div-large'>
-                <button className='search-bar-elements top-bar' id="search-button" onClick={props.searchBarClick}>Search</button>
-                <button className='search-bar-elements top-bar' id="trending-button" onClick={props.trendingBarClick}>Trending</button>
-                <Discover discoverSelectChange={props.discoverSelectChange}/>
+                <button className='search-bar-elements top-bar' id="search-button" onClick={handleSearch}>Search</button>
+                <button className='search-bar-elements top-bar' id="trending-button" onClick={handleTrending}>Trending</button>
+                <Discover discoverSelectPreview={props.discoverSelectPreview}/>
                 <MediaType />
-                <RenderMovies />
             </div>
         </div>
     )
@@ -70,25 +129,9 @@ function MediaType() {
         </select>
     )
 }
-function RenderMovies() {
-    return (
-        <select className='search-bar-elements bottom-bar' id='render-data-option'>
-            <option># of results</option>
-            <option>20</option>
-            <option>40</option>
-            <option>60</option>
-            <option>80</option>
-            <option>100</option>
-            <option>200</option>
-            <option>300</option>
-            <option>400</option>
-            <option>500</option>
-        </select>
-    )
-}
 function Discover(props) {
     return (
-        <select className='search-bar-elements top-bar' id='discover-button' onChange={props.discoverSelectChange}>
+        <select className='search-bar-elements top-bar' id='discover-button' onChange={props.discoverSelectPreview}>
             <option id='discover-option'>Discover</option>
             <option>Adventure</option>
             <option>Fantasy</option>
