@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function Filters(props) {
+    const [activeSection, setActiveSection] = useState('');
     const check60s = (event) => {
         props.setSixties(event.target.checked);
     };
@@ -37,22 +38,50 @@ function Filters(props) {
     const checkAdult = (event) => {
         props.setIsAdult(event.target.checked);
     };
-    const toggleFilterSection = () => {
-        const filterSections = document.getElementById('filter-sections');
-        if (filterSections.style.display === 'block') {
-            filterSections.style.display = 'none';
-        } else {
-            filterSections.style.display = 'block';
-        }
+
+    const toggleSection = (section) => {
+        setActiveSection((current) => (current === section ? '' : section));
+    };
+    const closePanel = () => {
+        setActiveSection('');
     };
     return (
         <div id='filters'>
-            <button onClick={toggleFilterSection}>Filters</button>
-            <div id='filter-sections'>
-                {<FilterDates check60s={check60s} check70s={check70s} check80s={check80s} check90s={check90s} check00s={check00s} check10s={check10s} check20s={check20s}/>}
-                {<FilterRatings check5={check5} check6={check6} check7={check7} check8={check8}/>}
-                {<FilterAdult checkAdult={checkAdult}/>}
+            <div className='filter-group'>
+                <div className='filter-label'>Filter by</div>
+                <div className='filter-buttons'>
+                    <button className={`filter-button ${activeSection === 'date' ? 'active-filter' : ''}`} onClick={() => toggleSection('date')}>Date</button>
+                    <button className={`filter-button ${activeSection === 'rating' ? 'active-filter' : ''}`} onClick={() => toggleSection('rating')}>Rating</button>
+                    <button className={`filter-button ${activeSection === 'adult' ? 'active-filter' : ''}`} onClick={() => toggleSection('adult')}>Adult</button>
+                </div>
             </div>
+            {activeSection && (
+                <div className='filter-modal-overlay' onClick={closePanel}>
+                    <div className='filter-modal' role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+                        <div className='filter-modal-header'>
+                            <div className='filter-modal-title'>
+                                {activeSection === 'date' && 'Filter by Date'}
+                                {activeSection === 'rating' && 'Filter by Rating'}
+                                {activeSection === 'adult' && 'Filter by Adult'}
+                            </div>
+                            <button className='filter-modal-close' onClick={closePanel} aria-label="Close filters">
+                                ×
+                            </button>
+                        </div>
+                        <div className='filter-modal-body'>
+                            {activeSection === 'date' && (
+                                <FilterDates check60s={check60s} check70s={check70s} check80s={check80s} check90s={check90s} check00s={check00s} check10s={check10s} check20s={check20s}/>
+                            )}
+                            {activeSection === 'rating' && (
+                                <FilterRatings check5={check5} check6={check6} check7={check7} check8={check8}/>
+                            )}
+                            {activeSection === 'adult' && (
+                                <FilterAdult checkAdult={checkAdult}/>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
@@ -119,7 +148,7 @@ function FilterAdult(props) {
         <div className="filter-section">
             <h3>Adult Films</h3>
             <div className="filter-type">
-                <label htmlFor='adult'>Show</label>
+                <label htmlFor='adult'>Show adult titles</label>
                 <input id='adult' type="checkbox" onChange={props.checkAdult}></input>
             </div>
         </div>

@@ -22,27 +22,32 @@ function SeeMore(props) {
         return; 
     } else if (props.data && props.page === 2) {
         return (
-            <div id='center-more-data'>
-                <div id="more-data-buttons-next">
-                    <button id="next" onClick={goNext}>{`Page ${props.page} >`}</button>
-                </div>
+            <div className='pagination'>
+                <div className='pagination-info'>Page 1</div>
+                <button className='pagination-button next' onClick={goNext}>
+                    Next <span aria-hidden="true">→</span>
+                </button>
             </div>
         )
     } else if (props.data && props.data !== '' && props.data.length < pageSize) {
         return (
-            <div id='center-more-data'>
-                <div id="more-data-buttons">
-                    <button id="previous" onClick={goPrevious}>{`< Page ${props.page - 2}`}</button>
-                </div>
+            <div className='pagination'>
+                <button className='pagination-button prev' onClick={goPrevious}>
+                    <span aria-hidden="true">←</span> Prev
+                </button>
+                <div className='pagination-info'>Page {Math.max(props.page - 2, 1)}</div>
             </div>
         )
     } else if (props.data && props.data !== '') {
         return (
-            <div id='center-more-data'>
-                <div id="more-data-buttons">
-                    <button id="previous" onClick={goPrevious}>{`< Page ${props.page - 2}`}</button>
-                    <button id="next" onClick={goNext}>{`Page ${props.page} >`}</button>
-                </div>
+            <div className='pagination'>
+                <button className='pagination-button prev' onClick={goPrevious}>
+                    <span aria-hidden="true">←</span> Prev
+                </button>
+                <div className='pagination-info'>Page {Math.max(props.page - 1, 1)}</div>
+                <button className='pagination-button next' onClick={goNext}>
+                    Next <span aria-hidden="true">→</span>
+                </button>
             </div>
         );
     }

@@ -246,13 +246,22 @@ function App(props) {
 
     return (
         <div className='movie-container'>
-            <div id='top-bar-buttons'>
+            <div id='top-bar-buttons' className={props.renderSearchBar ? 'results-toolbar' : ''}>
                 <div id='watch-list-and-filters'>
-                    <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber} setSavedData={setSavedData} data={data} watchData={watchData}/>
                     <Filters setSixties={setSixties} setSeventies={setSeventies} setEighties={setEighties} setNinties={setNinties} setThousands={setThousands} setTens={setTens} setTwenties={setTwenties}
                     setRate5={setRate5} setRate6={setRate6} setRate7={setRate7} setRate8={setRate8} setIsAdult={setIsAdult}/>
                 </div>
-                <SortingButtons data={data} setData={setData} setSorted={setSorted}/>
+                {props.renderSearchBar && (
+                    <div id='results-search-slot'>
+                        {props.renderSearchBar}
+                        <div id='results-watchlist-slot'>
+                            <LoadWatchList setData={setData} savedData={savedData} listNumber={listNumber} setSavedData={setSavedData} data={data} watchData={watchData}/>
+                        </div>
+                    </div>
+                )}
+                <div id='sorting-and-watchlist'>
+                    <SortingButtons data={data} setData={setData} setSorted={setSorted}/>
+                </div>
             </div>
             <div id='movie-section'>
                 {data && data.map((item, index) => (

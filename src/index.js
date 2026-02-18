@@ -66,9 +66,28 @@ function ResultsPage() {
     return (
         <div id="container" className="results-page">
             <UserHeader />
-            <h1 id="page-header" className='page-header-large'>Flix Finder</h1>
-            <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
-            <App searchClicked={searchClicked} searchValue={searchValue} />
+            <h1
+                id="page-header"
+                className='page-header-large page-header-link'
+                onClick={() => navigate('/')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        navigate('/');
+                    }
+                }}
+                aria-label="Flix Finder Home"
+            >
+                Flix Finder
+            </h1>
+            <App
+                searchClicked={searchClicked}
+                searchValue={searchValue}
+                renderSearchBar={
+                    <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
+                }
+            />
         </div>
     );
 }
