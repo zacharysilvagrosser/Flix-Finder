@@ -103,6 +103,15 @@ root.render (
     </AuthProvider>
 )
 function SearchBar(props) {
+        // Expose a global function for Discover to trigger search with value and type
+        React.useEffect(() => {
+            window.triggerSearchFromDiscover = (value, type) => {
+                setSearchValue(value);
+                setMediaType(type);
+                props.onSearchNavigate?.(`${value}|${type}`);
+            };
+            return () => { delete window.triggerSearchFromDiscover; };
+        }, [props]);
     // Parse initial value from query string if present
     const getInitialValues = () => {
         // Try to get from URL (q param)
@@ -161,6 +170,19 @@ function SearchBar(props) {
     const handleInputChange = (e) => {
         setSearchValue(e.target.value);
     };
+
+    // Allow external code to set the search bar value and update state
+    React.useEffect(() => {
+        const searchInput = document.getElementById('search');
+        if (!searchInput) return;
+        const handler = (e) => {
+            if (e.detail && e.detail.setByDiscover) {
+                setSearchValue(e.target.value);
+            }
+        };
+        searchInput.addEventListener('input', handler);
+        return () => searchInput.removeEventListener('input', handler);
+    }, []);
 
     const handleMediaTypeChange = (e) => {
         setMediaType(e.target.value);
@@ -232,8 +254,29 @@ function MediaType() {
     );
 }
 function Discover(props) {
+    // Custom handler to update search input and trigger search
+    const handleDiscoverChange = (e) => {
+        const genre = e.target.value;
+        // Set the search bar value
+        const searchInput = document.getElementById('search');
+        if (searchInput) {
+            searchInput.value = `Discover: ${genre}`;
+        }
+        // Get media type
+        const mediaType = document.getElementById('media-type')?.value || 'Movie';
+        // Call the search handler directly with the correct value and media type
+        if (typeof window.triggerSearchFromDiscover === 'function') {
+            window.triggerSearchFromDiscover(`Discover: ${genre}`, mediaType);
+        } else {
+            // fallback: click the search button
+            setTimeout(() => {
+                const searchBtn = document.getElementById('search-button');
+                if (searchBtn) searchBtn.click();
+            }, 0);
+        }
+    };
     return (
-        <select className='search-bar-elements top-bar' id='discover-button' onChange={props.discoverSelectPreview}>
+        <select className='search-bar-elements top-bar' id='discover-button' onChange={handleDiscoverChange}>
             <option id='discover-option'>Discover</option>
             <option>Adventure</option>
             <option>Fantasy</option>

@@ -148,7 +148,14 @@ function App(props) {
         }
     }, [watchData, showingWatchList]);
     function convertGenreIDs() {
-        switch(document.getElementById('discover-button').value) {
+        // Use the genre from the searchValue if it's a Discover search
+        let genre = null;
+        if (userSearch && userSearch.startsWith('Discover:')) {
+            genre = userSearch.replace('Discover:', '').trim();
+        } else {
+            genre = document.getElementById('discover-button')?.value;
+        }
+        switch(genre) {
             case "Adventure":
                 return 12;
             case "Fantasy":
@@ -200,9 +207,10 @@ function App(props) {
         const typesToFetch = isBoth ? ['movie', 'tv'] : [userMediaType.toLowerCase()];
         for (const mediaType of typesToFetch) {
             let response;
-            if (document.getElementById("search").value === 'Trending') {
+            const searchInputValue = document.getElementById("search")?.value || '';
+            if (searchInputValue === 'Trending') {
                 response = await fetch(`https://api.themoviedb.org/3/trending/${mediaType}/day?language=en-US&page=${pages}&api_key=${mykey}`);
-            } else if (document.getElementById("search").value === `Discover: ${document.getElementById('discover-button').value}`) {
+            } else if (searchInputValue.startsWith('Discover:')) {
                 response = await fetch(`https://api.themoviedb.org/3/discover/${mediaType}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
             } else {
                 response = await fetch(`https://api.themoviedb.org/3/search/${mediaType}?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
@@ -242,9 +250,54 @@ function App(props) {
                         }
                     });
                 });
-                // Apply the same filtering as MovieData (replicate filter logic here)
+                // If Discover search, skip genre filtering (API already filtered)
                 let filtered = [];
-                if (!selectedGenres || selectedGenres.length === 0) {
+                const searchInputValue = document.getElementById("search")?.value || '';
+                if (searchInputValue.startsWith('Discover:')) {
+                    filtered = allData.filter(item => {
+                        let date;
+                        if (item.release_date !== undefined) {
+                            date = item.release_date;
+                        } else if (item.first_air_date !== undefined) {
+                            date = item.first_air_date;
+                        }
+                        if (date !== undefined) {
+                            const convertedDate = date.substring(0, 4);
+                            const rating = item.vote_average;
+                            if (
+                                ((sixties && convertedDate <= 1969) ||
+                                    (seventies && convertedDate <= 1979 && convertedDate >= 1970) ||
+                                    (eighties && convertedDate <= 1989 && convertedDate >= 1980) ||
+                                    (ninties && convertedDate <= 1999 && convertedDate >= 1990) ||
+                                    (thousands && convertedDate <= 2009 && convertedDate >= 2000) ||
+                                    (tens && convertedDate <= 2019 && convertedDate >= 2010) ||
+                                    (twenties && convertedDate >= 2020)) &&
+                                ((rate5 && rating < 6) || (rate6 && rating < 7 && rating >= 6) || (rate7 && rating < 8 && rating >= 7) || (rate8 && rating >= 8))
+                            ) {
+                                if (
+                                    !isAdult &&
+                                    (item.adult ||
+                                        (item.overview && (
+                                            item.overview.includes('sex') ||
+                                            item.overview.includes('S&M') ||
+                                            item.overview.includes('intercourse') ||
+                                            item.overview.includes('porn') ||
+                                            item.overview.includes('busty') ||
+                                            item.overview.includes('horny') ||
+                                            item.overview.includes('breast') ||
+                                            item.overview.includes('seduc')
+                                        ))
+                                    )
+                                ) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    });
+                } else if (!selectedGenres || selectedGenres.length === 0) {
                     filtered = [];
                 } else {
                     filtered = allData.filter(item => {
