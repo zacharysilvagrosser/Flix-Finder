@@ -193,7 +193,7 @@ function SearchBar(props) {
     return (
         <div id="search-bar" className="search-bar-large">
             <div id='search-div' className='search-div-large' style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-                <input id="search" type="text" placeholder="Enter a movie title..." value={searchValue} onChange={handleInputChange} onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} />
+                <input id="search" type="text" placeholder="Enter a title..." value={searchValue} onChange={handleInputChange} onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} />
                 <button
                     className='search-bar-icon-button'
                     id="search-button"
@@ -201,7 +201,7 @@ function SearchBar(props) {
                     style={{ position: 'absolute', right: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', height: '2.2rem', width: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                     aria-label="Search"
                 >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </button>
             </div>
             <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -303,7 +303,7 @@ function Discover(props) {
 function Tagline() {
     return (
         <div id="movie-display">
-            <h2>Search over one million movies</h2>
+            <h2>Search over one million titles</h2>
             <img src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg' alt='The Movie Database logo'></img>
         </div>
     )
