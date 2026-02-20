@@ -103,13 +103,45 @@ root.render (
     </AuthProvider>
 )
 function SearchBar(props) {
-    const triggerSearch = (valueOverride) => {
-        const input = document.getElementById("search");
-        if (!input) return;
-        if (typeof valueOverride === 'string') {
-            input.value = valueOverride;
+    // Parse initial value from query string if present
+    const getInitialValues = () => {
+        // Try to get from URL (q param)
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q') || '';
+        if (q.includes('|')) {
+            const [search, type] = q.split('|');
+            return {
+                searchValue: search,
+                mediaType: type || (localStorage.getItem('flixFinderMediaType') || 'Movie')
+            };
         }
-        props.onSearchNavigate?.(input.value);
+        return {
+            searchValue: q,
+            mediaType: localStorage.getItem('flixFinderMediaType') || 'Movie'
+        };
+    };
+
+    const [mediaType, setMediaType] = React.useState(getInitialValues().mediaType);
+    const [searchValue, setSearchValue] = React.useState(getInitialValues().searchValue);
+
+    // Keep state in sync with URL changes (e.g., when navigating or switching types)
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q') || '';
+        if (q.includes('|')) {
+            const [search, type] = q.split('|');
+            setSearchValue(search);
+            setMediaType(type);
+        } else {
+            setSearchValue(q);
+        }
+    }, [window.location.search]);
+
+    const triggerSearch = (valueOverride, typeOverride) => {
+        let value = valueOverride !== undefined ? valueOverride : searchValue;
+        let type = typeOverride !== undefined ? typeOverride : mediaType;
+        // Compose a query string that includes both search and media type
+        props.onSearchNavigate?.(`${value}|${type}`);
     };
 
     const handleSearch = () => {
@@ -126,10 +158,20 @@ function SearchBar(props) {
         }
     };
 
+    const handleInputChange = (e) => {
+        setSearchValue(e.target.value);
+    };
+
+    const handleMediaTypeChange = (e) => {
+        setMediaType(e.target.value);
+        localStorage.setItem('flixFinderMediaType', e.target.value);
+        // Do not trigger search when changing dropdown
+    };
+
     return (
         <div id="search-bar" className="search-bar-large">
             <div id='search-div' className='search-div-large' style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-                <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} />
+                <input id="search" type="text" placeholder="Enter a movie title..." value={searchValue} onChange={handleInputChange} onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} />
                 <button
                     className='search-bar-icon-button'
                     id="search-button"
@@ -143,18 +185,51 @@ function SearchBar(props) {
             <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <button className='search-bar-elements top-bar' id="trending-button" onClick={handleTrending}>Trending</button>
                 <Discover discoverSelectPreview={props.discoverSelectPreview}/>
-                <MediaType />
+                <select className='search-bar-elements bottom-bar' id='media-type' value={mediaType} onChange={handleMediaTypeChange}>
+                    <option>Movie</option>
+                    <option>TV</option>
+                    <option>Both</option>
+                </select>
             </div>
         </div>
     )
 }
 function MediaType() {
+    const [mediaType, setMediaType] = React.useState(() => {
+        return localStorage.getItem('flixFinderMediaType') || 'Movie';
+    });
+
+    React.useEffect(() => {
+        const select = document.getElementById('media-type');
+        if (select) select.value = mediaType;
+    }, [mediaType]);
+
+    // Find the search input and trigger search if Enter is pressed after changing dropdown
+    React.useEffect(() => {
+        const input = document.getElementById('search');
+        if (!input) return;
+        const handler = (event) => {
+            if (event.key === 'Enter') {
+                input.blur(); // force onChange to fire for dropdown
+            }
+        };
+        input.addEventListener('keydown', handler);
+        return () => input.removeEventListener('keydown', handler);
+    }, []);
+
+    const handleChange = (e) => {
+        setMediaType(e.target.value);
+        localStorage.setItem('flixFinderMediaType', e.target.value);
+        // Do not trigger search immediately when changing dropdown
+    };
+
     return (
-        <select className='search-bar-elements bottom-bar' id='media-type'>
+        <select className='search-bar-elements bottom-bar' id='media-type' value={mediaType} onChange={handleChange}>
             <option>Movie</option>
             <option>TV</option>
+            <option>Both</option>
         </select>
-    )
+    );
 }
 function Discover(props) {
     return (

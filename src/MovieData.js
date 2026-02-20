@@ -61,10 +61,13 @@ function MovieData(props) {
                 return;
             }
             const streamLink = `https://www.justwatch.com/us/search?q=${title}`;
+            // Determine if this is a TV show
+            const isTV = !!props.item.first_air_date;
+            const tvClass = isTV ? 'tv-show' : '';
             return (
                 <div className='movie-information'>
                     <div className='movie-header'>
-                        {props.data && <h2 className='movie-names'>{title}</h2>}
+                        {props.data && <h2 className={`movie-names ${tvClass}`}>{title}</h2>}
                         <div className='watchlist-plus'>
                             <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setData={props.setData} watchTitles={props.watchTitles} setWatchTitles={props.setWatchTitles}/>
                         </div>
@@ -73,9 +76,9 @@ function MovieData(props) {
                         {props.data && (showInfo ? <MovieInfo data={props.data} item={props.item}/> : <MoviePoster item={props.item} page={props.page}/>) }
                     </div>
                     <div className='movie-buttons'>
-                        <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey} />
-                        <button className='movie-button' title="Find where to stream this title"><a href={streamLink} target='_blank' rel='noreferrer'>Stream</a></button>
-                        <button className='info-button movie-button' title="Display movie information"
+                        <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey} className={tvClass} />
+                        <button className={`movie-button ${tvClass}`} title="Find where to stream this title"><a href={streamLink} target='_blank' rel='noreferrer'>Stream</a></button>
+                        <button className={`info-button movie-button ${tvClass}`} title="Display movie information"
                             onClick={() => setShowInfo(show => !show)}
                         >{showInfo ? 'Close Info' : 'Info'}</button>
                     </div>

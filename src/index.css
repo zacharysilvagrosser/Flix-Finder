@@ -1,3 +1,23 @@
+/* Loading spinner styles */
+.loading-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+    width: 100%;
+}
+.loading-spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #2196f3;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 /* 
 TO DO: 
 Update the styling on being signed in
@@ -582,6 +602,8 @@ make responsive
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
+        --tv-purple: #311066;
+        --tv-purple-dark: #2b084e;
     --search-buttons: #223052;
     --search-buttons-hover: #18243a;
     --sort-buttons: #162c56;
@@ -965,6 +987,25 @@ button {
     position: relative;
     z-index: 1;
 }
+.movie-names.tv-show {
+    color: #4b217a;
+}
+.movie-button.tv-show, .suggestions-button.tv-show {
+    background: var(--tv-purple);
+    color: #fff;
+}
+.movie-button.tv-show:hover, .suggestions-button.tv-show:hover {
+    background: var(--tv-purple-dark);
+    color: #fff;
+}
+.info-button.tv-show {
+    background: var(--tv-purple);
+    color: #fff;
+}
+.info-button.tv-show:hover {
+    background: var(--tv-purple-dark);
+    color: #fff;
+}
 #movie-section {
     display: flex;
     flex-wrap: wrap;
@@ -1347,5 +1388,17 @@ button {
 @media (max-height: 480px) and (min-width: 700px) {
     .page-header-large {
         margin-top: 8rem;
+    }
+    .movie-names {
+        color: var(--accent);
+        font-size: 1.35rem;
+        text-align: center;
+        font-weight: 700;
+        margin-top: 0.5rem;
+        margin-bottom: 0.2rem;
+        letter-spacing: 0.02em;
+        width: 100%;
+        position: relative;
+        z-index: 1;
     }
 }

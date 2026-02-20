@@ -12,8 +12,9 @@ import { db } from './firebase';
 
 const mykey = process.env.REACT_APP_API_KEY;
 function App(props) {
-        // Track if we are showing the watch list
-        const [showingWatchList, setShowingWatchList] = useState(false);
+    // Track if we are showing the watch list
+    const [showingWatchList, setShowingWatchList] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { currentUser } = useAuth();
     useEffect(() => {
         const searchBar = document.getElementById("search-bar");
@@ -85,7 +86,15 @@ function App(props) {
         localStorage.setItem('flixFinderFilters', JSON.stringify(filterState));
     }, [sixties, seventies, eighties, ninties, thousands, tens, twenties, rate5, rate6, rate7, rate8, isAdult, selectedGenres]);
     // track the current search query from routing
-    const userSearch = props.searchValue || document.getElementById("search")?.value || '';
+    // Parse searchValue for search and media type
+    let userSearch = '';
+    let userMediaType = '';
+    if (props.searchValue && props.searchValue.includes('|')) {
+        [userSearch, userMediaType] = props.searchValue.split('|');
+    } else {
+        userSearch = props.searchValue || document.getElementById("search")?.value || '';
+        userMediaType = document.getElementById('media-type')?.value || 'Movie';
+    }
     const pageSize = 100;
     // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
@@ -185,18 +194,25 @@ function App(props) {
     let [allData, allIDs]= [[], []];
     // Helper to fetch a single page from the API
     const fetchData = async (pages) => {
-        let response;
-        const mediaType = document.getElementById('media-type').value;
+        let results = [];
         const genreID = convertGenreIDs();
-        if (document.getElementById("search").value === 'Trending') {
-            response = await fetch(`https://api.themoviedb.org/3/trending/${mediaType.toLowerCase()}/day?language=en-US&page=${pages}&api_key=${mykey}`);
-        } else if (document.getElementById("search").value === `Discover: ${document.getElementById('discover-button').value}`) {
-            response = await fetch(`https://api.themoviedb.org/3/discover/${mediaType.toLowerCase()}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
-        } else {
-            response = await fetch(`https://api.themoviedb.org/3/search/${mediaType.toLowerCase()}?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
+        const isBoth = userMediaType === 'Both';
+        const typesToFetch = isBoth ? ['movie', 'tv'] : [userMediaType.toLowerCase()];
+        for (const mediaType of typesToFetch) {
+            let response;
+            if (document.getElementById("search").value === 'Trending') {
+                response = await fetch(`https://api.themoviedb.org/3/trending/${mediaType}/day?language=en-US&page=${pages}&api_key=${mykey}`);
+            } else if (document.getElementById("search").value === `Discover: ${document.getElementById('discover-button').value}`) {
+                response = await fetch(`https://api.themoviedb.org/3/discover/${mediaType}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
+            } else {
+                response = await fetch(`https://api.themoviedb.org/3/search/${mediaType}?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
+            }
+            const jsonData = await response.json();
+            if (jsonData.results) {
+                results = results.concat(jsonData.results);
+            }
         }
-        const jsonData = await response.json();
-        return jsonData.results || [];
+        return results;
     };
 
     // Load enough pages to ensure 100 filtered results
@@ -204,22 +220,27 @@ function App(props) {
     useEffect(() => {
         let isMounted = true;
         const loadPages = async () => {
+            setLoading(true);
             allData = [];
             allIDs = [];
             let filteredResults = [];
-            let apiPage = 1;
             const userPage = Math.ceil(page / 5);
             const startPage = (userPage - 1) * 5 + 1;
             let lastResultsCount = 0;
-            // Keep fetching until we have 100 filtered results or run out of API pages (max 50 pages for safety)
+            let apiPage = 1;
+            // Fetch up to 5 pages in parallel at a time
             while (filteredResults.length < 100 && apiPage <= 50) {
-                const results = await fetchData(startPage + apiPage - 1);
-                lastResultsCount = results.length;
-                results.forEach(item => {
-                    if (!allIDs.includes(item.id)) {
-                        allData.push(item);
-                        allIDs.push(item.id);
-                    }
+                const pageBatch = Array.from({length: 5}, (_, i) => startPage + apiPage - 1 + i);
+                const fetchPromises = pageBatch.map(p => fetchData(p));
+                const resultsBatch = await Promise.all(fetchPromises);
+                resultsBatch.forEach(results => {
+                    lastResultsCount = results.length;
+                    results.forEach(item => {
+                        if (!allIDs.includes(item.id)) {
+                            allData.push(item);
+                            allIDs.push(item.id);
+                        }
+                    });
                 });
                 // Apply the same filtering as MovieData (replicate filter logic here)
                 let filtered = [];
@@ -276,7 +297,7 @@ function App(props) {
                     });
                 }
                 filteredResults = filtered;
-                apiPage++;
+                apiPage += 5;
             }
             // Only keep the first 100 filtered results
             filteredResults = filteredResults.slice(0, 100);
@@ -303,6 +324,7 @@ function App(props) {
                 setData(sortedResults);
                 setSavedData(sortedResults);
             }
+            setLoading(false);
         };
         loadPages();
         return () => { isMounted = false; };
@@ -451,7 +473,12 @@ function App(props) {
                 </div>
             </div>
             <div id='movie-section'>
-                {data && data.map((item, index) => (
+                {loading && (
+                    <div className='loading-spinner-container'>
+                        <div className='loading-spinner'></div>
+                    </div>
+                )}
+                {!loading && data && data.map((item, index) => (
                     <MovieData
                         data={data}
                         setData={setData}
@@ -471,7 +498,7 @@ function App(props) {
                         tens={tens}
                         twenties={twenties}
                         rate5={rate5}
-                        rate6={rate6}
+                        rate6={setRate6}
                         rate7={rate7}
                         rate8={rate8}
                         isAdult={isAdult}
@@ -480,7 +507,7 @@ function App(props) {
                         setWatchTitles={setWatchTitles}
                     />
                 ))}
-                <NoMoviesFound data={data}/>
+                {!loading && <NoMoviesFound data={data}/>} 
             </div>
             {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage} lastApiPageCount={lastApiPageCount}/>} 
         </div>
