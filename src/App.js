@@ -433,7 +433,10 @@ function App(props) {
     // Update watchTitles whenever watchData changes
     useEffect(() => {
         const titles = [];
-        (watchLists[selectedWatchList]?.movies || []).forEach(item => {
+        const movies = Array.isArray(watchLists[selectedWatchList]?.movies)
+            ? watchLists[selectedWatchList].movies
+            : [];
+        movies.forEach(item => {
             titles.push(item.title);
             titles.push(item.name);
         });
@@ -486,9 +489,14 @@ function App(props) {
                                 <AddWatchListButton onAdd={name => {
                                     setWatchLists(prev => {
                                         const newLists = [...prev, { name, movies: [] }];
+                                        // Select the new list after updating
+                                        setSelectedWatchList(newLists.length - 1);
+                                        // Immediately show the new watch list
+                                        setSavedData(data);
+                                        setData([]); // Show empty list
+                                        setShowingWatchList(true);
                                         return newLists;
                                     });
-                                    setSelectedWatchList(watchLists.length); // select new
                                 }} />
                             </LoadWatchList>
                         </div>
@@ -531,17 +539,49 @@ function App(props) {
                         <div className='loading-spinner'></div>
                     </div>
                 )}
-                {!loading && data && data.map((item, index) => (
+                {!loading && Array.isArray(showingWatchList ? watchData : data) && (showingWatchList ? watchData.filter(item => {
+                    // Filtering logic (same as MovieData)
+                    const getYear = (dateStr) => dateStr ? parseInt(dateStr.substring(0, 4), 10) : undefined;
+                    const year = item.release_date ? getYear(item.release_date) : (item.first_air_date ? getYear(item.first_air_date) : undefined);
+                    const rating = item.vote_average;
+                    const genreMatch = !selectedGenres || selectedGenres.length === 0 || (item.genre_ids && item.genre_ids.some((id) => selectedGenres.includes(id)));
+                    const dateMatch = (
+                        (sixties && year <= 1969) ||
+                        (seventies && year >= 1970 && year <= 1979) ||
+                        (eighties && year >= 1980 && year <= 1989) ||
+                        (ninties && year >= 1990 && year <= 1999) ||
+                        (thousands && year >= 2000 && year <= 2009) ||
+                        (tens && year >= 2010 && year <= 2019) ||
+                        (twenties && year >= 2020)
+                    );
+                    const ratingMatch = (
+                        (rate5 && rating < 6) ||
+                        (rate6 && rating >= 6 && rating < 7) ||
+                        (rate7 && rating >= 7 && rating < 8) ||
+                        (rate8 && rating >= 8)
+                    );
+                    const isAdultContent = () => {
+                        const adultKeywords = [
+                            'sex', 'S&M', 'intercourse', 'porn',
+                            'busty', 'horny', 'breast', 'seduc'
+                        ];
+                        return item.adult || adultKeywords.some(word => item.overview && item.overview.includes(word));
+                    };
+                    if (!year || !genreMatch || !dateMatch || !ratingMatch) return false;
+                    if (!isAdult && isAdultContent()) return false;
+                    return true;
+                }) : data).map((item, index) => (
                     <MovieData
-                        data={data}
+                        data={Array.isArray(showingWatchList ? watchData : data) ? (showingWatchList ? watchData : data) : []}
                         setData={setData}
                         setSavedData={setSavedData}
                         sorted={sorted}
                         key={index}
                         page={page}
                         item={item}
-                        watchData={watchData}
-                        setWatchData={setWatchData}
+                        watchLists={watchLists}
+                        setWatchLists={setWatchLists}
+                        selectedWatchList={selectedWatchList}
                         listNumber={listNumber}
                         sixties={sixties}
                         seventies={seventies}
@@ -556,8 +596,6 @@ function App(props) {
                         rate8={rate8}
                         isAdult={isAdult}
                         selectedGenres={selectedGenres}
-                        watchTitles={watchTitles}
-                        setWatchTitles={setWatchTitles}
                     />
                 ))}
                 {!loading && <NoMoviesFound data={data}/>} 

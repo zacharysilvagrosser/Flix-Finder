@@ -1,3 +1,11 @@
+.watchlist-plus-button.tv-show {
+    background: var(--tv-purple);
+    color: #fff;
+}
+.watchlist-plus-button.tv-show:hover {
+    background: var(--tv-purple-dark);
+    color: #fff;
+}
 /* Loading spinner styles */
 .loading-spinner-container {
     display: flex;
@@ -20,12 +28,6 @@
 }
 /* 
 TO DO: 
-Update the styling on being signed in
-Have the plus and minus buttons delete movies from specific watch lists
-Realign start screen
-Newest sory by isnt working
-TV doesnt work
-Increase font size or search bar buttons
 make responsive
 */
 .movie-button a {
@@ -328,10 +330,9 @@ make responsive
     color: #fff;
     border: none;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     font-size: 1.5rem;
-    top: -2px;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(24,58,90,0.18);
@@ -479,6 +480,8 @@ make responsive
     border-radius: 12px;
     width: 100%;
     min-width: 0;
+    overflow: visible;
+    z-index: 2;
 }
 .filter-buttons {
     display: grid;
@@ -602,8 +605,8 @@ make responsive
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-        --tv-purple: #311066;
-        --tv-purple-dark: #2b084e;
+        --tv-purple: #df5025;
+        --tv-purple-dark: #b8702d;
     --search-buttons: #223052;
     --search-buttons-hover: #18243a;
     --sort-buttons: #162c56;
@@ -988,7 +991,7 @@ button {
     z-index: 1;
 }
 .movie-names.tv-show {
-    color: #4b217a;
+    color: #d35c25;
 }
 .movie-button.tv-show, .suggestions-button.tv-show {
     background: var(--tv-purple);

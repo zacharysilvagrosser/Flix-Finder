@@ -8,6 +8,8 @@ import MoviePoster from './MoviePoster';
 function MovieData(props) {
     // Info button hover state (must be at top, not conditional)
     const [showInfo, setShowInfo] = React.useState(false);
+    const [posterRect, setPosterRect] = React.useState(null);
+    const posterAreaRef = React.useRef(null);
     let date, title;
     if (props.item.release_date !== undefined) {
         // object names for movies
@@ -64,15 +66,28 @@ function MovieData(props) {
             // Determine if this is a TV show
             const isTV = !!props.item.first_air_date;
             const tvClass = isTV ? 'tv-show' : '';
+            // Handler to update posterRect when WatchList modal is triggered
+            const handleShowWatchList = () => {
+                if (posterAreaRef.current) {
+                    setPosterRect(posterAreaRef.current.getBoundingClientRect());
+                }
+            };
             return (
                 <div className='movie-information'>
                     <div className='movie-header'>
                         {props.data && <h2 className={`movie-names ${tvClass}`}>{title}</h2>}
                         <div className='watchlist-plus'>
-                            <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setData={props.setData} watchTitles={props.watchTitles} setWatchTitles={props.setWatchTitles}/>
+                            <WatchList
+                                item={props.item}
+                                watchLists={props.watchLists}
+                                setWatchLists={props.setWatchLists}
+                                selectedWatchList={props.selectedWatchList}
+                                posterRect={posterRect}
+                                onShowModal={handleShowWatchList}
+                            />
                         </div>
                     </div>
-                    <div className='movie-poster-info-area'>
+                    <div className='movie-poster-info-area' ref={posterAreaRef}>
                         {props.data && (showInfo ? <MovieInfo data={props.data} item={props.item}/> : <MoviePoster item={props.item} page={props.page}/>) }
                     </div>
                     <div className='movie-buttons'>
