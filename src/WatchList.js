@@ -8,8 +8,8 @@ function WatchList(props) {
     const posterRect = props.posterRect;
     const modalStyle = posterRect && showChooseList ? {
         position: 'fixed',
-        top: posterRect.top + window.scrollY + posterRect.height / 2,
-        left: posterRect.left + window.scrollX + posterRect.width / 2,
+        top: posterRect.top + posterRect.height / 2,
+        left: posterRect.left + posterRect.width / 2,
         transform: 'translate(-50%, -50%)',
         zIndex: 2101,
         background: 'rgba(18, 22, 30, 0.97)',

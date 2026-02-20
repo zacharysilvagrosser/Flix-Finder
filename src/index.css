@@ -1,3 +1,133 @@
+@media (max-width: 1890px) {
+    #container.results-page #top-bar-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 1.2rem !important;
+    }
+    .search-bar-large {
+        order: 1;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    #sorting-panel {
+        order: 2;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: 700px !important;
+        display: block;
+    }
+    #container.results-page #filters-panel {
+        order: 3;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: 700px !important;
+        display: block;
+    }
+}
+@media (max-width: 900px) {
+    .watchlist-controls {
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+    }
+}
+@media (max-width: 900px) {
+    #container.results-page #top-bar-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 1.2rem !important;
+    }
+    .search-bar-large {
+        order: 1;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    .search-bar-large {
+        order: 1;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    #sorting-panel {
+        order: 2;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: 420px !important;
+        display: block;
+    }
+    #container.results-page #filters-panel {
+        order: 3;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: 420px !important;
+        display: block;
+    }
+}
+@media (max-width: 1400px) {
+    #container.results-page #top-bar-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+    }
+    .search-bar-large {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1.2rem;
+    }
+    #sorting-panel,
+    #container.results-page #filters-panel {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        max-width: 700px;
+    }
+}
+/* Responsive styles for sorting/filter controls */
+@media (max-width: 900px) {
+    .control-buttons,
+    .filter-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .control-group,
+    .sorting-group,
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.3rem;
+    }
+    .control-buttons,
+    .filter-buttons {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+        padding: 0.3rem;
+    }
+    .control-label,
+    .sorting-label,
+    .filter-label {
+        font-size: 0.95rem;
+        text-align: left;
+        margin-bottom: 0.2rem;
+    }
+    .control-button,
+    .filter-button {
+        font-size: 1rem;
+        padding: 0.7rem 0.8rem;
+        min-width: 0;
+        width: 100%;
+    }
+}
 .watchlist-plus-button.tv-show {
     background: var(--tv-purple);
     color: #fff;
@@ -325,27 +455,41 @@ make responsive
     margin: 0;
     padding: 0;
 }
+/* Unified Add to Watch List button styling */
 .watchlist-plus-button {
-    background: var(--accent);
-    color: #fff;
+    background: var(--accent) !important;
+    color: #fff !important;
     border: none;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 1.5rem;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(24,58,90,0.18);
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
-    transform: translateY(-2px);
     transition: background 0.2s, color 0.2s;
 }
-.watchlist-plus-butto2n:hover {
-    background: var(--accent-soft);
-    color: var(--accent);
+.watchlist-plus-button {
+    width: 28px;
+    height: 28px;
+    font-size: 1.5rem;
+    line-height: 1;
+    transform: translateY(-2px);
+}
+
+.watchlist-plus-button.tv-show {
+    background: var(--tv-purple) !important;
+    color: #fff !important;
+}
+.watchlist-plus-button.tv-show:hover {
+    background: var(--tv-purple-dark) !important;
+    color: #fff !important;
+}
+.watchlist-plus-button:hover,
+.add-watchlist-btn:hover,
+.watchlist-controls .add-watchlist-btn:hover {
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
 }
 
 /* Tooltip for Add to Watch List on plus button */
@@ -672,9 +816,14 @@ button {
     letter-spacing: -0.02em;
     z-index: 3;
     margin: 0.5rem 0 0;
+    white-space: nowrap;
+    display: inline-block;
+    width: auto;
 }
 .page-header-link {
     cursor: pointer;
+    white-space: nowrap;
+    display: inline-block;
 }
 .page-header-link:hover {
     color: #ffffff;
@@ -1078,6 +1227,10 @@ button {
 }
 #popularity-button {
     margin-left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 #no-movies-found {
     color: white;
@@ -1103,11 +1256,12 @@ button {
     align-items: start;
 }
 #container.results-page #filters-panel {
-    margin-left: 0;
+    margin-left: 1em;
+    margin-right: 1em;
     justify-content: center;
     min-width: 0;
     width: 100%;
-    max-width: 550px;
+    max-width: 450px;
     align-items: center;
     justify-self: end;
     align-self: flex-end;
@@ -1126,7 +1280,6 @@ button {
 }
 #container.results-page #filters {
     width: 100%;
-    max-width: 550px;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -1191,12 +1344,13 @@ button {
     gap: 0.7rem;
     align-self: flex-end;
     justify-self: start;
-    max-width: 550px;
+    max-width: 450px;
     background: rgba(17, 21, 27, 0.92);
     border: 1px solid var(--panel-border);
     border-radius: 16px;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
     padding: 0.7rem 0.8rem 0.9rem;
+    margin-left: 1em;
 }
 /* Make sorting buttons match filter buttons exactly */
 .sorting-buttons {
@@ -1218,7 +1372,7 @@ button {
         grid-template-columns: 1fr;
     }
     #container.results-page #results-search-slot .search-bar-small {
-        width: 100%;
+        width: 93%;
     }
     #container.results-page #sorting-buttons-div {
         justify-content: center;
@@ -1251,7 +1405,7 @@ button {
         margin-bottom: 6rem;
     }
     .sorting-buttons {
-        font-size: 1.2rem;
+        font-size: 1rem !important;
         padding: .8rem;
         font-weight: bold;
         width: 24%;
@@ -1298,7 +1452,11 @@ button {
         position: relative;
     }
     .search-bar-small {
-        margin-bottom: 4rem;
+        margin-bottom: 0 !important;
+    }
+    #watch-list {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
     }
     #more-data-buttons button, #more-data-buttons-next button {
         width: 20rem;

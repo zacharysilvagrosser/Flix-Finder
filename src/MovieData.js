@@ -45,8 +45,8 @@ function MovieData(props) {
     const isAdultContent = () => {
         const { item } = props;
         const adultKeywords = [
-            'sex', 'S&M', 'intercourse', 'porn',
-            'busty', 'horny', 'breast', 'seduc'
+            'S&M', 'intercourse', 'porn',
+            'busty', 'horny', 'breast'
         ];
         return item.adult || adultKeywords.some(word => item.overview && item.overview.includes(word));
     };
