@@ -6,13 +6,13 @@ function SortingButtons(props) {
     let sortedMovies;
     if (props.data) {
         function sortMovies(reference) {
-            document.querySelectorAll(".sorting-buttons").forEach(button => {
-                button.classList.remove("active-button");
+            document.querySelectorAll(".control-button").forEach(button => {
+                button.classList.remove("active");
             });
-            reference.classList.add("active-button");
+            reference.classList.add("active");
         }
         const sortPopularity = () => {
-            if (!document.getElementById('popularity-button').classList.contains('active-button')) {
+            if (!document.getElementById('popularity-button').classList.contains('active')) {
                 sortedMovies = [...props.data].sort((a, b) => b.popularity - a.popularity);
                 props.setData(sortedMovies);
                 props.setSorted('popularity');
@@ -20,7 +20,7 @@ function SortingButtons(props) {
             }
         }
         const sortRating = () => {
-            if (!document.getElementById('rating-button').classList.contains('active-button')) {
+            if (!document.getElementById('rating-button').classList.contains('active')) {
                 sortedMovies = [...props.data].sort((a, b) => b.vote_average - a.vote_average);
                 props.setData(sortedMovies);
                 props.setSorted('rating');
@@ -28,7 +28,7 @@ function SortingButtons(props) {
             }
         }
         const sortDatesOld = () => {
-            if (!document.getElementById('oldest-button').classList.contains('active-button')) {
+            if (!document.getElementById('oldest-button').classList.contains('active')) {
                 sortedMovies = [...props.data].sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
                 props.setData(sortedMovies);
                 props.setSorted('oldest');
@@ -36,7 +36,7 @@ function SortingButtons(props) {
             }
         }
         const sortDatesNew = () => {
-            if (!document.getElementById('newest-button').classList.contains('active-button')) {
+            if (!document.getElementById('newest-button').classList.contains('active')) {
                 sortedMovies = [...props.data].sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
                 props.setData(sortedMovies);
                 props.setSorted('newest');
@@ -44,13 +44,13 @@ function SortingButtons(props) {
             }
         }
         return (
-            <div className='sorting-group'>
-                <div className='sorting-label'>Sort by</div>
-                <div id='sorting-buttons-div'>
-                    <button id="popularity-button" className="sorting-buttons active-button" autoFocus onClick={sortPopularity}>Popularity</button>
-                    <button id="rating-button" className="sorting-buttons" onClick={sortRating}>Rating</button>
-                    <button id="oldest-button" className="sorting-buttons" onClick={sortDatesOld}>Oldest</button>
-                    <button id="newest-button" className="sorting-buttons" onClick={sortDatesNew}>Newest</button>
+            <div className='sorting-group control-group'>
+                <div className='sorting-label control-label'>Sort by</div>
+                <div id='sorting-buttons-div' className='control-buttons'>
+                    <button id="popularity-button" className="sorting-buttons control-button active" autoFocus onClick={sortPopularity}>Popularity</button>
+                    <button id="rating-button" className="sorting-buttons control-button" onClick={sortRating}>Rating</button>
+                    <button id="oldest-button" className="sorting-buttons control-button" onClick={sortDatesOld}>Oldest</button>
+                    <button id="newest-button" className="sorting-buttons control-button" onClick={sortDatesNew}>Newest</button>
                 </div>
             </div>
         );

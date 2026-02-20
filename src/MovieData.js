@@ -6,6 +6,8 @@ import MoviePoster from './MoviePoster';
 
 // individual movie component with all movie information displayed with it
 function MovieData(props) {
+    // Info button hover state (must be at top, not conditional)
+    const [showInfo, setShowInfo] = React.useState(false);
     let date, title;
     if (props.item.release_date !== undefined) {
         // object names for movies
@@ -16,30 +18,69 @@ function MovieData(props) {
         date = props.item.first_air_date;
         title = props.item.name;
     }
-    if (date !== undefined) {
-        const convertedDate = date.substring(0, 4);
-        const rating = props.item.vote_average;
+    // Helper functions for filtering
+    const getYear = (dateStr) => dateStr ? parseInt(dateStr.substring(0, 4), 10) : undefined;
+    const isGenreMatch = () => {
+        const { selectedGenres, item } = props;
+        if (!selectedGenres || selectedGenres.length === 0) return true;
+        return item.genre_ids && item.genre_ids.some((id) => selectedGenres.includes(id));
+    };
+    const isDateMatch = (year) => (
+        (props.sixties && year <= 1969) ||
+        (props.seventies && year >= 1970 && year <= 1979) ||
+        (props.eighties && year >= 1980 && year <= 1989) ||
+        (props.ninties && year >= 1990 && year <= 1999) ||
+        (props.thousands && year >= 2000 && year <= 2009) ||
+        (props.tens && year >= 2010 && year <= 2019) ||
+        (props.twenties && year >= 2020)
+    );
+    const isRatingMatch = (rating) => (
+        (props.rate5 && rating < 6) ||
+        (props.rate6 && rating >= 6 && rating < 7) ||
+        (props.rate7 && rating >= 7 && rating < 8) ||
+        (props.rate8 && rating >= 8)
+    );
+    const isAdultContent = () => {
+        const { item } = props;
+        const adultKeywords = [
+            'sex', 'S&M', 'intercourse', 'porn',
+            'busty', 'horny', 'breast', 'seduc'
+        ];
+        return item.adult || adultKeywords.some(word => item.overview && item.overview.includes(word));
+    };
 
-        if (((props.sixties && convertedDate <= 1969) || (props.seventies && convertedDate <= 1979 && convertedDate >= 1970) || (props.eighties && convertedDate <= 1989 && convertedDate >= 1980) ||
-        (props.ninties && convertedDate <= 1999 && convertedDate >= 1990) || (props.thousands && convertedDate <= 2009 && convertedDate >= 2000)|| (props.tens && convertedDate <= 2019 && convertedDate >= 2010) || (props.twenties && convertedDate >= 2020))
-        && ((props.rate5 && rating < 6) || (props.rate6 && rating < 7 && rating >= 6) || (props.rate7 && rating < 8 && rating >= 7) || (props.rate8 && rating >= 8))) {
-            if (!props.isAdult && (props.item.adult || props.item.overview.includes('sex') || props.item.overview.includes('S&M') || props.item.overview.includes('intercourse') || props.item.overview.includes('porn')
-                || props.item.overview.includes('busty') || props.item.overview.includes('horny') || props.item.overview.includes('breast') || props.item.overview.includes('seduc'))) {
+    if (date !== undefined) {
+        const year = getYear(date);
+        const rating = props.item.vote_average;
+        if (
+            isGenreMatch() &&
+            isDateMatch(year) &&
+            isRatingMatch(rating)
+        ) {
+            if (!props.isAdult && isAdultContent()) {
                 return;
-            } else {
-                const streamLink = `https://www.justwatch.com/us/search?q=${title}`
-                return (
-                    <div className='movie-information'>
-                        <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey}/>
-                        <button className='movie-button'><a href={streamLink} target='_blank' rel='noreferrer'>Stream</a></button>
-                        <button className='info-button movie-button'>Info</button>
-                        <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setData={props.setData} watchTitles={props.watchTitles} setWatchTitles={props.setWatchTitles}/>
-                        {props.data && <MoviePoster item={props.item} page={props.page}/>}
-                        {props.data && <h2 className='movie-names'>{title}</h2>}
-                        <MovieInfo data={props.data} item={props.item}/>
-                    </div>
-                );
             }
+            const streamLink = `https://www.justwatch.com/us/search?q=${title}`;
+            return (
+                <div className='movie-information'>
+                    <div className='movie-header'>
+                        {props.data && <h2 className='movie-names'>{title}</h2>}
+                        <div className='watchlist-plus'>
+                            <WatchList data={props.data} item={props.item} watchData={props.watchData} setWatchData={props.setWatchData} listNumber={props.listNumber} setData={props.setData} watchTitles={props.watchTitles} setWatchTitles={props.setWatchTitles}/>
+                        </div>
+                    </div>
+                    <div className='movie-poster-info-area'>
+                        {props.data && (showInfo ? <MovieInfo data={props.data} item={props.item}/> : <MoviePoster item={props.item} page={props.page}/>) }
+                    </div>
+                    <div className='movie-buttons'>
+                        <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey} />
+                        <button className='movie-button' title="Find where to stream this title"><a href={streamLink} target='_blank' rel='noreferrer'>Stream</a></button>
+                        <button className='info-button movie-button' title="Display movie information"
+                            onClick={() => setShowInfo(show => !show)}
+                        >{showInfo ? 'Close Info' : 'Info'}</button>
+                    </div>
+                </div>
+            );
         }
     }
 }

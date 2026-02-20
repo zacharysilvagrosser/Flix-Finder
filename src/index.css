@@ -1,17 +1,427 @@
+/* 
+TO DO: 
+Update the styling on being signed in
+Have the plus and minus buttons delete movies from specific watch lists
+Realign start screen
+Newest sory by isnt working
+TV doesnt work
+Increase font size or search bar buttons
+make responsive
+*/
+.movie-button a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+.movie-button:hover a {
+    color: #fff;
+}
+/* Custom dropdown for watch lists */
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 165px;
+    min-width: 160px;
+}
+.custom-dropdown-toggle {
+    background: var(--panel);
+    color: var(--text);
+    border: 1.5px solid var(--panel-border);
+    border-radius: 8px;
+    font-size: 0.97rem;
+    font-weight: 600;
+    padding: 0.38rem 1.1rem 0.38rem 0.7rem;
+    outline: none;
+    transition: border 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.08);
+    min-width: 120px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.custom-dropdown-toggle:focus {
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.custom-dropdown-menu {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: var(--panel);
+    color: var(--text);
+    border: 1.5px solid var(--panel-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(24,58,90,0.10);
+    min-width: 180px;
+    max-width: 220px;
+    z-index: 100;
+    padding: 0.2rem 0;
+    margin-top: 2px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+.custom-dropdown-menu li {
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.93rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+    max-width: 100%;
+}
+/* Truncate long list names in dropdown and toggle */
+.custom-dropdown-menu li span,
+.custom-dropdown-toggle .dropdown-toggle-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.custom-dropdown-menu li.selected,
+.custom-dropdown-menu li:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.custom-dropdown-menu li span[role="img"] {
+    margin-left: 0.3em;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+}
+.custom-dropdown-menu li span[role="img"]:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+/* Modern Watch List Controls */
+.watchlist-controls {
+    display: grid;
+    grid-template-columns: 1fr minmax(80px, 120px) minmax(40px, 56px);
+    align-items: center;
+    gap: 0.7rem;
+    background: rgba(17, 21, 27, 0.98);
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(24,58,90,0.10);
+    padding: 0.4rem 1.2rem 0.4rem 1.2rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.2rem;
+    border: 1px solid var(--panel-border);
+    width: 100%;
+    min-width: 0;
+    width: min(1200px, 96vw);
+    max-width: 850px;
+    border-radius: 14px;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+}
+.watchlist-controls > * {
+    min-width: 0;
+    max-width: none;
+}
+.watchlist-controls select {
+    grid-column: 2;
+    width: 120%;
+    height: 2.7rem;
+    min-width: 0;
+    font-size: 1rem;
+    padding: 0.38rem 0.7rem;
+}
+.watchlist-controls #watch-list {
+    grid-column: 1;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    justify-self: stretch;
+    font-size: 1.12rem;
+    font-weight: 700;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+}
+.watchlist-controls .add-watchlist-btn {
+    grid-column: 3;
+    width: 100%;
+    min-width: 0;
+    max-width: 56px;
+    justify-self: end;
+    padding: 0.38rem 0.7rem;
+    font-size: 1.2rem;
+}
+.watchlist-controls select {
+    background: var(--panel);
+    color: var(--text);
+    border: 1.5px solid var(--panel-border);
+    border-radius: 8px;
+    font-size: 1.08rem;
+    font-weight: 600;
+    padding: 0.38rem 1.1rem 0.38rem 0.7rem;
+    margin-right: 0.2rem;
+    outline: none;
+    transition: border 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.08);
+    min-width: 120px;
+    cursor: pointer;
+}
+.watchlist-controls select:focus {
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.watchlist-controls #watch-list {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    padding: 0.45rem 1.2rem;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+    box-shadow: 0 2px 8px var(--accent-soft);
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    cursor: pointer;
+    outline: none;
+    min-width: 120px;
+}
+.watchlist-controls #watch-list:hover, .watchlist-controls #watch-list:focus {
+    background: var(--accent-soft);
+    color: var(--accent);
+    box-shadow: 0 4px 16px var(--accent-soft);
+}
+.watchlist-controls .add-watchlist-btn {
+    margin-left: 0.2rem;
+    margin-right: 0.1rem;
+    background: linear-gradient(135deg, var(--accent) 70%, var(--accent-soft) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background 0.2s, color 0.2s, box-shadow 0.18s;
+}
+.watchlist-controls .add-watchlist-btn:hover, .watchlist-controls .add-watchlist-btn:focus {
+    background: var(--accent-soft);
+    color: var(--accent);
+    box-shadow: 0 4px 16px rgba(24,58,90,0.18);
+}
+.watchlist-controls .add-watchlist-input {
+    width: 130px;
+    border-radius: 8px;
+    padding: 0.35rem 0.8rem;
+    font-size: 1.05rem;
+    border: 1.5px solid var(--panel-border);
+    margin-left: 0.5rem;
+    background: var(--panel);
+    color: var(--text);
+    font-weight: 500;
+    outline: none;
+    transition: border 0.18s, box-shadow 0.18s;
+}
+.watchlist-controls .add-watchlist-input:focus {
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+}
+/* Add Watch List Button styles */
+.add-watchlist-btn-container {
+    display: inline-block;
+    position: relative;
+    margin-left: 0.5rem;
+}
+.add-watchlist-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 17px;
+    transition: background 0.2s, color 0.2s;
+}
+.add-watchlist-btn:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.add-watchlist-input {
+    width: 120px;
+    border-radius: 8px;
+    padding: 0.3rem 0.7rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    margin-left: 0.5rem;
+}
+/* Ensure the search buttons under the search bar fill 1/3 of the available space each */
+#search-buttons-div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    width: 100%;
+}
+/* Keep poster/info and buttons stacked, buttons always at bottom */
+.movie-poster-info-area {
+    width: 100%;
+    min-height: 320px;
+    /* max-height: 450px; */
+    /* height: 450px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+    /* overflow: hidden; */
+    background: radial-gradient(400px 250px at 90% 100%, rgba(77, 208, 225, 0.03), transparent 40%);
+}
+/* Header for movie card: title and plus button */
+/* Header for movie card: title centered, plus button top right */
+.movie-header {
+    width: 100%;
+    position: relative;
+    display: block;
+}
+.watchlist-plus {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+}
+.watchlist-plus-button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.5rem;
+    top: -2px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transform: translateY(-2px);
+    transition: background 0.2s, color 0.2s;
+}
+.watchlist-plus-butto2n:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* Tooltip for Add to Watch List on plus button */
+.watchlist-plus-button[title="Add to Watchlist"]:hover::after {
+    content: 'Add to Watch List';
+    position: absolute;
+    top: 110%;
+    right: 50%;
+    transform: translateX(50%);
+    background: #222b36;
+    color: #fff;
+    padding: 0.35em 0.8em;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    z-index: 10;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.15s;
+}
+
+/* Tooltip for Suggest button */
+.suggestions-button[title="Suggest similar titles"]:hover::after {
+    content: 'Suggest similar titles';
+    position: absolute;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222b36;
+    color: #fff;
+    padding: 0.35em 0.8em;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    z-index: 10;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.15s;
+}
+
+.movie-button[title="Find where to stream this title"]:hover::after {
+    content: 'Find where to stream this title';
+    position: absolute;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222b36;
+    color: #fff;
+    padding: 0.35em 0.8em;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    z-index: 10;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.15s;
+}
+
+/* Tooltip for Info button */
+.info-button[title="Display movie information"]:hover::after {
+    content: 'Display information about this title';
+    position: absolute;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222b36;
+    color: #fff;
+    padding: 0.35em 0.8em;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(24,58,90,0.18);
+    z-index: 10;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.15s;
+}
+
+/* UNIFIED CONTROL PANEL STYLES */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+    margin: 0 auto;
+}
 .sorting-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.45rem;
     width: 100%;
-    max-width: 320px;
     margin: 0 auto;
-}
-.sorting-label {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
 }
 .filter-group {
     display: flex;
@@ -19,8 +429,19 @@
     align-items: center;
     gap: 0.45rem;
     width: 100%;
-    max-width: 320px;
     margin: 0 auto;
+}
+.control-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+}
+.sorting-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
 }
 .filter-label {
     font-size: 0.8rem;
@@ -28,29 +449,58 @@
     letter-spacing: 0.12em;
     color: var(--muted);
 }
-.filter-buttons {
-    display: flex;
+.control-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.6rem;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: center;
     background: rgba(20, 25, 34, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0.4rem;
     border-radius: 12px;
+    width: 100%;
+    min-width: 0;
 }
-.filter-button {
+.filter-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.6rem;
+    background: rgba(20, 25, 34, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.4rem;
+    border-radius: 12px;
+    width: 100%;
+}
+.control-button {
     height: 2.7rem;
-    min-width: 7.5rem;
-    padding: 0 1.1rem;
+    min-width: 0;
+    width: 100%;
+    padding: 0 1.2rem;
     border-radius: 10px;
     border: 1px solid transparent;
     background: transparent;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
     transition: 0.2s ease;
 }
+.control-button:hover {
+    background: var(--search-buttons);
+}
+.control-button.active {
+    background: var(--search-buttons);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+/* Make filter buttons match sorting buttons exactly */
+/* Make filter buttons match sorting buttons exactly */
+.filter-button {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    height: 2.7rem !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 0 1.2rem !important;
+}
+
 .filter-button:hover {
     background: var(--search-buttons);
 }
@@ -132,17 +582,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-    --search-buttons: #1a1e24;
-    --search-buttons-hover: #12151a;
-    --sort-buttons: #0b1c2f;
-    --sort-buttons-hover: #0f2946;
-    --bg: #0b0f14;
-    --panel: #11151b;
-    --panel-border: rgba(255, 255, 255, 0.08);
-    --text: #eef2f6;
-    --muted: #9aa3ad;
-    --accent: #4dd0e1;
-    --accent-soft: rgba(77, 208, 225, 0.12);
+    --search-buttons: #223052;
+    --search-buttons-hover: #18243a;
+    --sort-buttons: #162c56;
+    --sort-buttons-hover: #20407a;
+    --bg: #0c1422;
+    --panel: #1a2336;
+    --panel-border: rgba(255, 255, 255, 0.12);
+    --text: #f0f4fa;
+    --muted: #b0b9c9;
+    --accent: #2761a7;
+    --accent-soft: rgba(39, 97, 167, 0.18);
 }
 body {
     margin: 0;
@@ -154,24 +604,30 @@ body {
 }
 a {
     color: white;
-    text-decoration: none;
+   
+     text-decoration: none;
 }
 button {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 #container {
     width: 100%;
-    height: 100vh;
-    position: fixed;
-    background: radial-gradient(1200px 800px at 10% -10%, rgba(77, 208, 225, 0.12), transparent 60%),
-                radial-gradient(900px 700px at 90% 0%, rgba(255, 200, 120, 0.10), transparent 55%),
+    min-height: 100vh;
+    position: relative;
+    background: radial-gradient(900px 600px at 10% -10%, rgba(77, 208, 225, 0.07), transparent 50%),
+                radial-gradient(700px 500px at 90% 0%, rgba(255, 200, 120, 0.06), transparent 45%),
                 var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    padding-top: 0;
+    /* overflow-x: hidden; */
+    /* overflow-y: scroll; */
+}
+#container.results-page {
+    justify-content: flex-start;
+    padding-top: 3.5rem;
 }
 #container::before {
     content: '';
@@ -265,9 +721,10 @@ button {
 .search-buttons-div-large {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.8rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
     margin-top: 1.4rem;
+    justify-items: stretch;
 }
 .top-bar {
     width: 100%;
@@ -286,16 +743,19 @@ button {
 .search-bar-elements {
     height: 3rem;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.2rem;
     border-radius: 10px;
     color: var(--text);
     background-color: var(--search-buttons);
     border: 1px solid rgba(255, 255, 255, 0.06);
     transition: 0.2s ease;
+    width: 100%;
+    margin: 0;
 }
 .search-bar-elements:hover {
     background-color: var(--search-buttons-hover);
     transform: translateY(-1px);
+    width: 100%;
 }
 .search-bar-elements-small {
     width: 100%;
@@ -369,66 +829,93 @@ button {
 }
 
 #sorting-buttons-div {
-    margin-right: 4rem;
-    display: flex;
-    gap: 0.75rem;
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    padding: 0.6rem;
-    border-radius: 999px;
+    margin-right: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    background: rgba(20, 25, 34, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.4rem;
+    border-radius: 12px;
+    width: 100%;
 }
-.sorting-buttons {
-    width: auto;
-    font-size: 0.95rem;
-    padding: 0.55rem 1.2rem;
-    margin: 0;
-    background-color: transparent;
-    color: var(--text);
-    border: 1px solid transparent;
-    border-radius: 999px;
-    transition: 0.2s ease;
-}
+/* Removed duplicate .sorting-buttons rule for clarity. */
 .sorting-buttons:hover {
     background-color: var(--search-buttons);
-    border-radius: 999px;
+    border-radius: 10px;
     transition: 0.2s ease;
 }
 .active-button {
     background-color: var(--search-buttons);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
+    border-radius: 10px;
 }
 .movie-img {
     max-height: 450px;
     width: 100%;
 }
+/* Modern movie card styling */
 .movie-information {
-    width: 300px;
-    height: 565px;
+    width: 340px;
+    min-height: 540px;
     margin: 2rem;
-    transition: .2s;
+    background: linear-gradient(135deg, rgba(17,21,27,0.98) 80%, rgba(77,208,225,0.08) 100%);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    padding: 1.2rem 1rem 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    position: relative;
+    padding-bottom: 3.5rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: box-shadow 0.2s, transform 0.2s;
 }
 .movie-information:hover {
-    transform: scale(103%);
-    transition: .2s;
+    box-shadow: 0 16px 48px rgba(77,208,225,0.18);
+    transform: translateY(-4px) scale(1.04);
 }
-.movie-button {
-    width: 25%;
-    font-size: .8rem;
-    padding: .6rem .2rem .6rem .2rem;
-    background-color: var(--sort-buttons-hover);
-    color: white;
-    border: 1px solid rgb(53, 71, 77);
-    transition: .3s;
+/* Modern movie action buttons */
+/* Slightly smaller action buttons for movie card */
+/* Slightly larger action buttons for movie card */
+/* Moderately sized action buttons for movie card */
+/* Slightly smaller action buttons for movie card */
+/* Slightly larger action buttons for movie card */
+.movie-button, .suggestions-button {
+    width: 85px;
+    font-size: 0.92rem;
+    padding: 0.52rem 0.13rem;
+    margin: 0.18rem 0.28rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(24,58,90,0.12);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
-.movie-button:hover {
-    background-color: var(--sort-buttons);
-    border-radius: 6px;
-    transition: .3s;
+.movie-button:hover, .suggestions-button:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+    box-shadow: 0 8px 24px rgba(24,58,90,0.18);
 }
+/* Arrange movie buttons horizontally */
+/* Arrange movie buttons horizontally and allow wrapping */
+/* Arrange movie buttons in a single row, no wrap */
+/* Arrange movie buttons horizontally and allow wrapping */
 .movie-buttons {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding-bottom: 0.7rem;
 }
 .info-button:hover ~ .info {
     display: block;
@@ -444,11 +931,11 @@ button {
 }
 .info {
     width: 320px;
-    max-height: 490px;
+    /* max-height: 490px; */
     position: relative;
-    display: none;
+    display: block;
     font-size: 1rem;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
     color: white;
 }
 .info p {
@@ -467,9 +954,16 @@ button {
     color: white;
 }
 .movie-names {
-    color: white;
-    font-size: 1.3rem;
+    color: var(--accent);
+    font-size: 1.35rem;
     text-align: center;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.02em;
+    width: 100%;
+    position: relative;
+    z-index: 1;
 }
 #movie-section {
     display: flex;
@@ -524,18 +1018,18 @@ button {
 }
 #watch-list {
     width: 12.5rem;
-    height: 2.8rem;
+    height: 2.7rem;
     font-size: 0.95rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 999px;
+    border: 1px solid transparent;
+    border-radius: 10px;
     transition: 0.2s ease;
-    background-color: var(--panel);
+    background-color: var(--search-buttons);
     color: var(--text);
     font-weight: 600;
 }
 #watch-list:hover {
     background-color: var(--search-buttons-hover);
-    border-radius: 999px;
+    border-radius: 10px;
     transition: 0.2s ease;
 }
 #popularity-button {
@@ -556,41 +1050,42 @@ button {
     justify-content: space-between;
 }
 #container.results-page #top-bar-buttons {
-    max-width: 1400px;
+    max-width: 2200px;
     margin: 0 auto 1.5rem;
-    padding: 0.7rem 1rem 0.9rem;
-    background: rgba(17, 21, 27, 0.92);
-    border: 1px solid var(--panel-border);
-    border-top: none;
-    border-radius: 0 0 18px 18px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    padding: 0.7rem 0;
     display: grid;
-    grid-template-columns: minmax(260px, 1fr) minmax(520px, 2.2fr) minmax(300px, 1fr);
-    gap: 1.4rem;
-    align-items: center;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.4rem;
+    align-items: start;
 }
-#container.results-page #watch-list-and-filters {
+#container.results-page #filters-panel {
     margin-left: 0;
     justify-content: center;
     min-width: 0;
     width: 100%;
-    background: transparent;
-    border: none;
-    padding: 0;
-    border-radius: 0;
+    max-width: 550px;
     align-items: center;
-    justify-self: center;
-    align-self: start;
+    justify-self: end;
+    align-self: flex-end;
+    background: rgba(17, 21, 27, 0.92);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    padding: 0.7rem 0.8rem 0.9rem;
 }
 #container.results-page #watch-list {
-    width: 13.5rem;
-    height: 2.8rem;
+    width: 100%;
+    max-width: 820px;
+    height: 2.7rem;
     font-weight: 600;
     letter-spacing: 0.01em;
 }
 #container.results-page #filters {
-    width: 13.5rem;
-    height: 2.8rem;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
 }
 #container.results-page #results-search-slot {
     display: flex;
@@ -598,6 +1093,8 @@ button {
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
+    justify-self: center;
+    max-width: 1020px;
 }
 #container.results-page #results-search-slot .search-bar-small {
     position: static;
@@ -608,25 +1105,25 @@ button {
     border-radius: 14px;
 }
 #container.results-page #results-search-slot .search-bar-small {
-    max-width: 720px;
+    max-width: 820px;
 }
 #results-watchlist-slot {
     display: flex;
     justify-content: center;
-    width: 100%;
-    max-width: 720px;
+    width: min(1400px, 96vw);
+    max-width: 1400px;
 }
 #results-watchlist-slot #watch-list {
     width: 100%;
+    max-width: 820px;
 }
 #container.results-page #sorting-buttons-div {
     justify-content: center;
     min-width: 0;
-    flex-wrap: nowrap;
     margin-right: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.6rem;
-    display: flex;
-    flex-direction: column;
     background: rgba(20, 25, 34, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0.4rem;
@@ -643,25 +1140,36 @@ button {
     min-width: 0;
     justify-content: center;
 }
-#sorting-and-watchlist {
+#sorting-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.7rem;
+    align-self: flex-end;
+    justify-self: start;
+    max-width: 550px;
+    background: rgba(17, 21, 27, 0.92);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    padding: 0.7rem 0.8rem 0.9rem;
 }
+/* Make sorting buttons match filter buttons exactly */
 .sorting-buttons {
     height: 2.7rem;
-    min-width: 7.5rem;
-    padding: 0 1.1rem;
+    min-width: 0;
+    width: 100%;
+    padding: 0 1.2rem;
     border-radius: 10px;
     border: 1px solid transparent;
     background: transparent;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
     transition: 0.2s ease;
 }
-@media (max-width: 1100px) {
+
+@media (max-width: 900px) {
     #container.results-page #top-bar-buttons {
         grid-template-columns: 1fr;
     }
@@ -671,29 +1179,18 @@ button {
     #container.results-page #sorting-buttons-div {
         justify-content: center;
     }
-    #container.results-page #watch-list-and-filters {
+    #container.results-page #filters-panel {
         justify-content: center;
     }
 }
 #container.results-page #sorting-buttons-div {
-    background: transparent;
-    border: none;
     box-shadow: none;
-    padding: 0;
-    gap: 0.5rem;
 }
-#watch-list-and-filters {
-    display: flex;
-    margin-left: 4.5rem;
-    gap: 0.75rem;
-}
-#watch-list-and-filters button {
-    margin-right: 0;
-}
+
 
 @media (max-width: 1360px) {
     #search-buttons-div  {
-        width: 80%;
+        width: 100%;
     }
     #search {
         width: 78.5%;
@@ -714,6 +1211,14 @@ button {
         padding: .8rem;
         font-weight: bold;
         width: 24%;
+    }
+    .filter-button {
+        font-size: 1.2rem;
+        padding: .8rem;
+        font-weight: bold;
+    }
+    .filter-button {
+        font-size: 1.2rem;
     }
     #popularity-button {
         margin: 0 .7rem;
@@ -737,7 +1242,7 @@ button {
     .search-buttons-div-large {
         justify-content: space-around;
     }
-    #watch-list-and-filters {
+    #filters-panel {
         width: 93%;
         justify-content: space-between;
         margin-bottom: 2rem;
@@ -762,9 +1267,11 @@ button {
         height: 2.5rem;
         font-weight: bold;
     }
-    #search, .search-buttons-div-large {
+    #search {
         width: 82%;
-        flex-wrap: wrap;
+    }
+    .search-buttons-div-large {
+        width: 100%;
     }
     #search {
         width: 77%;
@@ -796,11 +1303,17 @@ button {
         font-size: calc(.5rem + 1vmin);
         margin: 0 .2rem;
     }
+    .filter-button {
+        font-size: calc(.5rem + 1vmin);
+    }
+    .filter-button {
+        font-size: calc(.5rem + 1vmin);
+    }
     #sorting-buttons-div {
         width: 95%;
     }
     #filters {
-        width: 8rem;
+        width: 95%;
     }
     .filter-section label {
         font-size: .9rem;

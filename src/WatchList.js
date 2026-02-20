@@ -34,13 +34,11 @@ function WatchList(props) {
         if (movieTitle === props.item.title) {
             // for movies
             props.setWatchData(prevItems => prevItems.filter(movie => movie.title !== movieTitle));
-            props.setData(prevItems => prevItems.filter(movie => movie.title !== movieTitle));
             props.setWatchTitles(prevItems => prevItems.filter(movie => movie !== props.item.title));
         } else {
             // for TV
             props.setWatchData(prevItems => prevItems.filter(movie => movie.name !== movieTitle));
-            props.setData(prevItems => prevItems.filter(movie => movie.name !== movieTitle));
-            props.setWatchTitles(prevItems => prevItems.filter(movie => movie !== props.item.title));
+            props.setWatchTitles(prevItems => prevItems.filter(movie => movie !== props.item.name));
         }
     }
     // Show 'Listed' when item is on the watch list
@@ -49,10 +47,19 @@ function WatchList(props) {
         listed = true;
     }
     // change Watch List button to Delete button if currently viewing Watch List
-    if (document.getElementById("watch-list").classList.contains("view-watch-list")) {
-        return <button className='watch-list-button movie-button' onClick={() => deleteFromWatchlist((props.item.title ? props.item.title : props.item.name))}>Remove</button>
+    // Render minus icon if listed, plus if not
+    if (listed) {
+        return (
+            <div className="watchlist-plus">
+                <button className='watchlist-plus-button' onClick={() => deleteFromWatchlist((props.item.title ? props.item.title : props.item.name))} title="Remove from Watchlist">&#8722;</button>
+            </div>
+        );
     } else {
-        return <button className='watch-list-button movie-button' onClick={() => addToWatchlist(props.item)}>{listed ? 'Remove' : 'Watch List'}</button>
+        return (
+            <div className="watchlist-plus">
+                <button className='watchlist-plus-button' onClick={() => addToWatchlist(props.item)} title="Add to Watchlist">&#43;</button>
+            </div>
+        );
     }
 }
 

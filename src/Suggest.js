@@ -43,7 +43,7 @@ function Suggest(props) {
         };
         fetchData(1);
     }
-    return <button className='suggestions-button movie-button' onClick={() => suggest(props.item.id)}>Suggest</button>
+    return <button className='suggestions-button movie-button' title="Suggest similar titles" onClick={() => suggest(props.item.id)}>Suggest</button>
 }
 
 export default Suggest;

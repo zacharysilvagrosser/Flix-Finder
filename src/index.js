@@ -128,11 +128,19 @@ function SearchBar(props) {
 
     return (
         <div id="search-bar" className="search-bar-large">
-            <div id='search-div' className='search-div-large'>
-                <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={handleKeyDown}></input>
+            <div id='search-div' className='search-div-large' style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
+                <input id="search" type="text" placeholder="Enter a movie title..." onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} />
+                <button
+                    className='search-bar-icon-button'
+                    id="search-button"
+                    onClick={handleSearch}
+                    style={{ position: 'absolute', right: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', height: '2.2rem', width: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                    aria-label="Search"
+                >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
-            <div id='search-buttons-div' className='search-buttons-div-large'>
-                <button className='search-bar-elements top-bar' id="search-button" onClick={handleSearch}>Search</button>
+            <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <button className='search-bar-elements top-bar' id="trending-button" onClick={handleTrending}>Trending</button>
                 <Discover discoverSelectPreview={props.discoverSelectPreview}/>
                 <MediaType />
