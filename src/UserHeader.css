@@ -1,42 +1,45 @@
 .user-header {
-  position: fixed;
-  top: 10px;
-  right: 20px;
-  z-index: 100;
+  position: absolute;
+  top: 1.5rem;
+  right: 2.5rem;
+  z-index: 10;
 }
 
 .user-info {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--panel, #f7f8fa);
+  color: var(--text, #1a2233);
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--panel-border, #dbe2ea);
+  box-shadow: 0 2px 8px rgba(24,58,90,0.08);
 }
 
 .user-email {
-  color: #333;
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: var(--text, #1a2233);
+  font-size: 0.97rem;
+  font-weight: 600;
 }
 
 .logout-btn,
 .login-btn {
-  background-color: #4285f4;
-  color: white;
+  background: var(--primary, #2196f3);
+  color: #fff;
   border: none;
   padding: 0.5rem 1.25rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.97rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.18s;
+  box-shadow: 0 2px 8px rgba(24,58,90,0.08);
 }
 
 .logout-btn:hover,
 .login-btn:hover {
-  background-color: #357ae8;
+  background: var(--primary-dark, #1769aa);
 }
 
 .login-btn {
