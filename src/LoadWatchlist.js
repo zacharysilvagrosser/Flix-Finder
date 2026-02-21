@@ -8,11 +8,14 @@ function LoadWatchList(props) {
         props.onToggleWatchList();
     };
 
-    // Modal state for editing/deleting
+    // Modal state for editing/deleting/adding
     const [showEditModal, setShowEditModal] = useState(false);
     const [editName, setEditName] = useState('');
     const [editError, setEditError] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [addName, setAddName] = useState('');
+    const [addError, setAddError] = useState('');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [editIdx, setEditIdx] = useState(null);
     const [deleteIdx, setDeleteIdx] = useState(null);
@@ -41,7 +44,7 @@ function LoadWatchList(props) {
                 onClick={showWatchList}
                 className={props.showingWatchList ? "view-watch-list" : ""}
             >
-                {props.watchLists && props.watchLists[props.selectedWatchList]?.name} ({props.listNumber})
+                {props.watchLists && props.watchLists[props.selectedWatchList]?.name}
             </button>
             <div className="custom-dropdown" ref={dropdownRef}>
                 <button
@@ -102,11 +105,58 @@ function LoadWatchList(props) {
                                 </span>
                             </li>
                         ))}
+                        {/* Add new list option */}
+                        <li
+                            key="add-new-list"
+                            className="add-new-list-option"
+                            style={{ color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.3rem 0.7rem', borderTop: '1px solid #223052', marginTop: 4 }}
+                            onClick={e => {
+                                e.stopPropagation();
+                                setShowAddModal(true);
+                                setDropdownOpen(false);
+                            }}
+                        >
+                            <span style={{ fontSize: '1.2em', marginRight: 8 }}>+</span> Add new watch list
+                        </li>
                     </ul>
                 )}
             </div>
             {props.children}
 
+            {/* Add Modal */}
+            {showAddModal && (
+                <div className="auth-overlay" onClick={() => setShowAddModal(false)}>
+                    <div className="auth-modal" onClick={e => e.stopPropagation()}>
+                        <button className="auth-close" onClick={() => setShowAddModal(false)}>&times;</button>
+                        <h2>New Watch List</h2>
+                        {addError && <div className="auth-error">{addError}</div>}
+                        <form onSubmit={e => {
+                            e.preventDefault();
+                            if (!addName.trim()) {
+                                setAddError('List name cannot be empty.');
+                                return;
+                            }
+                            if (props.onAdd) {
+                                props.onAdd(addName.trim());
+                            }
+                            setShowAddModal(false);
+                            setAddName('');
+                            setAddError('');
+                        }}>
+                            <div className="auth-form-group">
+                                <input
+                                    type="text"
+                                    placeholder="Enter list name"
+                                    value={addName}
+                                    onChange={e => setAddName(e.target.value)}
+                                    autoFocus
+                                />
+                            </div>
+                            <button type="submit" className="auth-submit">Create List</button>
+                        </form>
+                    </div>
+                </div>
+            )}
             {/* Edit Modal */}
             {showEditModal && (
                 <div className="auth-overlay" onClick={() => setShowEditModal(false)}>

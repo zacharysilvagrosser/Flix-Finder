@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Filters from './Filters';
 import LoadWatchList from './LoadWatchlist';
-import AddWatchListButton from './AddWatchListButton';
 import SortingButtons from './SortingButtons';
 import MovieData from './MovieData';
 import SeeMore from './SeeMore';
@@ -482,22 +481,14 @@ function App(props) {
                                         return newLists;
                                     });
                                 }}
+                                onAdd={name => {
+                                    setWatchLists(prev => [...prev, { name, movies: [] }]);
+                                    setSelectedWatchList(watchLists.length); // select the new list
+                                }}
                                 showingWatchList={showingWatchList}
                                 onToggleWatchList={handleToggleWatchList}
                                 listNumber={listNumber}
                             >
-                                <AddWatchListButton onAdd={name => {
-                                    setWatchLists(prev => {
-                                        const newLists = [...prev, { name, movies: [] }];
-                                        // Select the new list after updating
-                                        setSelectedWatchList(newLists.length - 1);
-                                        // Immediately show the new watch list
-                                        setSavedData(data);
-                                        setData([]); // Show empty list
-                                        setShowingWatchList(true);
-                                        return newLists;
-                                    });
-                                }} />
                             </LoadWatchList>
                         </div>
                     </div>
@@ -533,6 +524,18 @@ function App(props) {
                     />
                 </div>
             </div>
+            {/* Watch List Header */}
+            {showingWatchList && (
+                <div style={{
+                    textAlign: 'center',
+                    fontWeight: 700,
+                    fontSize: '2rem',
+                    margin: '2rem 0 1.2rem 0',
+                    letterSpacing: '0.04em',
+                }}>
+                    {watchLists[selectedWatchList]?.name || 'Watch List'}
+                </div>
+            )}
             <div id='movie-section'>
                 {loading && (
                     <div className='loading-spinner-container'>
@@ -598,7 +601,7 @@ function App(props) {
                         selectedGenres={selectedGenres}
                     />
                 ))}
-                {!loading && <NoMoviesFound data={data}/>} 
+                {!loading && <NoMoviesFound data={Array.isArray(showingWatchList ? watchData : data) ? (showingWatchList ? watchData : data) : []} showingWatchList={showingWatchList} />} 
             </div>
             {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage} lastApiPageCount={lastApiPageCount}/>} 
         </div>

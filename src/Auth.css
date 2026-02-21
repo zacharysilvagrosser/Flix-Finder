@@ -1,3 +1,13 @@
+
+
+.watchlist-controls button#watch-list.view-watch-list {
+  background: var(--search-buttons);
+  color: #fff;
+  border: 2px solid var(--search-buttons);
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(34, 48, 82, 0.18);
+  font-style: normal;
+}
 .auth-overlay {
   position: fixed;
   top: 0;
