@@ -28,7 +28,7 @@ function HomePage() {
             <UserHeader />
             <h1 id="page-header" className='page-header-large'>Flix Finder</h1>
             <p id="page-subtitle">Search, discover, and save your next watch.</p>
-            <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
+                <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} showWatchlistButton={true} />
             <Tagline />
         </div>
     );
@@ -88,9 +88,9 @@ function ResultsPage() {
                 searchClicked={searchClicked}
                 searchValue={searchValue}
                 forceShowWatchlist={forceShowWatchlist}
-                renderSearchBar={
-                    <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
-                }
+                    renderSearchBar={
+                        <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} showWatchlistButton={false} />
+                    }
             />
         </div>
     );
@@ -224,13 +224,15 @@ function SearchBar(props) {
                     <option>Both</option>
                 </select>
             </div>
-            <button
-                className="search-bar-elements watchlist-bar"
-                style={{ width: '100%', margin: '0 auto 0.5rem auto', padding: '0.8rem', fontSize: '1.1rem', fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}
-                onClick={handleWatchlistClick}
-            >
-                View Watchlist
-            </button>
+            {props.showWatchlistButton && (
+                <button
+                    className="search-bar-elements watchlist-bar"
+                    style={{ width: '100%', margin: '0 auto 0.5rem auto', padding: '0.8rem', fontSize: '1.1rem', fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}
+                    onClick={handleWatchlistClick}
+                >
+                    View Watchlist
+                </button>
+            )}
         </div>
     )
 }

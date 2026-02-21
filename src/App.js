@@ -245,13 +245,14 @@ function App(props) {
             const startPage = (userPage - 1) * 5 + 1;
             let lastResultsCount = 0;
             let apiPage = 1;
-            // Fetch up to 5 pages in parallel at a time
-            while (filteredResults.length < 100 && apiPage <= 50) {
+            let done = false;
+            while (!done && filteredResults.length < 100 && apiPage <= 50) {
                 const pageBatch = Array.from({length: 5}, (_, i) => startPage + apiPage - 1 + i);
                 const fetchPromises = pageBatch.map(p => fetchData(p));
                 const resultsBatch = await Promise.all(fetchPromises);
+                let batchTotalResults = 0;
                 resultsBatch.forEach(results => {
-                    lastResultsCount = results.length;
+                    batchTotalResults += results.length;
                     results.forEach(item => {
                         if (!allIDs.includes(item.id)) {
                             allData.push(item);
@@ -259,6 +260,10 @@ function App(props) {
                         }
                     });
                 });
+                // If the batch returns fewer than 20 results for all pages, stop fetching more
+                if (batchTotalResults < 20 * pageBatch.length) {
+                    done = true;
+                }
                 // If Discover search, skip genre filtering (API already filtered)
                 let filtered = [];
                 const searchInputValue = document.getElementById("search")?.value || '';
