@@ -116,6 +116,7 @@ function App(props) {
     const [isWatchListLoaded, setIsWatchListLoaded] = useState(false);
     // track titles in the Watch List so the movies 'Watch List' button can change to 'Listed' if it's already in the watchlist
     const [watchTitles, setWatchTitles] = useState([]);
+
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
     function resetPage() {
         setPage(1);
@@ -126,6 +127,15 @@ function App(props) {
     useEffect(() => {
         resetPage();
     }, [props.searchClicked]);
+
+    // Open watchlist if forceShowWatchlist is true (from ResultsPage)
+    useEffect(() => {
+        if (props.forceShowWatchlist) {
+            setSavedData(data);
+            setData(watchData);
+            setShowingWatchList(true);
+        }
+    }, [props.forceShowWatchlist]);
 
     // Toggle between watch list and previous results
     function handleToggleWatchList() {

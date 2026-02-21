@@ -42,7 +42,9 @@ function LoadWatchList(props) {
             <button
                 id="watch-list"
                 onClick={showWatchList}
-                className={props.showingWatchList ? "view-watch-list" : ""}
+                className={
+                    (props.showingWatchList ? "view-watch-list " : "") + "results-watchlist-btn"
+                }
             >
                 {props.watchLists && props.watchLists[props.selectedWatchList]?.name}
             </button>

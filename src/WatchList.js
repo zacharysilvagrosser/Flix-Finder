@@ -57,8 +57,10 @@ function WatchList(props) {
         const idx = props.selectedWatchList;
         const newLists = props.watchLists.map((wl, i) =>
             i === idx ? { ...wl, movies: wl.movies.filter((movie) =>
-                (movie.title && movie.title !== (props.item.title || props.item.name)) &&
-                (movie.name && movie.name !== (props.item.title || props.item.name))
+                !(
+                    (movie.title && movie.title === (props.item.title || props.item.name)) ||
+                    (movie.name && movie.name === (props.item.title || props.item.name))
+                )
             ) } : wl
         );
         props.setWatchLists(newLists);

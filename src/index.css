@@ -1,3 +1,22 @@
+/* Watchlist bar button in search bar */
+.watchlist-bar {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    width: 100%;
+    margin-top: .5em !important;
+    margin-bottom: 0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+}
+.watchlist-bar:hover, .watchlist-bar:focus {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
 @media (max-width: 1890px) {
     #container:not(.results-page) {
         display: flex !important;

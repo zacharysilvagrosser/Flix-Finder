@@ -52,15 +52,18 @@ function ResultsPage() {
         navigate(`/search?q=${encodeURIComponent(nextValue)}`);
     };
 
+    const [forceShowWatchlist, setForceShowWatchlist] = useState(false);
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const nextValue = params.get('q') || '';
+        const openWatchlist = params.get('watchlist') === '1';
         const searchInput = document.getElementById('search');
         if (searchInput) {
             searchInput.value = nextValue;
         }
         setSearchValue(nextValue);
         setSearchClicked((prev) => !prev);
+        setForceShowWatchlist(openWatchlist);
     }, [location.search]);
 
     return (
@@ -84,6 +87,7 @@ function ResultsPage() {
             <App
                 searchClicked={searchClicked}
                 searchValue={searchValue}
+                forceShowWatchlist={forceShowWatchlist}
                 renderSearchBar={
                     <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} />
                 }
@@ -190,6 +194,13 @@ function SearchBar(props) {
         // Do not trigger search when changing dropdown
     };
 
+    // Handler for Watchlist button
+    const handleWatchlistClick = () => {
+        // Navigate to results page and set a query param to open watchlist
+        if (typeof window !== 'undefined' && window.location) {
+            window.location.assign('/search?watchlist=1');
+        }
+    };
     return (
         <div id="search-bar" className="search-bar-large">
             <div id='search-div' className='search-div-large' style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
@@ -204,7 +215,7 @@ function SearchBar(props) {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </button>
             </div>
-            <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <button className='search-bar-elements top-bar' id="trending-button" onClick={handleTrending}>Trending</button>
                 <Discover discoverSelectPreview={props.discoverSelectPreview}/>
                 <select className='search-bar-elements bottom-bar' id='media-type' value={mediaType} onChange={handleMediaTypeChange}>
@@ -213,6 +224,13 @@ function SearchBar(props) {
                     <option>Both</option>
                 </select>
             </div>
+            <button
+                className="search-bar-elements watchlist-bar"
+                style={{ width: '100%', margin: '0 auto 0.5rem auto', padding: '0.8rem', fontSize: '1.1rem', fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}
+                onClick={handleWatchlistClick}
+            >
+                View Watchlist
+            </button>
         </div>
     )
 }
