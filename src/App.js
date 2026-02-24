@@ -164,48 +164,71 @@ function App(props) {
         } else {
             genre = document.getElementById('discover-button')?.value;
         }
-        switch(genre) {
-            case "Adventure":
-                return 12;
-            case "Fantasy":
-                return 14;
-            case "Animation":
-                return 16;
-            case "Drama":
-                return 18;
-            case "Horror":
-                return 27;
-            case "Action":
-                return 28;
-            case "Comedy":
-                return 35;
-            case "History":
-                return 36;
-            case "Western":
-                return 37;
-            case "Thriller":
-                return 53;
-            case "Crime":
-                return 80;
-            case "Documentary":
-                return 99;
-            case "Science Fiction":
-                return 878;
-            case "Mystery":
-                return 9648;
-            case "Music":
-                return 10402;
-            case "Romance":
-                return 10749;
-            case "Family":
-                return 10751;
-            case "War":
-                return 10752;
-            case "TV Movie":
-                return 10770;
-            default:
-                return null;
+        // Determine media type for correct genre mapping
+        let mediaType = userMediaType ? userMediaType.toLowerCase() : 'movie';
+        if (mediaType !== 'movie' && mediaType !== 'tv') mediaType = 'movie';
+        console.log('[App] convertGenreIDs genre:', genre, 'mediaType:', mediaType);
+        // TMDB genre IDs for movies
+        const movieGenres = {
+            "Action": 28,
+            "Adventure": 12,
+            "Animation": 16,
+            "Comedy": 35,
+            "Crime": 80,
+            "Documentary": 99,
+            "Drama": 18,
+            "Family": 10751,
+            "Fantasy": 14,
+            "History": 36,
+            "Horror": 27,
+            "Music": 10402,
+            "Mystery": 9648,
+            "Romance": 10749,
+            "Science Fiction": 878,
+            "TV Movie": 10770,
+            "Thriller": 53,
+            "War": 10752,
+            "Western": 37
+        };
+        // TMDB genre IDs for TV
+        const tvGenres = {
+            "Action": 10759,
+            "Adventure": 10759,
+            "Animation": 16,
+            "Comedy": 35,
+            "Crime": 80,
+            "Documentary": 99,
+            "Drama": 18,
+            "Family": 10751,
+            "Fantasy": 10765, // Map to Sci-Fi & Fantasy
+            "Horror": 10765, // Map to Sci-Fi & Fantasy (no direct horror genre)
+            "History": null, // No direct TV genre
+            "Thriller": 9648, // Closest: Mystery
+            "Science Fiction": 10765, // Map to Sci-Fi & Fantasy
+            "Music": null, // No direct TV genre
+            "Romance": 10749, // Not a standard TV genre, but exists for movies; some TV shows may use it
+            "War": 10768, // War & Politics
+            "TV Movie": null, // No direct TV genre
+            "Kids": 10762,
+            "Mystery": 9648,
+            "News": 10763,
+            "Reality": 10764,
+            "Sci-Fi & Fantasy": 10765,
+            "Soap": 10766,
+            "Talk": 10767,
+            "War & Politics": 10768,
+            "Western": 37
+        };
+        let id = null;
+        if (mediaType === 'movie') {
+            id = movieGenres[genre] || null;
+        } else if (mediaType === 'tv') {
+            id = tvGenres[genre] || null;
         }
+        if (id === null) {
+            console.log('[App] convertGenreIDs: No match for genre', genre, 'mediaType', mediaType);
+        }
+        return id;
     }
     let [allData, allIDs]= [[], []];
     // Helper to fetch a single page from the API
@@ -220,11 +243,16 @@ function App(props) {
             if (searchInputValue === 'Trending') {
                 response = await fetch(`https://api.themoviedb.org/3/trending/${mediaType}/day?language=en-US&page=${pages}&api_key=${mykey}`);
             } else if (searchInputValue.startsWith('Discover:')) {
-                response = await fetch(`https://api.themoviedb.org/3/discover/${mediaType}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`);
+                const url = `https://api.themoviedb.org/3/discover/${mediaType}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`;
+                console.log('[App] Fetching Discover API:', url);
+                response = await fetch(url);
             } else {
                 response = await fetch(`https://api.themoviedb.org/3/search/${mediaType}?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
             }
             const jsonData = await response.json();
+            if (searchInputValue.startsWith('Discover:')) {
+                console.log('[App] Discover API raw results:', jsonData);
+            }
             if (jsonData.results) {
                 results = results.concat(jsonData.results);
             }
