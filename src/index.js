@@ -245,26 +245,25 @@ function Discover(props) {
     // Custom handler to update search input and trigger search
     const handleDiscoverChange = (e) => {
         const genre = e.target.value;
-        console.log('[Discover Dropdown] Selected genre:', genre);
+        if (genre === '' || genre === 'Discover') {
+            // Do nothing if the default option is selected
+            return;
+        }
         // Set the search bar value
         const searchInput = document.getElementById('search');
         if (searchInput) {
             searchInput.value = `Discover: ${genre}`;
-            console.log('[Discover Dropdown] Set search input value:', searchInput.value);
         }
         // Get media type
         const mediaType = document.getElementById('media-type')?.value || 'Movie';
-        console.log('[Discover Dropdown] Media type:', mediaType);
         // Call the search handler directly with the correct value and media type
         if (typeof window.triggerSearchFromDiscover === 'function') {
-            console.log('[Discover Dropdown] Calling triggerSearchFromDiscover with:', `Discover: ${genre}`, mediaType);
             window.triggerSearchFromDiscover(`Discover: ${genre}`, mediaType);
         } else {
             // fallback: click the search button
             setTimeout(() => {
                 const searchBtn = document.getElementById('search-button');
                 if (searchBtn) {
-                    console.log('[Discover Dropdown] Fallback: clicking search button');
                     searchBtn.click();
                 }
             }, 0);
@@ -280,10 +279,10 @@ function Discover(props) {
     const genres = props.mediaType === 'TV' ? tvGenres : movieGenres;
     const sortedGenres = [...genres].sort();
     return (
-        <select className='search-bar-elements top-bar' id='discover-button' onChange={handleDiscoverChange}>
-            <option id='discover-option'>Discover</option>
+        <select className='search-bar-elements top-bar' id='discover-button' onChange={handleDiscoverChange} defaultValue="">
+            <option id='discover-option' value="" disabled>Discover</option>
             {sortedGenres.map((genre) => (
-                <option key={genre}>{genre}</option>
+                <option key={genre} value={genre}>{genre}</option>
             ))}
         </select>
     );
