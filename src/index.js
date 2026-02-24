@@ -195,11 +195,10 @@ function SearchBar(props) {
     };
 
     // Handler for Watchlist button
+    const navigate = useNavigate();
     const handleWatchlistClick = () => {
-        // Navigate to results page and set a query param to open watchlist
-        if (typeof window !== 'undefined' && window.location) {
-            window.location.assign('/search?watchlist=1');
-        }
+        // Use client-side navigation for SPA routing
+        navigate('/search?watchlist=1');
     };
     return (
         <div id="search-bar" className="search-bar-large">
