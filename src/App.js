@@ -194,6 +194,7 @@ function App(props) {
         const tvGenres = {
             "Action": 10759,
             "Adventure": 10759,
+            "Action & Adventure": 10759,
             "Animation": 16,
             "Comedy": 35,
             "Crime": 80,

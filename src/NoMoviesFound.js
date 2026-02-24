@@ -9,7 +9,7 @@ function NoMoviesFound(props) {
             );
         } else {
             return (
-                <p id="no-movies-found">Please enter a movie or TV show in the search bar.</p>
+                <p id="no-movies-found">No search results found.</p>
             );
         }
     }
