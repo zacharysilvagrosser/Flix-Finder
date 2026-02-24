@@ -218,9 +218,15 @@ function SearchBar(props) {
             <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <button className='search-bar-elements top-bar' id="trending-button" onClick={handleTrending}>Trending</button>
                 <Discover mediaType={mediaType} discoverSelectPreview={props.discoverSelectPreview}/>
-                <select className='search-bar-elements bottom-bar' id='media-type' value={mediaType} onChange={handleMediaTypeChange}>
-                    <option>Movie</option>
-                    <option>TV</option>
+                <select
+                    className='search-bar-elements bottom-bar'
+                    id='media-type'
+                    value={mediaType}
+                    onChange={handleMediaTypeChange}
+                    style={{ marginLeft: '0.5rem' }}
+                >
+                    <option value="Movie">Movie</option>
+                    <option value="TV">TV</option>
                 </select>
             </div>
             {props.showWatchlistButton && (
@@ -234,43 +240,6 @@ function SearchBar(props) {
             )}
         </div>
     )
-}
-function MediaType() {
-    const [mediaType, setMediaType] = React.useState(() => {
-        return localStorage.getItem('flixFinderMediaType') || 'Movie';
-    });
-
-    React.useEffect(() => {
-        const select = document.getElementById('media-type');
-        if (select) select.value = mediaType;
-    }, [mediaType]);
-
-    // Find the search input and trigger search if Enter is pressed after changing dropdown
-    React.useEffect(() => {
-        const input = document.getElementById('search');
-        if (!input) return;
-        const handler = (event) => {
-            if (event.key === 'Enter') {
-                input.blur(); // force onChange to fire for dropdown
-            }
-        };
-        input.addEventListener('keydown', handler);
-        return () => input.removeEventListener('keydown', handler);
-    }, []);
-
-    const handleChange = (e) => {
-        setMediaType(e.target.value);
-        localStorage.setItem('flixFinderMediaType', e.target.value);
-        // Do not trigger search immediately when changing dropdown
-    };
-
-    return (
-        <select className='search-bar-elements bottom-bar' id='media-type' value={mediaType} onChange={handleChange}>
-            <option>Movie</option>
-            <option>TV</option>
-            <option>Both</option>
-        </select>
-    );
 }
 function Discover(props) {
     // Custom handler to update search input and trigger search

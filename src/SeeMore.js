@@ -2,7 +2,6 @@ import React from 'react';
 
 // forward and backward buttons to display individual pages of 20 movies at a time on screen
 function SeeMore(props) {
-    const pageSize = 100;
     // Accept lastApiPageCount as a prop for Next button logic
     function goNext() {
         props.setPage(props.page + 5);

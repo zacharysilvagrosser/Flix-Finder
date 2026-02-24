@@ -94,7 +94,6 @@ function App(props) {
         userSearch = props.searchValue || document.getElementById("search")?.value || '';
         userMediaType = document.getElementById('media-type')?.value || 'Movie';
     }
-    const pageSize = 100;
     // useState variable containing API movie data and page number returned
     const [data, setData] = useState(null);
     const [page, setPage] = useState(1);
@@ -110,9 +109,6 @@ function App(props) {
     // For backward compatibility, keep current single list as the first
     // watchData/setWatchData now refer to the selected list
     const watchData = watchLists[selectedWatchList]?.movies || [];
-    const setWatchData = (newMovies) => {
-        setWatchLists(prev => prev.map((wl, i) => i === selectedWatchList ? { ...wl, movies: newMovies } : wl));
-    };
     const [isWatchListLoaded, setIsWatchListLoaded] = useState(false);
     // track titles in the Watch List so the movies 'Watch List' button can change to 'Listed' if it's already in the watchlist
     const [watchTitles, setWatchTitles] = useState([]);
@@ -344,13 +340,13 @@ function App(props) {
                     filtered = [];
                 } else {
                     filtered = allData.filter(item => {
-                        let date, title;
+                        let date;
                         if (item.release_date !== undefined) {
                             date = item.release_date;
-                            title = item.title;
+                            // title = item.title;
                         } else if (item.first_air_date !== undefined) {
                             date = item.first_air_date;
-                            title = item.name;
+                            // title = item.name;
                         }
                         if (date !== undefined) {
                             const convertedDate = date.substring(0, 4);

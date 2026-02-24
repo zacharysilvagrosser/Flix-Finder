@@ -2,7 +2,6 @@ import React from 'react';
 
 function Suggest(props) {
     const mykey = process.env.REACT_APP_API_KEY;
-    const pageSize = 20;
     // fetch similar movies from API to display suggested movies to watch
     const suggest = (id) => {
         let [allData, allIDs] = [[], []];
@@ -16,7 +15,7 @@ function Suggest(props) {
                 }
                 allIDs.push(i.id);
             });
-            if (pages === pageSize / 20 || pages === jsonData.total_pages) {
+            if (pages === jsonData.total_pages) {
                 // Keep data sorted between fetch requests
                 switch (props.sorted) {
                     case 'popularity':
