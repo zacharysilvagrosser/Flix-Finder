@@ -467,18 +467,6 @@ function App(props) {
         saveWatchLists();
     }, [watchLists, currentUser, isWatchListLoaded]);
 
-    // Update watchTitles whenever watchData changes
-    useEffect(() => {
-        const titles = [];
-        const movies = Array.isArray(watchLists[selectedWatchList]?.movies)
-            ? watchLists[selectedWatchList].movies
-            : [];
-        movies.forEach(item => {
-            titles.push(item.title);
-            titles.push(item.name);
-        });
-        setWatchTitles(titles);
-    }, [watchLists, selectedWatchList]);
 
     // For now, keep listNumber as the length of the selected list
     const listNumber = watchLists[selectedWatchList]?.movies?.length || 0;
