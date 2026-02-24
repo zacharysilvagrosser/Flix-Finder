@@ -109,9 +109,9 @@ function App(props) {
     // For backward compatibility, keep current single list as the first
     // watchData/setWatchData now refer to the selected list
     const watchData = watchLists[selectedWatchList]?.movies || [];
-    const [isWatchListLoaded, setIsWatchListLoaded] = useState(false);
     // track titles in the Watch List so the movies 'Watch List' button can change to 'Listed' if it's already in the watchlist
     const [watchTitles, setWatchTitles] = useState([]);
+    const [isWatchListLoaded, setIsWatchListLoaded] = useState(false);
 
     // SET PAGE BACK TO 1 WHEN STARTING NEW SEARCH
     function resetPage() {
