@@ -427,17 +427,41 @@ function App(props) {
                 try {
                     const docRef = doc(db, 'watchlists', currentUser.uid);
                     const docSnap = await getDoc(docRef);
+                    const localData = localStorage.getItem('watchLaterLists');
+                    const localLists = localData ? JSON.parse(localData) : null;
+                    // Use sessionStorage to prevent repeated migration in the same session
+                    const migrationKey = `watchlistMigrated_${currentUser.uid}`;
+                    const alreadyMigrated = sessionStorage.getItem(migrationKey);
                     if (docSnap.exists()) {
-                        setWatchLists(docSnap.data().lists || [{ name: 'Watch List', movies: [] }]);
+                        const firestoreLists = docSnap.data().lists || [{ name: 'Watch List', movies: [] }];
+                        const isFirestoreEmpty = !firestoreLists || firestoreLists.length === 0 || (firestoreLists.length === 1 && firestoreLists[0].movies.length === 0);
+                        if (!alreadyMigrated && isFirestoreEmpty && localLists && localLists.length > 0 && !(localLists.length === 1 && localLists[0].movies.length === 0)) {
+                            // Migrate localStorage lists to Firestore
+                            await setDoc(docRef, { lists: localLists });
+                            setWatchLists(localLists);
+                            localStorage.removeItem('watchLaterLists');
+                            sessionStorage.setItem(migrationKey, 'true');
+                        } else {
+                            setWatchLists(firestoreLists);
+                            if (localLists) localStorage.removeItem('watchLaterLists');
+                            sessionStorage.setItem(migrationKey, 'true');
+                        }
                     } else {
-                        setWatchLists([{ name: 'Watch List', movies: [] }]);
+                        if (!alreadyMigrated && localLists && localLists.length > 0 && !(localLists.length === 1 && localLists[0].movies.length === 0)) {
+                            await setDoc(docRef, { lists: localLists });
+                            setWatchLists(localLists);
+                            localStorage.removeItem('watchLaterLists');
+                            sessionStorage.setItem(migrationKey, 'true');
+                        } else {
+                            setWatchLists([{ name: 'Watch List', movies: [] }]);
+                            sessionStorage.setItem(migrationKey, 'true');
+                        }
                     }
                 } catch (error) {
                     console.error('Error loading watchlists:', error);
                     setWatchLists([{ name: 'Watch List', movies: [] }]);
                 }
             } else {
-                // If user is not logged in, load from localStorage as fallback
                 const storedData = localStorage.getItem('watchLaterLists');
                 setWatchLists(storedData ? JSON.parse(storedData) : [{ name: 'Watch List', movies: [] }]);
             }
@@ -450,15 +474,20 @@ function App(props) {
     useEffect(() => {
         if (!isWatchListLoaded) return;
         async function saveWatchLists() {
+            // Only save to Firestore if user is logged in and watchLists is loaded from Firestore (not from localStorage migration)
             if (currentUser && watchLists) {
-                try {
-                    const docRef = doc(db, 'watchlists', currentUser.uid);
-                    await setDoc(docRef, { lists: watchLists });
-                    // Optionally, you can keep 'movies' for backward compatibility:
-                    // await setDoc(docRef, { lists: watchLists, movies: watchLists[0]?.movies || [] });
-                    // console.log('Watchlists saved to Firestore:', watchLists.length, 'lists');
-                } catch (error) {
-                    console.error('Error saving watchlists:', error);
+                // Prevent saving if localStorage still exists (means migration just happened or bug)
+                const localData = localStorage.getItem('watchLaterLists');
+                if (!localData) {
+                    try {
+                        const docRef = doc(db, 'watchlists', currentUser.uid);
+                        await setDoc(docRef, { lists: watchLists });
+                        // Optionally, you can keep 'movies' for backward compatibility:
+                        // await setDoc(docRef, { lists: watchLists, movies: watchLists[0]?.movies || [] });
+                        // console.log('Watchlists saved to Firestore:', watchLists.length, 'lists');
+                    } catch (error) {
+                        console.error('Error saving watchlists:', error);
+                    }
                 }
             } else if (!currentUser && watchLists) {
                 localStorage.setItem('watchLaterLists', JSON.stringify(watchLists));

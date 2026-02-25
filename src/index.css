@@ -259,13 +259,18 @@ make responsive
     transition: background 0.15s;
     max-width: 100%;
 }
+
+/* Left-align the Add new watch list option */
+.custom-dropdown-menu .add-new-list-option {
+    justify-content: flex-start !important;
+}
 /* Truncate long list names in dropdown and toggle */
 .custom-dropdown-menu li span,
 .custom-dropdown-toggle .dropdown-toggle-label {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 120px;
+    max-width: 300px;
     display: inline-block;
     vertical-align: middle;
 }
