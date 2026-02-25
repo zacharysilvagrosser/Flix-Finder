@@ -1,15 +1,23 @@
+
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import Auth from './Auth';
 import './UserHeader.css';
+import { useNavigate } from 'react-router-dom';
+
 
 function UserHeader() {
   const [showAuth, setShowAuth] = useState(false);
   const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   async function handleLogout() {
     try {
       await logout();
+      // Reset app state by reloading or navigating to home
+      navigate('/');
+      // Optionally, force a reload for a full reset:
+      // window.location.href = '/';
     } catch (error) {
       console.error('Failed to log out:', error);
     }

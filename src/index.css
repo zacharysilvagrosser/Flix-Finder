@@ -451,7 +451,7 @@ make responsive
     justify-content: center;
     margin-bottom: 0.8rem;
     /* overflow: hidden; */
-    background: radial-gradient(400px 250px at 90% 100%, rgba(77, 208, 225, 0.03), transparent 40%);
+    /* background: radial-gradient(400px 250px at 90% 100%, rgba(77, 208, 225, 0.03), transparent 40%); */
 }
 /* Header for movie card: title and plus button */
 /* Header for movie card: title centered, plus button top right */
@@ -801,9 +801,7 @@ button {
     width: 100%;
     min-height: 100vh;
     position: relative;
-    background: radial-gradient(900px 600px at 10% -10%, rgba(77, 208, 225, 0.07), transparent 50%),
-                radial-gradient(700px 500px at 90% 0%, rgba(255, 200, 120, 0.06), transparent 45%),
-                var(--bg);
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -817,11 +815,7 @@ button {
     padding-top: 3.5rem;
 }
 #container::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(11, 15, 20, 0.6), rgba(11, 15, 20, 0.95));
-    pointer-events: none;
+    display: none;
 }
 #container.results-page::before {
     background: transparent;
@@ -1044,7 +1038,12 @@ button {
 }
 .movie-img {
     max-height: 450px;
+    max-width: 300px;
     width: 100%;
+    object-fit: contain;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 /* Modern movie card styling */
 .movie-information {
