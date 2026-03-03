@@ -6,7 +6,7 @@ function SortingButtons(props) {
     let sortedMovies;
     if (props.data) {
         function sortMovies(reference) {
-            document.querySelectorAll(".control-button").forEach(button => {
+            document.querySelectorAll(".control-btn").forEach(button => {
                 button.classList.remove("active");
             });
             reference.classList.add("active");
@@ -44,13 +44,13 @@ function SortingButtons(props) {
             }
         }
         return (
-            <div className='sorting-group control-group'>
-                <div className='sorting-label control-label'>Sort by</div>
-                <div id='sorting-buttons-div' className='control-buttons'>
-                    <button id="popularity-button" className="sorting-buttons control-button active" autoFocus onClick={sortPopularity}>Popularity</button>
-                    <button id="rating-button" className="sorting-buttons control-button" onClick={sortRating}>Rating</button>
-                    <button id="oldest-button" className="sorting-buttons control-button" onClick={sortDatesOld}>Oldest</button>
-                    <button id="newest-button" className="sorting-buttons control-button" onClick={sortDatesNew}>Newest</button>
+            <div className='control-group'>
+                <div className='control-label' id="sort-label">Sort by</div>
+                <div id='sort-buttons' className='control-buttons' role="group" aria-labelledby="sort-label">
+                    <button id="popularity-button" className="control-btn active" onClick={sortPopularity} aria-pressed="true">Popularity</button>
+                    <button id="rating-button" className="control-btn" onClick={sortRating} aria-pressed="false">Rating</button>
+                    <button id="oldest-button" className="control-btn" onClick={sortDatesOld} aria-pressed="false">Oldest</button>
+                    <button id="newest-button" className="control-btn" onClick={sortDatesNew} aria-pressed="false">Newest</button>
                 </div>
             </div>
         );

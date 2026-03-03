@@ -73,7 +73,7 @@ function MovieData(props) {
                 }
             };
             return (
-                <div className='movie-information'>
+                <article className='movie-information' aria-label={`${title} movie card`}>
                     <div className='movie-header'>
                         {props.data && <h2 className={`movie-names ${tvClass}`}>{title}</h2>}
                         <div className='watchlist-plus'>
@@ -90,14 +90,16 @@ function MovieData(props) {
                     <div className='movie-poster-info-area' ref={posterAreaRef}>
                         {props.data && (showInfo ? <MovieInfo data={props.data} item={props.item}/> : <MoviePoster item={props.item} page={props.page}/>) }
                     </div>
-                    <div className='movie-buttons'>
+                    <div className='movie-buttons' role="group" aria-label="Movie actions">
                         <Suggest item={props.item} setData={props.setData} setSavedData={props.setSavedData} sorted={props.sorted} page={props.page} mykey={props.mykey} className={tvClass} />
-                        <button className={`movie-button ${tvClass}`} title="Find where to stream this title"><a href={streamLink} target='_blank' rel='noreferrer'>Stream</a></button>
-                        <button className={`info-button movie-button ${tvClass}`} title="Display movie information"
+                        <a href={streamLink} target='_blank' rel='noreferrer' className={`movie-button ${tvClass}`} aria-label={`Find where to stream ${title}`}>Stream</a>
+                        <button className={`info-button movie-button ${tvClass}`} 
                             onClick={() => setShowInfo(show => !show)}
+                            aria-label={showInfo ? `Close information for ${title}` : `Show information for ${title}`}
+                            aria-expanded={showInfo}
                         >{showInfo ? 'Close Info' : 'Info'}</button>
                     </div>
-                </div>
+                </article>
             );
         }
     }

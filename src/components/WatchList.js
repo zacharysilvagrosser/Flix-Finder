@@ -83,10 +83,10 @@ function WatchList(props) {
     if (showChooseList && posterRect) {
         return ReactDOM.createPortal(
             <>
-                <div style={overlayStyle} onClick={() => setShowChooseList(false)} />
-                <div style={modalStyle} onClick={e => e.stopPropagation()}>
-                    <button className="auth-close" style={{top: 12, right: 12, position: 'absolute', color: 'var(--text, #fff)', fontSize: 24, background: 'none', border: 'none', cursor: 'pointer'}} onClick={() => setShowChooseList(false)}>&times;</button>
-                    <h2 style={{marginBottom: 18, fontWeight: 700, fontSize: '1.25rem', textAlign: 'center'}}>Add to Watch List</h2>
+                <div style={overlayStyle} onClick={() => setShowChooseList(false)} aria-hidden="true" />
+                <div style={modalStyle} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="choose-list-title">
+                    <button className="auth-close" style={{top: 12, right: 12, position: 'absolute', color: 'var(--text, #fff)', fontSize: 24, background: 'none', border: 'none', cursor: 'pointer'}} onClick={() => setShowChooseList(false)} aria-label="Close modal">&times;</button>
+                    <h2 id="choose-list-title" style={{marginBottom: 18, fontWeight: 700, fontSize: '1.25rem', textAlign: 'center'}}>Add to Watch List</h2>
                     <div style={{marginBottom: 18, color: 'var(--text, #fff)', fontSize: '1.08rem', textAlign: 'center'}}>Select a watch list to add this item:</div>
                     <div style={{display: 'flex', flexDirection: 'column', gap: 12, width: '100%'}}>
                         {props.watchLists.map((wl, idx) => (
@@ -94,6 +94,7 @@ function WatchList(props) {
                                 key={wl.name + idx}
                                 onClick={() => addToList(idx)}
                                 disabled={isItemInList(wl, props.item)}
+                                aria-label={isItemInList(wl, props.item) ? `Already in ${wl.name}` : `Add to ${wl.name}`}
                                 style={{
                                     background: isItemInList(wl, props.item) ? '#2a3342' : 'var(--accent, #1976d2)',
                                     color: isItemInList(wl, props.item) ? '#888' : '#fff',
@@ -121,17 +122,18 @@ function WatchList(props) {
     // Determine if this is a TV show for styling
     const isTV = !!props.item.first_air_date;
     const tvClass = isTV ? 'tv-show' : '';
+    const itemTitle = props.item.title || props.item.name || 'this item';
 
     if (listed) {
         return (
             <div className="watchlist-plus">
-                <button className={`watchlist-plus-button ${tvClass}`} onClick={removeFromList} title="Remove from Watchlist">&#8722;</button>
+                <button className={`watchlist-plus-button ${tvClass}`} onClick={removeFromList} aria-label={`Remove ${itemTitle} from Watchlist`}>&#8722;</button>
             </div>
         );
     } else {
         return (
             <div className="watchlist-plus">
-                <button className={`watchlist-plus-button ${tvClass}`} onClick={handleAdd} title="Add to Watchlist">&#43;</button>
+                <button className={`watchlist-plus-button ${tvClass}`} onClick={handleAdd} aria-label={`Add ${itemTitle} to Watchlist`}>&#43;</button>
             </div>
         );
     }

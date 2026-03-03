@@ -27,19 +27,19 @@ function SeeMore(props) {
     // Show Next if there are more than 100 results or more pages available
     const showNext = props.data && props.data.length === 100 && props.lastApiPageCount === 20;
     return (
-        <div className='pagination'>
+        <nav className='pagination' aria-label="Pagination navigation">
             {props.page > 5 && (
-                <button className='pagination-button prev' onClick={goPrevious}>
+                <button className='pagination-button prev' onClick={goPrevious} aria-label="Go to previous page">
                     <span aria-hidden="true">←</span> Prev
                 </button>
             )}
-            <div className='pagination-info'>Page {userPage}</div>
+            <div className='pagination-info' aria-current="page" role="status">Page {userPage}</div>
             {showNext || (props.data && props.data.length === 100) ? (
-                <button className='pagination-button next' onClick={goNext}>
+                <button className='pagination-button next' onClick={goNext} aria-label="Go to next page">
                     Next <span aria-hidden="true">→</span>
                 </button>
             ) : null}
-        </div>
+        </nav>
     );
 }
 

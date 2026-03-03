@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './Auth.css';
+import '../styles/Auth.css';
 
 // Watch list button component to display watch list
 function LoadWatchList(props) {
@@ -45,6 +45,7 @@ function LoadWatchList(props) {
                 className={
                     (props.showingWatchList ? "view-watch-list " : "") + "results-watchlist-btn"
                 }
+                aria-label={`${props.showingWatchList ? 'Hide' : 'Show'} watchlist: ${props.watchLists && props.watchLists[props.selectedWatchList]?.name}`}
             >
                 {props.watchLists && props.watchLists[props.selectedWatchList]?.name}
             </button>
@@ -54,18 +55,27 @@ function LoadWatchList(props) {
                     onClick={() => setDropdownOpen(open => !open)}
                     aria-haspopup="listbox"
                     aria-expanded={dropdownOpen}
+                    aria-label="Select watchlist"
                 >
                     <span className="dropdown-toggle-label">{props.watchLists && props.watchLists[props.selectedWatchList]?.name}</span>
-                    <span style={{ marginLeft: 8 }}>▼</span>
+                    <span aria-hidden="true" style={{ marginLeft: 8 }}>▼</span>
                 </button>
                 {dropdownOpen && (
-                    <ul className="custom-dropdown-menu" role="listbox">
+                    <ul className="custom-dropdown-menu" role="listbox" aria-label="Available watchlists">
                         {props.watchLists && props.watchLists.map((wl, idx) => (
                             <li
                                 key={wl.name + idx}
                                 className={idx === props.selectedWatchList ? 'selected' : ''}
                                 role="option"
                                 aria-selected={idx === props.selectedWatchList}
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        props.setSelectedWatchList(idx);
+                                        setDropdownOpen(false);
+                                    }
+                                }}
                                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.3rem 0.7rem', cursor: 'pointer' }}
                                 onClick={() => {
                                     props.setSelectedWatchList(idx);
@@ -74,9 +84,10 @@ function LoadWatchList(props) {
                             >
                                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wl.name}</span>
                                 <span style={{ display: 'flex', gap: 6, marginLeft: 10 }}>
-                                    <span
-                                        title="Edit name"
-                                        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: 0.8, width: 20, height: 20 }}
+                                    <button
+                                        type="button"
+                                        aria-label={`Edit ${wl.name} watchlist name`}
+                                        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: 0.8, width: 20, height: 20, background: 'none', border: 'none', padding: 0 }}
                                         onClick={e => {
                                             e.stopPropagation();
                                             setEditIdx(idx);
@@ -87,12 +98,13 @@ function LoadWatchList(props) {
                                         }}
                                     >
                                         {/* Modern pencil SVG */}
-                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 2.29a1 1 0 0 1 1.42 0l1.59 1.59a1 1 0 0 1 0 1.42l-9.34 9.34a1 1 0 0 1-.45.26l-4 1a1 1 0 0 1-1.22-1.22l1-4a1 1 0 0 1 .26-.45l9.34-9.34zm-8.38 11.09l7.09-7.09-1.59-1.59-7.09 7.09-0.71 2.83 2.83-0.71z" fill="currentColor"/></svg>
-                                    </span>
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M14.7 2.29a1 1 0 0 1 1.42 0l1.59 1.59a1 1 0 0 1 0 1.42l-9.34 9.34a1 1 0 0 1-.45.26l-4 1a1 1 0 0 1-1.22-1.22l1-4a1 1 0 0 1 .26-.45l9.34-9.34zm-8.38 11.09l7.09-7.09-1.59-1.59-7.09 7.09-0.71 2.83 2.83-0.71z" fill="currentColor"/></svg>
+                                    </button>
                                     {props.watchLists.length > 1 && idx !== 0 && (
-                                        <span
-                                            title="Delete list"
-                                            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: 0.8, width: 20, height: 20 }}
+                                        <button
+                                            type="button"
+                                            aria-label={`Delete ${wl.name} watchlist`}
+                                            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: 0.8, width: 20, height: 20, background: 'none', border: 'none', padding: 0 }}
                                             onClick={e => {
                                                 e.stopPropagation();
                                                 setDeleteIdx(idx);
@@ -101,8 +113,8 @@ function LoadWatchList(props) {
                                             }}
                                         >
                                             {/* Modern trash SVG */}
-                                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V3h4a1 1 0 1 1 0 2h-1v12a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V5H2a1 1 0 1 1 0-2h4V2zm2 1v0h1V2h-1v1zm-4 2v12h10V5H5zm2 3a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8zm4 0a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z" fill="currentColor"/></svg>
-                                        </span>
+                                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7.5 2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V3h4a1 1 0 1 1 0 2h-1v12a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V5H2a1 1 0 1 1 0-2h4V2zm2 1v0h1V2h-1v1zm-4 2v12h10V5H5zm2 3a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8zm4 0a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8z" fill="currentColor"/></svg>
+                                        </button>
                                     )}
                                 </span>
                             </li>
@@ -111,14 +123,24 @@ function LoadWatchList(props) {
                         <li
                             key="add-new-list"
                             className="add-new-list-option"
+                            role="option"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setShowAddModal(true);
+                                    setDropdownOpen(false);
+                                }
+                            }}
                             style={{ color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.3rem 0.7rem', borderTop: '1px solid #223052', marginTop: 4 }}
                             onClick={e => {
                                 e.stopPropagation();
                                 setShowAddModal(true);
                                 setDropdownOpen(false);
                             }}
+                            aria-label="Add new watch list"
                         >
-                            <span style={{ fontSize: '1.2em', marginRight: 8 }}>+</span> Add new watch list
+                            <span aria-hidden="true" style={{ fontSize: '1.2em', marginRight: 8 }}>+</span> Add new watch list
                         </li>
                     </ul>
                 )}
@@ -127,11 +149,11 @@ function LoadWatchList(props) {
 
             {/* Add Modal */}
             {showAddModal && (
-                <div className="auth-overlay" onClick={() => setShowAddModal(false)}>
+                <div className="auth-overlay" onClick={() => setShowAddModal(false)} role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
                     <div className="auth-modal" onClick={e => e.stopPropagation()}>
-                        <button className="auth-close" onClick={() => setShowAddModal(false)}>&times;</button>
-                        <h2>New Watch List</h2>
-                        {addError && <div className="auth-error">{addError}</div>}
+                        <button className="auth-close" onClick={() => setShowAddModal(false)} aria-label="Close modal">&times;</button>
+                        <h2 id="add-modal-title">New Watch List</h2>
+                        {addError && <div className="auth-error" role="alert">{addError}</div>}
                         <form onSubmit={e => {
                             e.preventDefault();
                             if (!addName.trim()) {
@@ -146,7 +168,9 @@ function LoadWatchList(props) {
                             setAddError('');
                         }}>
                             <div className="auth-form-group">
+                                <label htmlFor="add-list-name" className="visually-hidden">List name</label>
                                 <input
+                                    id="add-list-name"
                                     type="text"
                                     placeholder="Enter list name"
                                     value={addName}
@@ -161,11 +185,11 @@ function LoadWatchList(props) {
             )}
             {/* Edit Modal */}
             {showEditModal && (
-                <div className="auth-overlay" onClick={() => setShowEditModal(false)}>
+                <div className="auth-overlay" onClick={() => setShowEditModal(false)} role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
                     <div className="auth-modal" onClick={e => e.stopPropagation()}>
-                        <button className="auth-close" onClick={() => setShowEditModal(false)}>&times;</button>
-                        <h2>Edit List Name</h2>
-                        {editError && <div className="auth-error">{editError}</div>}
+                        <button className="auth-close" onClick={() => setShowEditModal(false)} aria-label="Close modal">&times;</button>
+                        <h2 id="edit-modal-title">Edit List Name</h2>
+                        {editError && <div className="auth-error" role="alert">{editError}</div>}
                         <form onSubmit={e => {
                             e.preventDefault();
                             if (!editName.trim()) {
@@ -176,7 +200,9 @@ function LoadWatchList(props) {
                             setShowEditModal(false);
                         }}>
                             <div className="auth-form-group">
+                                <label htmlFor="edit-list-name" className="visually-hidden">List name</label>
                                 <input
+                                    id="edit-list-name"
                                     type="text"
                                     value={editName}
                                     onChange={e => setEditName(e.target.value)}
@@ -191,11 +217,11 @@ function LoadWatchList(props) {
 
             {/* Delete Modal */}
             {showDeleteModal && (
-                <div className="auth-overlay" onClick={() => setShowDeleteModal(false)}>
+                <div className="auth-overlay" onClick={() => setShowDeleteModal(false)} role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
                     <div className="auth-modal" onClick={e => e.stopPropagation()}>
-                        <button className="auth-close" onClick={() => setShowDeleteModal(false)}>&times;</button>
-                        <h2>Delete List</h2>
-                        <div className="auth-error">Are you sure you want to delete this list? This cannot be undone.</div>
+                        <button className="auth-close" onClick={() => setShowDeleteModal(false)} aria-label="Close modal">&times;</button>
+                        <h2 id="delete-modal-title">Delete List</h2>
+                        <div className="auth-error" role="alert">Are you sure you want to delete this list? This cannot be undone.</div>
                         <button
                             className="auth-submit"
                             style={{ background: '#c33', marginRight: 8 }}

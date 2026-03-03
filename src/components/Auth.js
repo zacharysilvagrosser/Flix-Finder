@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
-import './Auth.css';
+import '../styles/Auth.css';
 
 function Auth({ onClose }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -57,43 +57,51 @@ function Auth({ onClose }) {
   }
 
   return (
-    <div className="auth-overlay" onClick={onClose}>
+    <div className="auth-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="auth-close" onClick={onClose}>&times;</button>
-        <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-        {error && <div className="auth-error">{error}</div>}
+        <button className="auth-close" onClick={onClose} aria-label="Close authentication modal">&times;</button>
+        <h2 id="auth-modal-title">{isLogin ? 'Login' : 'Sign Up'}</h2>
+        {error && <div className="auth-error" role="alert">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="auth-form-group">
+            <label htmlFor="auth-email" className="visually-hidden">Email Address</label>
             <input
+              id="auth-email"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              aria-required="true"
             />
           </div>
           <div className="auth-form-group">
+            <label htmlFor="auth-password" className="visually-hidden">Password</label>
             <input
+              id="auth-password"
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-required="true"
+              aria-describedby="password-requirements"
             />
+            <span id="password-requirements" className="visually-hidden">Password must be at least 6 characters</span>
           </div>
-          <button type="submit" className="auth-submit" disabled={loading}>
+          <button type="submit" className="auth-submit" disabled={loading} aria-busy={loading}>
             {loading ? 'Loading...' : (isLogin ? 'Login' : 'Sign Up')}
           </button>
         </form>
-        <div className="auth-divider">
+        <div className="auth-divider" aria-hidden="true">
           <span>OR</span>
         </div>
-        <button onClick={handleGoogleSignIn} className="google-signin" disabled={loading}>
+        <button onClick={handleGoogleSignIn} className="google-signin" disabled={loading} aria-label="Continue with Google">
           <span>Continue with Google</span>
         </button>
         <div className="auth-switch">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={() => setIsLogin(!isLogin)} className="auth-switch-btn">
+          <button onClick={() => setIsLogin(!isLogin)} className="auth-switch-btn" aria-label={isLogin ? 'Switch to sign up form' : 'Switch to login form'}>
             {isLogin ? 'Sign Up' : 'Login'}
           </button>
         </div>

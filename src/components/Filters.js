@@ -75,19 +75,19 @@ function Filters(props) {
         setActiveSection('');
     };
     return (
-        <div className='sorting-group control-group' id='filters'>
-            <div className='sorting-label control-label'>Filter by</div>
-            <div id='sorting-buttons-div' className='control-buttons'>
-                <button className={`sorting-buttons filter-button control-button ${activeSection === 'date' ? 'active-filter active' : ''}`} onClick={() => toggleSection('date')}>Date</button>
-                <button className={`sorting-buttons filter-button control-button ${activeSection === 'genre' ? 'active-filter active' : ''}`} onClick={() => toggleSection('genre')}>Genre</button>
-                <button className={`sorting-buttons filter-button control-button ${activeSection === 'rating' ? 'active-filter active' : ''}`} onClick={() => toggleSection('rating')}>Rating</button>
-                <button className={`sorting-buttons filter-button control-button ${activeSection === 'adult' ? 'active-filter active' : ''}`} onClick={() => toggleSection('adult')}>Adult</button>
+        <div className='control-group' id='filters'>
+            <div className='control-label' id="filter-label">Filter by</div>
+            <div id='filter-buttons' className='control-buttons' role="group" aria-labelledby="filter-label">
+                <button className={`control-btn ${activeSection === 'date' ? 'active' : ''}`} onClick={() => toggleSection('date')} aria-expanded={activeSection === 'date'} aria-controls="filter-modal">Date</button>
+                <button className={`control-btn ${activeSection === 'genre' ? 'active' : ''}`} onClick={() => toggleSection('genre')} aria-expanded={activeSection === 'genre'} aria-controls="filter-modal">Genre</button>
+                <button className={`control-btn ${activeSection === 'rating' ? 'active' : ''}`} onClick={() => toggleSection('rating')} aria-expanded={activeSection === 'rating'} aria-controls="filter-modal">Rating</button>
+                <button className={`control-btn ${activeSection === 'adult' ? 'active' : ''}`} onClick={() => toggleSection('adult')} aria-expanded={activeSection === 'adult'} aria-controls="filter-modal">Adult</button>
             </div>
             {activeSection && (
                 <div className='filter-modal-overlay' onClick={closePanel}>
-                    <div className='filter-modal' role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+                    <div className='filter-modal' id="filter-modal" role="dialog" aria-modal="true" aria-labelledby="filter-modal-title" onClick={(event) => event.stopPropagation()}>
                         <div className='filter-modal-header'>
-                            <div className='filter-modal-title'>
+                            <div className='filter-modal-title' id="filter-modal-title">
                                 {activeSection === 'date' && 'Filter by Date'}
                                 {activeSection === 'genre' && 'Filter by Genre'}
                                 {activeSection === 'rating' && 'Filter by Rating'}
@@ -174,37 +174,40 @@ function FilterDates(props) {
     return (
         <div className="filter-section">
             <h3>Release Date</h3>
-            <div className="filter-type">
-                <label htmlFor='60'>60's and earlier</label>
-                <input id='60' type="checkbox" checked={props.sixties} onChange={props.check60s} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='70'>70's</label>
-                <input id='70' type="checkbox" checked={props.seventies} onChange={props.check70s} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='80'>80's</label>
-                <input id='80' type="checkbox" checked={props.eighties} onChange={props.check80s} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='90'>90's</label>
-                <input id='90' type="checkbox" checked={props.ninties} onChange={props.check90s} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='00'>00's</label>
-                <input id='00' type="checkbox" checked={props.thousands} onChange={props.check00s} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='10'>10's</label>
-                <input id='10' type="checkbox" checked={props.tens} onChange={props.check10s} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='20'>20's and later</label>
-                <input id='20' type="checkbox" checked={props.twenties} onChange={props.check20s} />
-            </div>
+            <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                <legend className="visually-hidden">Select release date ranges</legend>
+                <div className="filter-type">
+                    <label htmlFor='60'>60's and earlier</label>
+                    <input id='60' type="checkbox" checked={props.sixties} onChange={props.check60s} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='70'>70's</label>
+                    <input id='70' type="checkbox" checked={props.seventies} onChange={props.check70s} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='80'>80's</label>
+                    <input id='80' type="checkbox" checked={props.eighties} onChange={props.check80s} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='90'>90's</label>
+                    <input id='90' type="checkbox" checked={props.ninties} onChange={props.check90s} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='00'>00's</label>
+                    <input id='00' type="checkbox" checked={props.thousands} onChange={props.check00s} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='10'>10's</label>
+                    <input id='10' type="checkbox" checked={props.tens} onChange={props.check10s} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='20'>20's and later</label>
+                    <input id='20' type="checkbox" checked={props.twenties} onChange={props.check20s} />
+                </div>
+            </fieldset>
             <div style={{ display: 'flex', gap: '0.7rem', marginTop: '0.7rem', justifyContent: 'center' }}>
-                <button type="button" className="control-button" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleSelectAll}>Select All</button>
-                <button type="button" className="control-button" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleUnselectAll}>Unselect All</button>
+                <button type="button" className="control-btn" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleSelectAll}>Select All</button>
+                <button type="button" className="control-btn" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleUnselectAll}>Unselect All</button>
             </div>
         </div>
     )
@@ -225,25 +228,28 @@ function FilterRatings(props) {
     return (
         <div className="filter-section">
             <h3>Rating</h3>
-            <div className="filter-type">
-                <label htmlFor='5'>5 and under</label>
-                <input id='5' type="checkbox" checked={props.rate5} onChange={props.check5} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='6'>6</label>
-                <input id='6' type="checkbox" checked={props.rate6} onChange={props.check6} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='7'>7</label>
-                <input id='7' type="checkbox" checked={props.rate7} onChange={props.check7} />
-            </div>
-            <div className="filter-type">
-                <label htmlFor='8'>8 and over</label>
-                <input id='8' type="checkbox" checked={props.rate8} onChange={props.check8} />
-            </div>
+            <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                <legend className="visually-hidden">Select rating ranges</legend>
+                <div className="filter-type">
+                    <label htmlFor='5'>5 and under</label>
+                    <input id='5' type="checkbox" checked={props.rate5} onChange={props.check5} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='6'>6</label>
+                    <input id='6' type="checkbox" checked={props.rate6} onChange={props.check6} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='7'>7</label>
+                    <input id='7' type="checkbox" checked={props.rate7} onChange={props.check7} />
+                </div>
+                <div className="filter-type">
+                    <label htmlFor='8'>8 and over</label>
+                    <input id='8' type="checkbox" checked={props.rate8} onChange={props.check8} />
+                </div>
+            </fieldset>
             <div style={{ display: 'flex', gap: '0.7rem', marginTop: '0.7rem', justifyContent: 'center' }}>
-                <button type="button" className="control-button" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleSelectAll}>Select All</button>
-                <button type="button" className="control-button" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleUnselectAll}>Unselect All</button>
+                <button type="button" className="control-btn" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleSelectAll}>Select All</button>
+                <button type="button" className="control-btn" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleUnselectAll}>Unselect All</button>
             </div>
         </div>
     )
@@ -267,20 +273,23 @@ function FilterGenres(props) {
     return (
         <div className="filter-section">
             <h3>Genre</h3>
-            {props.genres.map((genre) => (
-                <div className="filter-type" key={genre.id}>
-                    <label htmlFor={`genre-${genre.id}`}>{genre.name}</label>
-                    <input
-                        id={`genre-${genre.id}`}
-                        type="checkbox"
-                        checked={props.selectedGenres.includes(genre.id)}
-                        onChange={() => props.toggleGenre(genre.id)}
-                    />
-                </div>
-            ))}
+            <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                <legend className="visually-hidden">Select genres</legend>
+                {props.genres.map((genre) => (
+                    <div className="filter-type" key={genre.id}>
+                        <label htmlFor={`genre-${genre.id}`}>{genre.name}</label>
+                        <input
+                            id={`genre-${genre.id}`}
+                            type="checkbox"
+                            checked={props.selectedGenres.includes(genre.id)}
+                            onChange={() => props.toggleGenre(genre.id)}
+                        />
+                    </div>
+                ))}
+            </fieldset>
             <div style={{ display: 'flex', gap: '0.7rem', marginTop: '0.7rem', justifyContent: 'center' }}>
-                <button type="button" className="control-button" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleSelectAll}>Select All</button>
-                <button type="button" className="control-button" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleUnselectAll}>Unselect All</button>
+                <button type="button" className="control-btn" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleSelectAll}>Select All</button>
+                <button type="button" className="control-btn" style={{ minWidth: 0, padding: '0.3rem 1.1rem', fontSize: '0.97rem' }} onClick={handleUnselectAll}>Unselect All</button>
             </div>
         </div>
     );

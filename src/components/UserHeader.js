@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import Auth from './Auth';
-import './UserHeader.css';
+import '../styles/UserHeader.css';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -25,18 +25,18 @@ function UserHeader() {
 
   return (
     <>
-      <div className="user-header">
+      <header className="user-header" role="banner">
         {currentUser ? (
           <div className="user-info">
             <span className="user-email">{currentUser.email}</span>
-            <button onClick={handleLogout} className="logout-btn">Logout</button>
+            <button onClick={handleLogout} className="logout-btn" aria-label="Log out of your account">Logout</button>
           </div>
         ) : (
-          <button onClick={() => setShowAuth(true)} className="login-btn">
+          <button onClick={() => setShowAuth(true)} className="login-btn" aria-label="Open login or sign up modal">
             Login / Sign Up
           </button>
         )}
-      </div>
+      </header>
       {showAuth && <Auth onClose={() => setShowAuth(false)} />}
     </>
   );

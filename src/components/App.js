@@ -7,7 +7,7 @@ import SeeMore from './SeeMore';
 import NoMoviesFound from './NoMoviesFound';
 import { useAuth } from './AuthContext';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from '../config/firebase';
 
 const mykey = process.env.REACT_APP_API_KEY;
 function App(props) {
@@ -161,7 +161,6 @@ function App(props) {
         // Determine media type for correct genre mapping
         let mediaType = userMediaType ? userMediaType.toLowerCase() : 'movie';
         if (mediaType !== 'movie' && mediaType !== 'tv') mediaType = 'movie';
-        console.log('[App] convertGenreIDs genre:', genre, 'mediaType:', mediaType);
         // TMDB genre IDs for movies
         const movieGenres = {
             "Action": 28,
@@ -220,39 +219,74 @@ function App(props) {
         } else if (mediaType === 'tv') {
             id = tvGenres[genre] || null;
         }
-        if (id === null) {
-            console.log('[App] convertGenreIDs: No match for genre', genre, 'mediaType', mediaType);
-        }
         return id;
     }
-    let [allData, allIDs]= [[], []];
-    // Helper to fetch a single page from the API
-    const fetchData = async (pages) => {
-        let results = [];
+    // Helper to build a TMDB API URL for a given media type and page
+    const buildUrl = (mediaType, pageNum, searchInputValue, genreID) => {
+        if (searchInputValue === 'Trending') {
+            return `https://api.themoviedb.org/3/trending/${mediaType}/day?language=en-US&page=${pageNum}&api_key=${mykey}`;
+        } else if (searchInputValue.startsWith('Discover:')) {
+            return `https://api.themoviedb.org/3/discover/${mediaType}?include_adult=true&include_video=false&language=en-US&page=${pageNum}&with_genres=${genreID}&api_key=${mykey}`;
+        } else {
+            return `https://api.themoviedb.org/3/search/${mediaType}?api_key=${mykey}&include_adult=true&page=${pageNum}&query=${encodeURIComponent(userSearch)}&include_video=false`;
+        }
+    };
+
+    // Fetch a single API page, returning results + total_pages.
+    // If isBoth, movie and TV are fetched in parallel.
+    const fetchPage = async (pageNum) => {
         const genreID = convertGenreIDs();
+        const searchInputValue = document.getElementById("search")?.value || '';
         const isBoth = userMediaType === 'Both';
         const typesToFetch = isBoth ? ['movie', 'tv'] : [userMediaType.toLowerCase()];
-        for (const mediaType of typesToFetch) {
-            let response;
-            const searchInputValue = document.getElementById("search")?.value || '';
-            if (searchInputValue === 'Trending') {
-                response = await fetch(`https://api.themoviedb.org/3/trending/${mediaType}/day?language=en-US&page=${pages}&api_key=${mykey}`);
-            } else if (searchInputValue.startsWith('Discover:')) {
-                const url = `https://api.themoviedb.org/3/discover/${mediaType}?include_adult=true&include_video=false&language=en-US&page=${pages}&with_genres=${genreID}&api_key=${mykey}`;
-                console.log('[App] Fetching Discover API:', url);
-                response = await fetch(url);
-            } else {
-                response = await fetch(`https://api.themoviedb.org/3/search/${mediaType}?api_key=${mykey}&include_adult=true&page=${pages}&query=${userSearch}&total_pages=True&include_video=false`);
-            }
-            const jsonData = await response.json();
-            if (searchInputValue.startsWith('Discover:')) {
-                console.log('[App] Discover API raw results:', jsonData);
-            }
-            if (jsonData.results) {
-                results = results.concat(jsonData.results);
-            }
+
+        const responses = await Promise.all(
+            typesToFetch.map(mt => fetch(buildUrl(mt, pageNum, searchInputValue, genreID)).then(r => r.json()))
+        );
+
+        let results = [];
+        let totalPages = 1;
+        responses.forEach(json => {
+            if (json.results) results = results.concat(json.results);
+            if (json.total_pages) totalPages = Math.max(totalPages, json.total_pages);
+        });
+        return { results, totalPages };
+    };
+
+    // Shared filter predicate to avoid duplicate logic
+    const isAdultContent = (item) => {
+        const adultKeywords = ['sex', 'S&M', 'intercourse', 'porn', 'busty', 'horny', 'breast', 'seduc'];
+        return item.adult || adultKeywords.some(w => item.overview && item.overview.includes(w));
+    };
+
+    const passesFilters = (item, searchInputValue) => {
+        const date = item.release_date ?? item.first_air_date;
+        if (!date) return false;
+        const year = parseInt(date.substring(0, 4), 10);
+        const rating = item.vote_average;
+        const yearOk = (
+            (sixties && year <= 1969) ||
+            (seventies && year >= 1970 && year <= 1979) ||
+            (eighties && year >= 1980 && year <= 1989) ||
+            (ninties && year >= 1990 && year <= 1999) ||
+            (thousands && year >= 2000 && year <= 2009) ||
+            (tens && year >= 2010 && year <= 2019) ||
+            (twenties && year >= 2020)
+        );
+        const ratingOk = (
+            (rate5 && rating < 6) ||
+            (rate6 && rating >= 6 && rating < 7) ||
+            (rate7 && rating >= 7 && rating < 8) ||
+            (rate8 && rating >= 8)
+        );
+        if (!yearOk || !ratingOk) return false;
+        if (!isAdult && isAdultContent(item)) return false;
+        // Genre filter only applies for non-Discover searches
+        if (!searchInputValue.startsWith('Discover:')) {
+            if (!selectedGenres || selectedGenres.length === 0) return false;
+            if (!item.genre_ids || !item.genre_ids.some(id => selectedGenres.includes(id))) return false;
         }
-        return results;
+        return true;
     };
 
     // Load enough pages to ensure 100 filtered results
@@ -261,155 +295,52 @@ function App(props) {
         let isMounted = true;
         const loadPages = async () => {
             setLoading(true);
-            allData = [];
-            allIDs = [];
-            let filteredResults = [];
+            // Use a Set for O(1) deduplication instead of array.includes()
+            const seenIDs = new Set();
+            const allItems = [];
+            const searchInputValue = document.getElementById("search")?.value || '';
+
+            // Determine which API pages to request based on the user's pagination page
             const userPage = Math.ceil(page / 5);
             const startPage = (userPage - 1) * 5 + 1;
-            let lastResultsCount = 0;
-            let apiPage = 1;
-            let done = false;
-            while (!done && filteredResults.length < 100 && apiPage <= 50) {
-                const pageBatch = Array.from({length: 5}, (_, i) => startPage + apiPage - 1 + i);
-                const fetchPromises = pageBatch.map(p => fetchData(p));
-                const resultsBatch = await Promise.all(fetchPromises);
-                let batchTotalResults = 0;
-                resultsBatch.forEach(results => {
-                    batchTotalResults += results.length;
+
+            // Fetch page 1 (relative to startPage) first to discover total_pages
+            const { results: firstResults, totalPages } = await fetchPage(startPage);
+            firstResults.forEach(item => {
+                if (!seenIDs.has(item.id)) {
+                    seenIDs.add(item.id);
+                    allItems.push(item);
+                }
+            });
+
+            // Fetch remaining pages all at once in parallel, bounded by actual total_pages
+            const maxPage = Math.min(startPage + totalPages - 1, startPage + 9); // up to 10 pages per user-page
+            if (maxPage > startPage) {
+                const remainingPageNums = Array.from({ length: maxPage - startPage }, (_, i) => startPage + 1 + i);
+                const batchResults = await Promise.all(remainingPageNums.map(p => fetchPage(p)));
+                batchResults.forEach(({ results }) => {
                     results.forEach(item => {
-                        if (!allIDs.includes(item.id)) {
-                            allData.push(item);
-                            allIDs.push(item.id);
+                        if (!seenIDs.has(item.id)) {
+                            seenIDs.add(item.id);
+                            allItems.push(item);
                         }
                     });
                 });
-                // If the batch returns fewer than 20 results for all pages, stop fetching more
-                if (batchTotalResults < 20 * pageBatch.length) {
-                    done = true;
-                }
-                // If Discover search, skip genre filtering (API already filtered)
-                let filtered = [];
-                const searchInputValue = document.getElementById("search")?.value || '';
-                if (searchInputValue.startsWith('Discover:')) {
-                    filtered = allData.filter(item => {
-                        let date;
-                        if (item.release_date !== undefined) {
-                            date = item.release_date;
-                        } else if (item.first_air_date !== undefined) {
-                            date = item.first_air_date;
-                        }
-                        if (date !== undefined) {
-                            const convertedDate = date.substring(0, 4);
-                            const rating = item.vote_average;
-                            if (
-                                ((sixties && convertedDate <= 1969) ||
-                                    (seventies && convertedDate <= 1979 && convertedDate >= 1970) ||
-                                    (eighties && convertedDate <= 1989 && convertedDate >= 1980) ||
-                                    (ninties && convertedDate <= 1999 && convertedDate >= 1990) ||
-                                    (thousands && convertedDate <= 2009 && convertedDate >= 2000) ||
-                                    (tens && convertedDate <= 2019 && convertedDate >= 2010) ||
-                                    (twenties && convertedDate >= 2020)) &&
-                                ((rate5 && rating < 6) || (rate6 && rating < 7 && rating >= 6) || (rate7 && rating < 8 && rating >= 7) || (rate8 && rating >= 8))
-                            ) {
-                                if (
-                                    !isAdult &&
-                                    (item.adult ||
-                                        (item.overview && (
-                                            item.overview.includes('sex') ||
-                                            item.overview.includes('S&M') ||
-                                            item.overview.includes('intercourse') ||
-                                            item.overview.includes('porn') ||
-                                            item.overview.includes('busty') ||
-                                            item.overview.includes('horny') ||
-                                            item.overview.includes('breast') ||
-                                            item.overview.includes('seduc')
-                                        ))
-                                    )
-                                ) {
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
-                    });
-                } else if (!selectedGenres || selectedGenres.length === 0) {
-                    filtered = [];
-                } else {
-                    filtered = allData.filter(item => {
-                        let date;
-                        if (item.release_date !== undefined) {
-                            date = item.release_date;
-                            // title = item.title;
-                        } else if (item.first_air_date !== undefined) {
-                            date = item.first_air_date;
-                            // title = item.name;
-                        }
-                        if (date !== undefined) {
-                            const convertedDate = date.substring(0, 4);
-                            const rating = item.vote_average;
-                            const genreFilterActive = selectedGenres && selectedGenres.length > 0;
-                            const genreMatch = !genreFilterActive || (item.genre_ids && item.genre_ids.some((id) => selectedGenres.includes(id)));
-                            if (
-                                genreMatch &&
-                                ((sixties && convertedDate <= 1969) ||
-                                    (seventies && convertedDate <= 1979 && convertedDate >= 1970) ||
-                                    (eighties && convertedDate <= 1989 && convertedDate >= 1980) ||
-                                    (ninties && convertedDate <= 1999 && convertedDate >= 1990) ||
-                                    (thousands && convertedDate <= 2009 && convertedDate >= 2000) ||
-                                    (tens && convertedDate <= 2019 && convertedDate >= 2010) ||
-                                    (twenties && convertedDate >= 2020)) &&
-                                ((rate5 && rating < 6) || (rate6 && rating < 7 && rating >= 6) || (rate7 && rating < 8 && rating >= 7) || (rate8 && rating >= 8))
-                            ) {
-                                if (
-                                    !isAdult &&
-                                    (item.adult ||
-                                        (item.overview && (
-                                            item.overview.includes('sex') ||
-                                            item.overview.includes('S&M') ||
-                                            item.overview.includes('intercourse') ||
-                                            item.overview.includes('porn') ||
-                                            item.overview.includes('busty') ||
-                                            item.overview.includes('horny') ||
-                                            item.overview.includes('breast') ||
-                                            item.overview.includes('seduc')
-                                        ))
-                                    )
-                                ) {
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
-                    });
-                }
-                filteredResults = filtered;
-                apiPage += 5;
             }
-            // Only keep the first 100 filtered results
-            filteredResults = filteredResults.slice(0, 100);
-            setLastApiPageCount(lastResultsCount);
-            // Keep data sorted between fetch requests
-            let sortedResults = [...filteredResults];
-            switch (sorted) {
-                case 'popularity':
-                    sortedResults = sortedResults.sort((a, b) => b.popularity - a.popularity);
-                    break;
-                case 'rating':
-                    sortedResults = sortedResults.sort((a, b) => b.vote_average - a.vote_average);
-                    break;
-                case 'oldest':
-                    sortedResults = sortedResults.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-                    break;
-                case 'newest':
-                    sortedResults = sortedResults.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
-                    break;
-                default:
-                    break;
-            }
+
+            // Filter and cap at 100 results
+            const filteredResults = allItems.filter(item => passesFilters(item, searchInputValue)).slice(0, 100);
+            setLastApiPageCount(totalPages);
+
+            // Sort
+            const sorters = {
+                popularity: (a, b) => b.popularity - a.popularity,
+                rating: (a, b) => b.vote_average - a.vote_average,
+                oldest: (a, b) => new Date(a.release_date ?? a.first_air_date) - new Date(b.release_date ?? b.first_air_date),
+                newest: (a, b) => new Date(b.release_date ?? b.first_air_date) - new Date(a.release_date ?? a.first_air_date),
+            };
+            const sortedResults = sorters[sorted] ? [...filteredResults].sort(sorters[sorted]) : filteredResults;
+
             if (isMounted) {
                 setData(sortedResults);
                 setSavedData(sortedResults);
@@ -581,7 +512,7 @@ function App(props) {
             </div>
             {/* Watch List Header */}
             {showingWatchList && (
-                <div style={{
+                <h2 style={{
                     textAlign: 'center',
                     fontWeight: 700,
                     fontSize: '2rem',
@@ -589,12 +520,13 @@ function App(props) {
                     letterSpacing: '0.04em',
                 }}>
                     {watchLists[selectedWatchList]?.name || 'Watch List'}
-                </div>
+                </h2>
             )}
-            <div id='movie-section'>
+            <section id='movie-section' aria-label={showingWatchList ? 'Watchlist items' : 'Search results'}>
                 {loading && (
-                    <div className='loading-spinner-container'>
+                    <div className='loading-spinner-container' role="status" aria-live="polite" aria-label="Loading results">
                         <div className='loading-spinner'></div>
+                        <span className="visually-hidden">Loading...</span>
                     </div>
                 )}
                 {!loading && Array.isArray(showingWatchList ? watchData : data) && (showingWatchList ? watchData.filter(item => {
@@ -657,7 +589,7 @@ function App(props) {
                     />
                 ))}
                 {!loading && <NoMoviesFound data={Array.isArray(showingWatchList ? watchData : data) ? (showingWatchList ? watchData : data) : []} showingWatchList={showingWatchList} />} 
-            </div>
+            </section>
             {<SeeMore data={data} page={page} setPage={setPage} nextPage={nextPage} setNextPage={setNextPage} lastApiPageCount={lastApiPageCount}/>} 
         </div>
     );

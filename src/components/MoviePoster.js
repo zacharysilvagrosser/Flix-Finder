@@ -5,11 +5,18 @@ function MoviePoster(props) {
     if (props.item.poster_path) {
         posterPath = "https://image.tmdb.org/t/p/w300" + props.item.poster_path;
     } else {
-        posterPath = require('./missing-img.png'); 
+        posterPath = require('../assets/missing-img.png'); 
     }
     const mykey = process.env.REACT_APP_API_KEY;
     const [isLoading, setIsLoading] = useState(true);
     const [idData, setIdData] = useState(null);
+    
+    // Get title for alt text
+    const title = props.item.title || props.item.name || 'Unknown Title';
+    const posterAltText = props.item.poster_path 
+        ? `Movie poster for ${title}` 
+        : `Placeholder for ${title} - poster not available`;
+    
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
@@ -34,17 +41,17 @@ function MoviePoster(props) {
     }, [props.page, mykey, props.item.id, props.item.media_type, props.item.first_air_date, props.item.release_date]);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div role="status" aria-live="polite">Loading...</div>;
     }
     // Only show IMDb link if available
     const imdbLink = idData && idData.imdb_id ? 'https://www.imdb.com/title/' + idData.imdb_id : undefined;
     return (
         imdbLink ? (
-            <a className='imdb-link' href={imdbLink} target='_blank' rel='noreferrer'>
-                <img className='movie-img' src={posterPath} alt="Movie Poster" />
+            <a className='imdb-link' href={imdbLink} target='_blank' rel='noreferrer' aria-label={`View ${title} on IMDb`}>
+                <img className='movie-img' src={posterPath} alt={posterAltText} />
             </a>
         ) : (
-            <img className='movie-img' src={posterPath} alt="Movie Poster" />
+            <img className='movie-img' src={posterPath} alt={posterAltText} />
         )
     );
 }

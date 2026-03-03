@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import App from './components/App';
 import React, { useEffect, useState } from 'react';
-import { AuthProvider } from './AuthContext';
-import UserHeader from './UserHeader';
+import { AuthProvider } from './components/AuthContext';
+import UserHeader from './components/UserHeader';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -25,11 +25,14 @@ function HomePage() {
 
     return (
         <div id="container">
+            <a href="#main-content" className="skip-to-main">Skip to main content</a>
             <UserHeader />
-            <h1 id="page-header" className='page-header-large'>Flix Finder</h1>
+            <h1 id="page-header" className='page-header'>Flix Finder</h1>
             <p id="page-subtitle">Search, discover, and save your next watch.</p>
-                <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} showWatchlistButton={true} />
             <Tagline />
+            <main id="main-content" role="main">
+                <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} showWatchlistButton={true} />
+            </main>
         </div>
     );
 }
@@ -68,15 +71,17 @@ function ResultsPage() {
 
     return (
         <div id="container" className="results-page">
+            <a href="#main-content" className="skip-to-main">Skip to main content</a>
             <UserHeader />
             <h1
                 id="page-header"
-                className='page-header-large page-header-link'
+                className='page-header page-header-link'
                 onClick={() => navigate('/')}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
                         navigate('/');
                     }
                 }}
@@ -84,14 +89,16 @@ function ResultsPage() {
             >
                 Flix Finder
             </h1>
-            <App
-                searchClicked={searchClicked}
-                searchValue={searchValue}
-                forceShowWatchlist={forceShowWatchlist}
-                    renderSearchBar={
-                        <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} showWatchlistButton={false} />
-                    }
-            />
+            <main id="main-content" role="main">
+                <App
+                    searchClicked={searchClicked}
+                    searchValue={searchValue}
+                    forceShowWatchlist={forceShowWatchlist}
+                        renderSearchBar={
+                            <SearchBar onSearchNavigate={handleSearchNavigate} discoverSelectPreview={discoverSelectPreview} showWatchlistButton={false} />
+                        }
+                />
+            </main>
         </div>
     );
 }
@@ -201,9 +208,10 @@ function SearchBar(props) {
         navigate('/search?watchlist=1');
     };
     return (
-        <div id="search-bar" className="search-bar-large">
-            <div id='search-div' className='search-div-large' style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-                <input id="search" type="text" placeholder="Enter a title..." value={searchValue} onChange={handleInputChange} onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} />
+        <div id="search-bar">
+            <div id='search-input-wrapper' style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
+                <label htmlFor="search" className="visually-hidden">Search for movies and TV shows</label>
+                <input id="search" type="text" placeholder="Enter a title..." value={searchValue} onChange={handleInputChange} onKeyDown={handleKeyDown} style={{ flex: 1, paddingRight: '2.5rem' }} aria-label="Search for movies and TV shows" />
                 <button
                     className='search-bar-icon-button'
                     id="search-button"
@@ -211,18 +219,20 @@ function SearchBar(props) {
                     style={{ position: 'absolute', right: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', height: '2.2rem', width: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                     aria-label="Search"
                 >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </button>
             </div>
-            <div id='search-buttons-div' className='search-buttons-div-large' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <button className='search-bar-elements top-bar' id="trending-button" onClick={handleTrending}>Trending</button>
+            <div id='search-controls' style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <button className='btn-trending' id="trending-button" onClick={handleTrending} aria-label="Search trending titles">Trending</button>
                 <Discover mediaType={mediaType} discoverSelectPreview={props.discoverSelectPreview}/>
+                <label htmlFor="media-type" className="visually-hidden">Media Type</label>
                 <select
-                    className='search-bar-elements bottom-bar'
+                    className='select-media-type'
                     id='media-type'
                     value={mediaType}
                     onChange={handleMediaTypeChange}
                     style={{ marginLeft: '0.5rem' }}
+                    aria-label="Select media type"
                 >
                     <option value="Movie">Movie</option>
                     <option value="TV">TV</option>
@@ -230,9 +240,10 @@ function SearchBar(props) {
             </div>
             {props.showWatchlistButton && (
                 <button
-                    className="search-bar-elements watchlist-bar"
+                    className="btn-watchlist"
                     style={{ width: '100%', margin: '0 auto 0.5rem auto', padding: '0.8rem', fontSize: '1.1rem', fontWeight: 600, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}
                     onClick={handleWatchlistClick}
+                    aria-label="View your watchlist"
                 >
                     View Watchlist
                 </button>
@@ -278,7 +289,7 @@ function Discover(props) {
     const genres = props.mediaType === 'TV' ? tvGenres : movieGenres;
     const sortedGenres = [...genres].sort();
     return (
-        <select className='search-bar-elements top-bar' id='discover-button' onChange={handleDiscoverChange} defaultValue="">
+        <select className='select-discover' id='discover-button' onChange={handleDiscoverChange} defaultValue="" aria-label="Discover movies by genre">
             <option id='discover-option' value="" disabled>Discover</option>
             {sortedGenres.map((genre) => (
                 <option key={genre} value={genre}>{genre}</option>
@@ -290,7 +301,7 @@ function Tagline() {
     return (
         <div id="movie-display">
             <h2>Search over one million titles</h2>
-            <img src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg' alt='The Movie Database logo'></img>
+            <img src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg' alt='The Movie Database (TMDB) logo'></img>
         </div>
     )
 }
