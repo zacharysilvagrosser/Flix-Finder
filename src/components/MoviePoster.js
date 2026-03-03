@@ -48,10 +48,10 @@ function MoviePoster(props) {
     return (
         imdbLink ? (
             <a className='imdb-link' href={imdbLink} target='_blank' rel='noreferrer' aria-label={`View ${title} on IMDb`}>
-                <img className='movie-img' src={posterPath} alt={posterAltText} />
+                <img className='movie-img' src={posterPath} alt={posterAltText} width='300' height='450' />
             </a>
         ) : (
-            <img className='movie-img' src={posterPath} alt={posterAltText} />
+            <img className='movie-img' src={posterPath} alt={posterAltText} width='300' height='450' />
         )
     );
 }

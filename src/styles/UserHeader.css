@@ -25,7 +25,7 @@
 
 .logout-btn,
 .login-btn {
-  background: var(--primary, #2196f3);
+  background: var(--primary, #1565C0);
   color: #fff;
   border: none;
   padding: 0.32rem 0.85rem;
@@ -39,7 +39,7 @@
 
 .logout-btn:hover,
 .login-btn:hover {
-  background: var(--primary-dark, #1769aa);
+  background: var(--primary-dark, #0D47A1);
 }
 
 .login-btn {
